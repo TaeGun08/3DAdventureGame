@@ -7,6 +7,8 @@ public class InputController : MonoBehaviour
     private CharacterController characterController; //플레이어가 가지고 있는 캐릭터 컨트롤러를 받아올 변수
     private Vector3 moveVec; //플레이어의 입력값을 받아올 변수
 
+    private Camera mainCam;
+
     private Animator anim; //플레이어의 애니메이션을 받아올 변수
 
     [Header("플레이어 설정")]
@@ -14,19 +16,32 @@ public class InputController : MonoBehaviour
     [Space]
     [SerializeField, Tooltip("플레이어의 이동속도")] private float moveSpeed;
     [Space]
+    [SerializeField, Tooltip("플레이어의 구르기 힘")] private float diveRollForce;
     [SerializeField, Tooltip("구르기 쿨타임")] private float diveRollCoolTime;
+    private Transform diveRollTrs; //구르기 시 회전할 방향을 받아올 변수
     private float diveRollTimer; //구르기 쿨타임을 적용할 타이머 변수
+    private float deveRollValue;
+    private float dive;
     private bool useDieveRoll = false; //구르기를 사용했는지 체크하기 위한 변수
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
+        diveRollTrs = GetComponent<Transform>();
+
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    private void Start()
+    {
+        mainCam = Camera.main;
     }
 
     private void Update()
     {
         playerTimers();
+        playerLookAtScreen();
         playerMove();
         playerDiveRoll();
         playerAnim();
@@ -49,12 +64,22 @@ public class InputController : MonoBehaviour
     }
 
     /// <summary>
+    /// 플레이어가 마우스를 움직여 화면을 볼 수 있게 담당하는 함수
+    /// </summary>
+    private void playerLookAtScreen()
+    {
+        transform.rotation = Quaternion.Euler(0f, mainCam.transform.rotation.y, 0f);
+    }
+
+    /// <summary>
     /// 플레이어의 기본 이동을 담당하는 함수
     /// </summary>
     private void playerMove()
     {
         if (useDieveRoll == true)
         {
+            diveRollTrs.rotation = Quaternion.Euler(new Vector3(0f, deveRollValue, 0f));
+            characterController.Move(diveRollTrs.rotation * new Vector3(0f, 0f, diveRollForce) * Time.deltaTime);
             return;
         }
 
@@ -90,8 +115,26 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerDiveRoll()
     {
+        deveRollValue = Mathf.SmoothDampAngle(transform.localRotation.y, -90f, ref dive, 3f, 4f);
         if (Input.GetKeyDown(KeyCode.Space) && useDieveRoll == false)
         {
+            if (inputHorizontal() < 0f)
+            {
+                deveRollValue = Mathf.SmoothDampAngle(transform.localRotation.y, -90f, ref dive, 0f, 4f, Time.deltaTime);
+            }
+            else if (inputHorizontal() > 0f)
+            {
+                deveRollValue = Mathf.SmoothDampAngle(transform.localRotation.y, 90f, ref dive, 0f, 4f, Time.deltaTime);
+            }
+            else if (inputVertical() < 0f)
+            {
+                deveRollValue = Mathf.SmoothDampAngle(transform.localRotation.y, 180f, ref dive, 0f, 4f, Time.deltaTime);
+            }
+            else if (inputVertical() > 0f)
+            {
+                deveRollValue = Mathf.SmoothDampAngle(transform.localRotation.y, 0f, ref dive, 0f, 4f, Time.deltaTime);
+            }
+
             anim.Play("Unarmed-DiveRoll-Forward1");
             useDieveRoll = true;
         }
