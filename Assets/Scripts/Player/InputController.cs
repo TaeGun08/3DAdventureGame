@@ -200,7 +200,6 @@ public class InputController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && useDieveRoll == false && curStamina > 30f)
         {
-            Debug.Log("±¸¸£±â");
             anim.Play("Unarmed-DiveRoll-Forward1");
             curStamina -= 30;
             useDieveRoll = true;
@@ -217,10 +216,18 @@ public class InputController : MonoBehaviour
             if (idleChange == 0)
             {
                 idleChange = 1;
+                weapon.transform.position = playerHandTrs.transform.position;
+                weapon.transform.rotation = playerHandTrs.transform.rotation;
+                weapon.transform.SetParent(playerHandTrs.transform);
+                anim.Play("ChangeWeapon");
             }
             else
             {
                 idleChange = 0;
+                weapon.transform.position = playerBackTrs.transform.position;
+                weapon.transform.rotation = playerBackTrs.transform.rotation;
+                weapon.transform.SetParent(playerBackTrs.transform);
+                anim.Play("ChangeHand");
             }
 
             weaponChange = true;
