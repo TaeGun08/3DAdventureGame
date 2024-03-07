@@ -241,8 +241,8 @@ public class InputController : MonoBehaviour
     {
         if (useDieveRoll == true)
         {
-            isAttack = true;
-            attackDelay = 0.3f;
+            isAttack = false;
+            attackDelay = 0f;
             attackCount = 0;
             attackCombo = false;
             attackTimer = 0f;
