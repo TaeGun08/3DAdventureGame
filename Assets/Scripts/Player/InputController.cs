@@ -68,7 +68,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerLookAtScreen()
     {
-        transform.rotation = Quaternion.Euler(0f, mainCam.transform.rotation.y, 0f);
+        transform.rotation = Quaternion.Euler(0f, mainCam.transform.eulerAngles.y, 0f);
     }
 
     /// <summary>
@@ -78,8 +78,7 @@ public class InputController : MonoBehaviour
     {
         if (useDieveRoll == true)
         {
-            diveRollTrs.rotation = Quaternion.Euler(new Vector3(0f, deveRollValue, 0f));
-            characterController.Move(diveRollTrs.rotation * new Vector3(0f, 0f, diveRollForce) * Time.deltaTime);
+            characterController.Move(transform.rotation * new Vector3(0f, 0f, diveRollForce) * Time.deltaTime);
             return;
         }
 
@@ -118,23 +117,6 @@ public class InputController : MonoBehaviour
         deveRollValue = Mathf.SmoothDampAngle(transform.localRotation.y, -90f, ref dive, 3f, 4f);
         if (Input.GetKeyDown(KeyCode.Space) && useDieveRoll == false)
         {
-            if (inputHorizontal() < 0f)
-            {
-                deveRollValue = Mathf.SmoothDampAngle(transform.localRotation.y, -90f, ref dive, 0f, 4f, Time.deltaTime);
-            }
-            else if (inputHorizontal() > 0f)
-            {
-                deveRollValue = Mathf.SmoothDampAngle(transform.localRotation.y, 90f, ref dive, 0f, 4f, Time.deltaTime);
-            }
-            else if (inputVertical() < 0f)
-            {
-                deveRollValue = Mathf.SmoothDampAngle(transform.localRotation.y, 180f, ref dive, 0f, 4f, Time.deltaTime);
-            }
-            else if (inputVertical() > 0f)
-            {
-                deveRollValue = Mathf.SmoothDampAngle(transform.localRotation.y, 0f, ref dive, 0f, 4f, Time.deltaTime);
-            }
-
             anim.Play("Unarmed-DiveRoll-Forward1");
             useDieveRoll = true;
         }
