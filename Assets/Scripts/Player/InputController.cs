@@ -26,6 +26,7 @@ public class InputController : MonoBehaviour
     [SerializeField, Tooltip("구르기 쿨타임")] private float diveRollCoolTime;
     private float diveRollTimer; //구르기 쿨타임을 적용할 타이머 변수
     private bool useDieveRoll = false; //구르기를 사용했는지 체크하기 위한 변수
+    private Vector3 diveVec; //구르기 시 화면을 회전해도 내가 바라봤던 방향으로 구르기를 하기 위해 값을 담을 변수
 
     //공격 모션을 위한 변수들
     private bool isAttack = false; //공격을 했는지 여부를 확인하기 위한 변수
@@ -43,6 +44,10 @@ public class InputController : MonoBehaviour
     private float weaponChangeDelay; //플레이어의 손과 무기를 변경하기 위한 딜레이 시간
     private bool weaponChange = false; //플레이어가 무기를 변경하였는지 체크하기 위한 변수
 
+    [Header("아이템을 줍기 위한 콜라이더")]
+    [SerializeField] private BoxCollider pickUpArea;
+    [SerializeField] private Collider[] pickUpColl;
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
@@ -59,8 +64,17 @@ public class InputController : MonoBehaviour
         curStamina = maxStamina;
     }
 
+    private void pickUpTrigger(Collider collision)
+    {
+        if (collision.gameObject.tag == "Item")
+        {
+            weapon = collision.gameObject;
+        }
+    }
+
     private void Update()
     {
+        playerPickUpItem();
         playerTimers();
         playerLookAtScreen();
         playerMove();
@@ -69,6 +83,20 @@ public class InputController : MonoBehaviour
         playerWeaponChange();
         playerAttack();
         playerAnim();
+    }
+
+    /// <summary>
+    /// 아이템을 줍기 위한 함수
+    /// </summary>
+    private void playerPickUpItem()
+    {
+        pickUpColl = Physics.OverlapBox(pickUpArea.bounds.center, pickUpArea.bounds.size, Quaternion.identity,
+            LayerMask.GetMask("Weapon"));
+
+        if (pickUpColl != null)
+        {
+            pickUpTrigger(pickUpColl[0]);
+        }
     }
 
     /// <summary>
@@ -127,6 +155,11 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerLookAtScreen()
     {
+        if (useDieveRoll == true)
+        {
+            return;
+        }
+
         transform.rotation = Quaternion.Euler(0f, mainCam.transform.eulerAngles.y, 0f);
     }
 
@@ -137,7 +170,7 @@ public class InputController : MonoBehaviour
     {
         if (useDieveRoll == true)
         {
-            characterController.Move(transform.rotation * new Vector3(0f, 0f, diveRollForce) * Time.deltaTime);
+            characterController.Move(Quaternion.Euler(diveVec) * new Vector3(0f, 0f, diveRollForce) * Time.deltaTime);
             return;
         }
 
@@ -201,6 +234,7 @@ public class InputController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && useDieveRoll == false && curStamina > 30f)
         {
             anim.Play("Unarmed-DiveRoll-Forward1");
+            diveVec = new Vector3(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
             curStamina -= 30;
             useDieveRoll = true;
         }
