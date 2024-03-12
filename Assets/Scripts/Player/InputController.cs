@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class InputController : MonoBehaviour
@@ -111,12 +112,30 @@ public class InputController : MonoBehaviour
         playerAnim();
     }
 
+//#if UNITY_EDITOR//전처리
+
+//    [SerializeField] float radius = 1.0f;
+//    [SerializeField] Color lineColor = Color.red;
+//    [SerializeField] bool showLine = false;
+    
+//    private void OnDrawGizmos()
+//    {
+//        if (showLine == true)
+//        {
+//            Handles.color = lineColor;
+//            Handles.DrawWireDisc(transform.position, transform.up, radius);
+//            Handles.color = lineColor;
+//            Handles.DrawWireCube(pickUpArea.bounds.center, pickUpArea.bounds.size);
+//        }
+//    }
+//#endif
+
     /// <summary>
     /// 아이템을 줍기 위한 함수
     /// </summary>
     private void playerPickUpItem()
     {
-        Collider[] pickUpColl = Physics.OverlapBox(pickUpArea.bounds.center, pickUpArea.bounds.size, Quaternion.identity,
+        Collider[] pickUpColl = Physics.OverlapBox(pickUpArea.bounds.center, pickUpArea.bounds.size * 0.5f, Quaternion.identity,
             LayerMask.GetMask("Weapon"));
 
         if (pickUpColl != null)
