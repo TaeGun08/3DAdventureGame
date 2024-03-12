@@ -486,6 +486,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: 2Hand-Sword
       objectReference: {fileID: 0}
+    - target: {fileID: 5786088079639903287, guid: 9e2d2ce9dc155fd439b7996831098a04, type: 3}
+      propertyPath: m_TagString
+      value: Item
+      objectReference: {fileID: 0}
+    - target: {fileID: 6016599102916871215, guid: 9e2d2ce9dc155fd439b7996831098a04, type: 3}
+      propertyPath: weaponLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6016599102916871215, guid: 9e2d2ce9dc155fd439b7996831098a04, type: 3}
+      propertyPath: weaponDamage
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8397793343827723377, guid: 9e2d2ce9dc155fd439b7996831098a04, type: 3}
       propertyPath: m_RootOrder
       value: 7
@@ -871,8 +883,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
-      propertyPath: weapon
-      value: 
+      propertyPath: playerLevel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
+      propertyPath: diveRollForce
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
+      propertyPath: playerMaxCurHp.x
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 4644301860256745509, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
       propertyPath: m_Name

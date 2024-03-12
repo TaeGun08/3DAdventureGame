@@ -27,6 +27,14 @@ public class InputController : MonoBehaviour
     private float diveRollTimer; //구르기 쿨타임을 적용할 타이머 변수
     private bool useDieveRoll = false; //구르기를 사용했는지 체크하기 위한 변수
     private Vector3 diveVec; //구르기 시 화면을 회전해도 내가 바라봤던 방향으로 구르기를 하기 위해 값을 담을 변수
+    private bool diveNoHit = false; //구르기 시 잠시 무적을 위한 변수
+
+    [Header("플레이어 레벨 설정")]
+    [SerializeField] private int playerLevel = 1;
+    private float levelPoint; //레벨 경험치
+    private int statusPoint; //능력치를 올릴 수 있는 포인트
+    private int skillPoint; //스킬 레벨을 올릴 수 있는 포인트
+    private int weaponLevel; //무기 레벨을 받아 올 변수
 
     //공격 모션을 위한 변수들
     private bool isAttack = false; //공격을 했는지 여부를 확인하기 위한 변수
@@ -36,6 +44,15 @@ public class InputController : MonoBehaviour
     private bool attackCombo; //콤보 어택을 위한 변수
     private float comboTimer; //콤보 어택을 위한 시간
     private float changeStaminaAttack; //공격모션을 변경하기 위한 변수
+    [Header("플레이어 공격 설정")]
+    [SerializeField] private float playerDamage = 1;
+    private bool playerCritical = false; //플에이어가 공격 시 크리티컬이 발동되었는지
+
+    [Header("플레이어 체력 설정 x = max, y = cur")]
+    [SerializeField] private Vector2 playerMaxCurHp;
+
+    [Header("플레이어 방어력 설정")]
+    [SerializeField] private float playerArmor;
 
     [Header("플레이어의 무기 설정")]
     [SerializeField] private Transform playerHandTrs; //플레이어의 손 위치
@@ -46,7 +63,6 @@ public class InputController : MonoBehaviour
 
     [Header("아이템을 줍기 위한 콜라이더")]
     [SerializeField] private BoxCollider pickUpArea;
-    [SerializeField] private Collider[] pickUpColl;
 
     private void Awake()
     {
@@ -62,13 +78,23 @@ public class InputController : MonoBehaviour
         mainCam = Camera.main;
 
         curStamina = maxStamina;
+
+        playerMaxCurHp.y = playerMaxCurHp.x;
     }
 
     private void pickUpTrigger(Collider collision)
     {
-        if (collision.gameObject.tag == "Item")
+        if (collision.gameObject.tag == "Item" && Input.GetKeyDown(KeyCode.E))
         {
-            weapon = collision.gameObject;
+            Weapon weaponSc = collision.gameObject.GetComponent<Weapon>();
+            if (weaponSc.WeaponLevel() <= playerLevel)
+            {
+                weapon = collision.gameObject;
+                playerDamage = (playerDamage + weaponSc.WeaponDamage());
+                weapon.transform.SetParent(playerBackTrs.transform);
+                weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
+                weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            }
         }
     }
 
@@ -90,12 +116,15 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerPickUpItem()
     {
-        pickUpColl = Physics.OverlapBox(pickUpArea.bounds.center, pickUpArea.bounds.size, Quaternion.identity,
+        Collider[] pickUpColl = Physics.OverlapBox(pickUpArea.bounds.center, pickUpArea.bounds.size, Quaternion.identity,
             LayerMask.GetMask("Weapon"));
 
         if (pickUpColl != null)
         {
-            pickUpTrigger(pickUpColl[0]);
+            for (int i = 0; i < pickUpColl.Length; i++)
+            {
+                pickUpTrigger(pickUpColl[0]);
+            }
         }
     }
 
@@ -110,6 +139,7 @@ public class InputController : MonoBehaviour
             if (diveRollTimer <= 0f)
             {
                 diveRollTimer = diveRollCoolTime;
+                diveNoHit = false;
                 useDieveRoll = false;
             }
         }
@@ -170,11 +200,18 @@ public class InputController : MonoBehaviour
     {
         if (useDieveRoll == true)
         {
-            characterController.Move(Quaternion.Euler(diveVec) * new Vector3(0f, 0f, diveRollForce) * Time.deltaTime);
+            if (idleChange == 0)
+            {
+                characterController.Move(Quaternion.Euler(diveVec) * new Vector3(0f, 0f, diveRollForce * 1.5f) * Time.deltaTime);
+            }
+            else
+            {
+                characterController.Move(Quaternion.Euler(diveVec) * new Vector3(0f, 0f, diveRollForce * 1.2f) * Time.deltaTime);
+            }
             return;
         }
 
-        if (isAttack == true)
+        if (isAttack == true || (weaponChange == true && weaponChangeDelay <= 0.7f))
         {
             return;
         }
@@ -183,17 +220,37 @@ public class InputController : MonoBehaviour
 
         if (inputVertical() < 0)
         {
-            characterController.Move(transform.rotation * moveVec * Time.deltaTime * 0.5f);
+            if (idleChange == 0)
+            {
+                characterController.Move(transform.rotation * moveVec * Time.deltaTime);
+            }
+            else
+            {
+                characterController.Move(transform.rotation * (moveVec * 0.5f) * Time.deltaTime);
+            }
         }
         else if (inputHorizontal() != 0)
         {
-            characterController.Move(transform.rotation * moveVec * Time.deltaTime * 0.7f);
+            if (idleChange == 0)
+            {
+                characterController.Move(transform.rotation * (moveVec * 1.2f) * Time.deltaTime);
+            }
+            else
+            {
+                characterController.Move(transform.rotation * (moveVec * 0.7f) * Time.deltaTime);
+            }
         }
         else
         {
-            characterController.Move(transform.rotation * moveVec * Time.deltaTime);
+            if (idleChange == 0)
+            {
+                characterController.Move(transform.rotation * (moveVec * 1.5f) * Time.deltaTime);
+            }
+            else
+            {
+                characterController.Move(transform.rotation * (moveVec * 1f) * Time.deltaTime);
+            }
         }
-
     }
 
     private float inputHorizontal()
@@ -236,6 +293,7 @@ public class InputController : MonoBehaviour
             anim.Play("Unarmed-DiveRoll-Forward1");
             diveVec = new Vector3(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
             curStamina -= 30;
+            diveNoHit = true;
             useDieveRoll = true;
         }
     }
@@ -351,5 +409,17 @@ public class InputController : MonoBehaviour
         anim.SetFloat("ChangeAttack", idleChange);
         anim.SetFloat("AttackCount", attackCount);
         anim.SetFloat("StaminaAttack", changeStaminaAttack);
+    }
+
+    public void AttackHit()
+    {
+        if (idleChange == 0)
+        {
+
+        }
+        else
+        {
+
+        }
     }
 }
