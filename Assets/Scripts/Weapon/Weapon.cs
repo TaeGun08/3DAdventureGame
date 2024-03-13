@@ -18,11 +18,6 @@ public class Weapon : MonoBehaviour
     [SerializeField] private int weaponLevel;
     [SerializeField] private float weaponDamage;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        
-    }
-
     /// <summary>
     /// 무기의 레벨을 다른 스크립트에서 가져올 수 있게 하는 함수
     /// </summary>

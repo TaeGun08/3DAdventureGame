@@ -1,5 +1,58 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1004457941310319170
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6457029264968619363}
+  - component: {fileID: 6039884528357083128}
+  m_Layer: 6
+  m_Name: HItArea
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6457029264968619363
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004457941310319170}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.5, z: 1.57}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4644301860256977989}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &6039884528357083128
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004457941310319170}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2.5, y: 2, z: 3}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2921965688642919029
 GameObject:
   m_ObjectHideFlags: 0
@@ -102,7 +155,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400050, guid: e57e9b8cd5e115f4f8d7736473e5c7fd, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 400050, guid: e57e9b8cd5e115f4f8d7736473e5c7fd, type: 3}
       propertyPath: m_LocalPosition.x
@@ -162,6 +215,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 400050, guid: e57e9b8cd5e115f4f8d7736473e5c7fd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4215211584030368622}
+    - targetCorrespondingSourceObject: {fileID: 400050, guid: e57e9b8cd5e115f4f8d7736473e5c7fd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6457029264968619363}
     - targetCorrespondingSourceObject: {fileID: 400204, guid: e57e9b8cd5e115f4f8d7736473e5c7fd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6422700140698451732}
@@ -220,13 +276,17 @@ MonoBehaviour:
   moveSpeed: 4
   maxStamina: 100
   curStamina: 0
-  diveRollForce: 4
+  diveRollForce: 5
   diveRollCoolTime: 1
+  playerLevel: 1
+  hitArea: {fileID: 6039884528357083128}
+  playerDamage: 1
+  playerMaxCurHp: {x: 100, y: 0}
+  playerArmor: 0
   playerHandTrs: {fileID: 4644301860256978007}
   playerBackTrs: {fileID: 6422700140698451732}
   weapon: {fileID: 0}
   pickUpArea: {fileID: 8123441159933304225}
-  pickUpColl: []
 --- !u!4 &4644301860256977989 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400050, guid: e57e9b8cd5e115f4f8d7736473e5c7fd, type: 3}

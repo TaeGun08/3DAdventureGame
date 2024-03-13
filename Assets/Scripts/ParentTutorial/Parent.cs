@@ -17,4 +17,10 @@ public class Parent : MonoBehaviour //자식에게 이런 기능들이 있음을 전달
     {
         Debug.Log("저는 부모입니다");
     }
+
+    private void setResoution()
+    {
+        float targetRatio = 9f / 16f;
+        float ratio = (float)Screen.width / (float)Screen.height;
+    }
 }

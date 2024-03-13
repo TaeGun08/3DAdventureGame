@@ -882,26 +882,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
-      propertyPath: radius
-      value: 2.33
-      objectReference: {fileID: 0}
-    - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
-      propertyPath: showLine
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
-      propertyPath: playerLevel
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
-      propertyPath: diveRollForce
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
-      propertyPath: playerMaxCurHp.x
-      value: 100
-      objectReference: {fileID: 0}
     - target: {fileID: 4644301860256745509, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
       propertyPath: m_Name
       value: Player
@@ -1006,6 +986,10 @@ PrefabInstance:
     - target: {fileID: 3478204434425216494, guid: 6836ba32bb20d3a458948fd819546fdd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9124037510730041629, guid: 6836ba32bb20d3a458948fd819546fdd, type: 3}
+      propertyPath: rotateY.y
+      value: 359
       objectReference: {fileID: 0}
     - target: {fileID: 9212183133774513556, guid: 6836ba32bb20d3a458948fd819546fdd, type: 3}
       propertyPath: m_Name

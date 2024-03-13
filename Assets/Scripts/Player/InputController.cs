@@ -46,8 +46,10 @@ public class InputController : MonoBehaviour
     private float comboTimer; //콤보 어택을 위한 시간
     private float changeStaminaAttack; //공격모션을 변경하기 위한 변수
     [Header("플레이어 공격 설정")]
+    [SerializeField] private Collider hitArea;
     [SerializeField] private float playerDamage = 1;
     private bool playerCritical = false; //플에이어가 공격 시 크리티컬이 발동되었는지
+    private bool monsterAttack = false; //몬스터를 공격하기 위한 변수
 
     [Header("플레이어 체력 설정 x = max, y = cur")]
     [SerializeField] private Vector2 playerMaxCurHp;
@@ -83,7 +85,7 @@ public class InputController : MonoBehaviour
         playerMaxCurHp.y = playerMaxCurHp.x;
     }
 
-    private void pickUpTrigger(Collider collision)
+    private void OnTrigger(Collider collision)
     {
         if (collision.gameObject.tag == "Item" && Input.GetKeyDown(KeyCode.E))
         {
@@ -97,11 +99,19 @@ public class InputController : MonoBehaviour
                 weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
             }
         }
+
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Monster") && monsterAttack == true)
+        {
+            Debug.Log(collision.gameObject);
+            Monster monsterSc = collision.GetComponent<Monster>();
+            monsterSc.monsterHit(playerDamage);
+            monsterAttack = false;
+        }
     }
 
     private void Update()
     {
-        playerPickUpItem();
+        playerColliderCheck();
         playerTimers();
         playerLookAtScreen();
         playerMove();
@@ -112,37 +122,50 @@ public class InputController : MonoBehaviour
         playerAnim();
     }
 
-//#if UNITY_EDITOR//전처리
+    //#if UNITY_EDITOR//전처리
 
-//    [SerializeField] float radius = 1.0f;
-//    [SerializeField] Color lineColor = Color.red;
-//    [SerializeField] bool showLine = false;
-    
-//    private void OnDrawGizmos()
-//    {
-//        if (showLine == true)
-//        {
-//            Handles.color = lineColor;
-//            Handles.DrawWireDisc(transform.position, transform.up, radius);
-//            Handles.color = lineColor;
-//            Handles.DrawWireCube(pickUpArea.bounds.center, pickUpArea.bounds.size);
-//        }
-//    }
-//#endif
+    //    [SerializeField] float radius = 1.0f;
+    //    [SerializeField] Color lineColor = Color.red;
+    //    [SerializeField] bool showLine = false;
+
+    //    private void OnDrawGizmos()
+    //    {
+    //        if (showLine == true)
+    //        {
+    //            Handles.color = lineColor;
+    //            Handles.DrawWireDisc(transform.position, transform.up, radius);
+    //            Handles.color = lineColor;
+    //            Handles.DrawWireCube(pickUpArea.bounds.center, pickUpArea.bounds.size);
+    //        }
+    //    }
+    //#endif
 
     /// <summary>
     /// 아이템을 줍기 위한 함수
     /// </summary>
-    private void playerPickUpItem()
+    private void playerColliderCheck()
     {
         Collider[] pickUpColl = Physics.OverlapBox(pickUpArea.bounds.center, pickUpArea.bounds.size * 0.5f, Quaternion.identity,
             LayerMask.GetMask("Weapon"));
 
+        Collider[] attackColl = Physics.OverlapBox(hitArea.bounds.center, hitArea.bounds.size * 0.5f, Quaternion.identity, 
+            LayerMask.GetMask("Weapon"));
+
         if (pickUpColl != null)
         {
-            for (int i = 0; i < pickUpColl.Length; i++)
+            int count = pickUpColl.Length;
+            for (int i = 0; i < count; i++)
             {
-                pickUpTrigger(pickUpColl[0]);
+                OnTrigger(pickUpColl[0]);
+            }
+        }
+
+        if (attackColl != null)
+        {
+            int count = attackColl.Length;
+            for (int i = 0; i < count; i++)
+            {
+                OnTrigger(attackColl[i]);
             }
         }
     }
@@ -432,13 +455,6 @@ public class InputController : MonoBehaviour
 
     public void AttackHit()
     {
-        if (idleChange == 0)
-        {
-
-        }
-        else
-        {
-
-        }
+        monsterAttack = true;
     }
 }
