@@ -22,5 +22,9 @@ public class Parent : MonoBehaviour //자식에게 이런 기능들이 있음을 전달
     {
         float targetRatio = 9f / 16f;
         float ratio = (float)Screen.width / (float)Screen.height;
+        float scaleHeight = ratio / targetRatio;
+        float fixedWidth = (float)Screen.width / scaleHeight;
+
+        Screen.SetResolution((int)fixedWidth, Screen.height, true);
     }
 }
