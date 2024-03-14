@@ -281,6 +281,8 @@ MonoBehaviour:
   playerLevel: 1
   hitArea: {fileID: 6039884528357083128}
   playerDamage: 1
+  playerCritical: 50
+  playerCriticalDamage: 0.5
   playerMaxCurHp: {x: 100, y: 0}
   playerArmor: 0
   playerHandTrs: {fileID: 4644301860256978007}

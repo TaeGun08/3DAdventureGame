@@ -84,7 +84,6 @@ public class Monster : MonoBehaviour
     /// </summary>
     public virtual void monsterHit(float _hitDamge)
     {
-        Debug.Log("몬스터히트");
         hp -= _hitDamge;
     }
 }

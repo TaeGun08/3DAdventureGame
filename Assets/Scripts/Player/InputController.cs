@@ -5,12 +5,37 @@ using UnityEngine;
 
 public class InputController : MonoBehaviour
 {
+    public class PlayerData
+    {
+        public int idleChange;
+        public float moveSpeed;
+        public float maxStamina;
+        public float curStamina;
+        public int playerLevel;
+        public float levelPoint;
+        public int statusPoint;
+        public int skillPoint;
+        public int weaponLevel;
+        public float playerDamage;
+        public float playerMaxHp;
+        public float playerCurHp;
+        public float playerArmor;
+        public int weaponNumber;
+    }
+
+    private PlayerData playerData = new PlayerData();
+
+    private SaveManager saveManager;
+
     private CharacterController characterController; //플레이어가 가지고 있는 캐릭터 컨트롤러를 받아올 변수
     private Vector3 moveVec; //플레이어의 입력값을 받아올 변수
 
     private Camera mainCam;
 
     private Animator anim; //플레이어의 애니메이션을 받아올 변수
+
+    [Header("저장 파일 불러오기")]
+    [SerializeField] private bool dataLoad = false;
 
     [Header("플레이어 애니메이션 변경")]
     [SerializeField, Range(0, 1)] private int idleChange;
@@ -48,7 +73,10 @@ public class InputController : MonoBehaviour
     [Header("플레이어 공격 설정")]
     [SerializeField] private Collider hitArea;
     [SerializeField] private float playerDamage = 1;
-    private bool playerCritical = false; //플에이어가 공격 시 크리티컬이 발동되었는지
+    [SerializeField, Range(0.0f, 100.0f)] private float playerCritical;
+    [SerializeField, Range(0.5f, 4.0f)] private float playerCriticalDamage = 0.5f;
+    private float playerAttackDamage; //계속 변경되어서 들어갈 데미지 변수
+    private bool playerCriticalAttack = false; //플에이어가 공격 시 크리티컬이 발동되었는지
     private bool monsterAttack = false; //몬스터를 공격하기 위한 변수
 
     [Header("플레이어 체력 설정 x = max, y = cur")]
@@ -61,6 +89,7 @@ public class InputController : MonoBehaviour
     [SerializeField] private Transform playerHandTrs; //플레이어의 손 위치
     [SerializeField] private Transform playerBackTrs; //플레이어의 등 위치
     [SerializeField] private GameObject weapon; //플레이어의 무기
+    [SerializeField] private int weaponNumber; //무기번호를 받아와 저장 및 불러오기를 하기 위한 변수
     private float weaponChangeDelay; //플레이어의 손과 무기를 변경하기 위한 딜레이 시간
     private bool weaponChange = false; //플레이어가 무기를 변경하였는지 체크하기 위한 변수
 
@@ -80,6 +109,8 @@ public class InputController : MonoBehaviour
     {
         mainCam = Camera.main;
 
+        saveManager = SaveManager.Instance;
+
         curStamina = maxStamina;
 
         playerMaxCurHp.y = playerMaxCurHp.x;
@@ -90,6 +121,7 @@ public class InputController : MonoBehaviour
         if (collision.gameObject.tag == "Item" && Input.GetKeyDown(KeyCode.E))
         {
             Weapon weaponSc = collision.gameObject.GetComponent<Weapon>();
+            weaponNumber = weaponSc.WeaponNumber();
             if (weaponSc.WeaponLevel() <= playerLevel)
             {
                 weapon = collision.gameObject;
@@ -102,15 +134,25 @@ public class InputController : MonoBehaviour
 
         if (collision.gameObject.layer == LayerMask.NameToLayer("Monster") && monsterAttack == true)
         {
-            Debug.Log(collision.gameObject);
             Monster monsterSc = collision.GetComponent<Monster>();
-            monsterSc.monsterHit(playerDamage);
+
+            if (playerCriticalAttack == true)
+            {
+                monsterSc.monsterHit(playerAttackDamage + (playerAttackDamage * playerCriticalDamage));
+                playerCriticalAttack = false;
+            }
+            else
+            {
+                monsterSc.monsterHit(playerAttackDamage);
+            }
+
             monsterAttack = false;
         }
     }
 
     private void Update()
     {
+        playerDataLoad();
         playerColliderCheck();
         playerTimers();
         playerLookAtScreen();
@@ -120,6 +162,14 @@ public class InputController : MonoBehaviour
         playerWeaponChange();
         playerAttack();
         playerAnim();
+    }
+
+    /// <summary>
+    /// 플레이어의 데이터를 불러오기 위한 함수
+    /// </summary>
+    private void playerDataLoad()
+    {
+        
     }
 
     //#if UNITY_EDITOR//전처리
@@ -148,8 +198,34 @@ public class InputController : MonoBehaviour
         Collider[] pickUpColl = Physics.OverlapBox(pickUpArea.bounds.center, pickUpArea.bounds.size * 0.5f, Quaternion.identity,
             LayerMask.GetMask("Weapon"));
 
-        Collider[] attackColl = Physics.OverlapBox(hitArea.bounds.center, hitArea.bounds.size * 0.5f, Quaternion.identity, 
-            LayerMask.GetMask("Weapon"));
+        if (idleChange == 0)
+        {
+            Collider[] attackColl = Physics.OverlapBox(hitArea.bounds.center, hitArea.bounds.size * 0.3f, Quaternion.identity,
+                LayerMask.GetMask("Monster"));
+
+            if (attackColl != null)
+            {
+                int count = attackColl.Length;
+                for (int i = 0; i < count; i++)
+                {
+                    OnTrigger(attackColl[i]);
+                }
+            }
+        }
+        else
+        {
+            Collider[] attackColl = Physics.OverlapBox(hitArea.bounds.center, hitArea.bounds.size * 0.5f, Quaternion.identity,
+                LayerMask.GetMask("Monster"));
+
+            if (attackColl != null)
+            {
+                int count = attackColl.Length;
+                for (int i = 0; i < count; i++)
+                {
+                    OnTrigger(attackColl[i]);
+                }
+            }
+        }
 
         if (pickUpColl != null)
         {
@@ -157,15 +233,6 @@ public class InputController : MonoBehaviour
             for (int i = 0; i < count; i++)
             {
                 OnTrigger(pickUpColl[0]);
-            }
-        }
-
-        if (attackColl != null)
-        {
-            int count = attackColl.Length;
-            for (int i = 0; i < count; i++)
-            {
-                OnTrigger(attackColl[i]);
             }
         }
     }
@@ -400,6 +467,26 @@ public class InputController : MonoBehaviour
                     attackCombo = false;
                 }
 
+                if (attackCount == 0)
+                {
+                    playerAttackDamage = playerDamage;
+                }
+                else
+                {
+                    playerAttackDamage = playerDamage + (playerDamage * 0.5f);
+                }
+
+                float critical = Random.Range(0.0f, 100.0f);
+
+                if (critical <= playerCritical)
+                {
+                    playerCriticalAttack = true;
+                }
+                else
+                {
+                    playerCriticalAttack = false;
+                }
+
                 anim.Play("Attack Tree");
                 attackDelay = 1f;
                 isAttack = true;
@@ -413,6 +500,26 @@ public class InputController : MonoBehaviour
                     attackCount = 1;
                     comboTimer = 0f;
                     attackCombo = false;
+                }
+
+                if (attackCount == 0)
+                {
+                    playerAttackDamage = playerDamage;
+                }
+                else
+                {
+                    playerAttackDamage = playerDamage + (playerDamage * 0.5f);
+                }
+
+                float critical = Random.Range(0.0f, 100.0f);
+
+                if (critical <= playerCritical)
+                {
+                    playerCriticalAttack = true;
+                }
+                else
+                {
+                    playerCriticalAttack = false;
                 }
 
                 anim.Play("Attack Tree");
@@ -430,6 +537,26 @@ public class InputController : MonoBehaviour
                 attackCount = 1;
                 comboTimer = 0f;
                 attackCombo = false;
+            }
+
+            if (attackCount == 0)
+            {
+                playerAttackDamage = playerDamage + (playerDamage * 0.7f);
+            }
+            else
+            {
+                playerAttackDamage = playerDamage + (playerDamage * 0.9f);
+            }
+
+            float critical = Random.Range(0.0f, 100.0f);
+
+            if (critical <= playerCritical)
+            {
+                playerCriticalAttack = true;
+            }
+            else
+            {
+                playerCriticalAttack = false;
             }
 
             anim.Play("Attack Tree");
