@@ -1202,3 +1202,5 @@ MonoBehaviour:
   hp: 20
   armor: 0
   checkColl: {fileID: 0}
+  hitDamagePrefab: {fileID: 3816709212189601542, guid: 65334bdfbc3d6614aa0ee2281336d641, type: 3}
+  heightValue: 3.5

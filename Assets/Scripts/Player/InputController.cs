@@ -26,6 +26,7 @@ public class InputController : MonoBehaviour
     private PlayerData playerData = new PlayerData();
 
     private SaveManager saveManager;
+    private GameManager gameManager;
 
     private CharacterController characterController; //플레이어가 가지고 있는 캐릭터 컨트롤러를 받아올 변수
     private Vector3 moveVec; //플레이어의 입력값을 받아올 변수
@@ -111,6 +112,8 @@ public class InputController : MonoBehaviour
 
         saveManager = SaveManager.Instance;
 
+        gameManager =GameManager.Instance;
+
         curStamina = maxStamina;
 
         playerMaxCurHp.y = playerMaxCurHp.x;
@@ -153,6 +156,17 @@ public class InputController : MonoBehaviour
     private void Update()
     {
         playerDataLoad();
+
+        if (gameManager.GetGamePause() == true)
+        {
+            gameManager.SetGamePause(true);
+            return;
+        }
+        else
+        {
+            gameManager.SetGamePause(false);
+        }
+
         playerColliderCheck();
         playerTimers();
         playerLookAtScreen();
@@ -320,7 +334,7 @@ public class InputController : MonoBehaviour
             return;
         }
 
-        if (isAttack == true || (weaponChange == true && weaponChangeDelay <= 0.7f))
+        if (isAttack == true || (weaponChange == true && weaponChangeDelay <= 0.5f))
         {
             return;
         }
