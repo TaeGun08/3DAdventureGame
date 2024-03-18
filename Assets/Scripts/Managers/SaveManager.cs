@@ -13,7 +13,8 @@ public class SaveManager : MonoBehaviour
         public float moveSpeed;
         public float maxStamina;
         public float curStamina;
-        public int playerLevel;
+        public float playerMaxExp;
+        public int playerCurExp;
         public float levelPoint;
         public int statusPoint;
         public int skillPoint;
@@ -56,7 +57,8 @@ public class SaveManager : MonoBehaviour
         saveData.moveSpeed = _playerData.moveSpeed;
         saveData.maxStamina = _playerData.maxStamina;
         saveData.curStamina = _playerData.curStamina;
-        saveData.playerLevel = _playerData.playerLevel;
+        saveData.playerMaxExp = _playerData.playerMaxExp;
+        saveData.playerCurExp = _playerData.playerCurExp;
         saveData.levelPoint = _playerData.levelPoint;
         saveData.statusPoint = _playerData.statusPoint;
         saveData.skillPoint = _playerData.skillPoint;

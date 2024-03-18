@@ -1199,8 +1199,9 @@ MonoBehaviour:
   rotateY: {x: 0, y: 359}
   smoothMaxSpeed: 10
   damage: 0
-  hp: 20
+  hp: 10
   armor: 0
   checkColl: {fileID: 0}
   hitDamagePrefab: {fileID: 3816709212189601542, guid: 65334bdfbc3d6614aa0ee2281336d641, type: 3}
-  heightValue: 3.5
+  heightValue: 2
+  setExp: 2

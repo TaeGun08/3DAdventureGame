@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     [Header("게임 정지")]
     [SerializeField] private bool gamePause;
 
+    private float playerExp; //플레이어에게 전달할 경험치
+
     private void Awake()
     {
         if (Instance == null)
@@ -46,5 +48,23 @@ public class GameManager : MonoBehaviour
     public bool GetGamePause()
     {
         return gamePause;
+    }
+
+    /// <summary>
+    /// 다른 스크립트에서 경험치를 받아올 함수
+    /// </summary>
+    /// <param name="_exp"></param>
+    public void SetExp(float _exp)
+    {
+        playerExp += _exp;
+    }
+
+    /// <summary>
+    /// 다른 스크립트에서 경험치를 가져올 변수
+    /// </summary>
+    /// <returns></returns>
+    public float GetExp()
+    {
+        return playerExp;
     }
 }

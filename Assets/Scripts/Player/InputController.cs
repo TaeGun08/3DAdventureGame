@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InputController : MonoBehaviour
 {
@@ -11,7 +12,8 @@ public class InputController : MonoBehaviour
         public float moveSpeed;
         public float maxStamina;
         public float curStamina;
-        public int playerLevel;
+        public float playerMaxExp;
+        public int playerCurExp;
         public float levelPoint;
         public int statusPoint;
         public int skillPoint;
@@ -57,11 +59,11 @@ public class InputController : MonoBehaviour
     private bool diveNoHit = false; //구르기 시 잠시 무적을 위한 변수
 
     [Header("플레이어 레벨 설정")]
-    [SerializeField] private int playerLevel = 1;
-    private float levelPoint; //레벨 경험치
+    [SerializeField, Tooltip("플레이어 레벨")] private int playerLevel = 1;
+    [SerializeField, Tooltip("플레이어 최대 경험치")] private float playerMaxExp;
+    [SerializeField, Tooltip("플레이어 현재 경험치")] private float playerCurExp;
     private int statusPoint; //능력치를 올릴 수 있는 포인트
     private int skillPoint; //스킬 레벨을 올릴 수 있는 포인트
-    private int weaponLevel; //무기 레벨을 받아 올 변수
 
     //공격 모션을 위한 변수들
     private bool isAttack = false; //공격을 했는지 여부를 확인하기 위한 변수
@@ -93,9 +95,15 @@ public class InputController : MonoBehaviour
     [SerializeField] private int weaponNumber; //무기번호를 받아와 저장 및 불러오기를 하기 위한 변수
     private float weaponChangeDelay; //플레이어의 손과 무기를 변경하기 위한 딜레이 시간
     private bool weaponChange = false; //플레이어가 무기를 변경하였는지 체크하기 위한 변수
+    private int weaponLevel; //무기 레벨을 받아 올 변수
 
     [Header("아이템을 줍기 위한 콜라이더")]
     [SerializeField] private BoxCollider pickUpArea;
+
+    [Header("플레이어 상태바")]
+    [SerializeField] private GameObject playerBar;
+    private Image playerHpBar; //플레이어의 체력 이미지
+    private Image playerStaminaBar; //플레이어의 스테미너 이미지
 
     private void Awake()
     {
@@ -112,7 +120,11 @@ public class InputController : MonoBehaviour
 
         saveManager = SaveManager.Instance;
 
-        gameManager =GameManager.Instance;
+        gameManager = GameManager.Instance;
+
+        playerHpBar = playerBar.transform.Find("LayOut/Hp").GetComponent<Image>();
+
+        playerStaminaBar = playerBar.transform.Find("LayOut/Stamina").GetComponent<Image>();
 
         curStamina = maxStamina;
 
@@ -147,9 +159,8 @@ public class InputController : MonoBehaviour
             else
             {
                 monsterSc.monsterHit(playerAttackDamage);
+                playerCriticalAttack = false;
             }
-
-            monsterAttack = false;
         }
     }
 
@@ -175,6 +186,9 @@ public class InputController : MonoBehaviour
         playerDiveRoll();
         playerWeaponChange();
         playerAttack();
+        playerExpCheck();
+        playerLevelUp();
+        playerBarCheck();
         playerAnim();
     }
 
@@ -183,7 +197,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerDataLoad()
     {
-        
+
     }
 
     //#if UNITY_EDITOR//전처리
@@ -224,6 +238,8 @@ public class InputController : MonoBehaviour
                 {
                     OnTrigger(attackColl[i]);
                 }
+
+                monsterAttack = false;
             }
         }
         else
@@ -238,6 +254,8 @@ public class InputController : MonoBehaviour
                 {
                     OnTrigger(attackColl[i]);
                 }
+
+                monsterAttack = false;
             }
         }
 
@@ -578,6 +596,44 @@ public class InputController : MonoBehaviour
             isAttack = true;
 
             curStamina -= 30f;
+        }
+    }
+
+    /// <summary>
+    /// 경험치가 존재하는지 안 하는지 체크하고 받아오기 위한 함수
+    /// </summary>
+    private void playerExpCheck()
+    {
+        if (gameManager.GetExp() > 0)
+        {
+            playerCurExp += gameManager.GetExp();
+            gameManager.SetExp(-gameManager.GetExp());
+        }
+    }
+
+    /// <summary>
+    /// 플레이어가 일정 경험치 이상 쌓였을 때 레벨업하기 위한 함수
+    /// </summary>
+    private void playerLevelUp()
+    {
+        if (playerMaxExp <= playerCurExp)
+        {
+            playerCurExp -= playerMaxExp;
+            playerLevel++;
+            statusPoint += 3;
+            skillPoint += 3;
+            playerMaxExp *= 1.3f;
+        }
+    }
+
+    /// <summary>
+    /// 플레이어가 체력  또는 스테미너가 닳았을 때 체크해주기 위한 함수
+    /// </summary>
+    private void playerBarCheck()
+    {
+        if (curStamina != 100)
+        {
+            playerStaminaBar.fillAmount = curStamina / 100;
         }
     }
 

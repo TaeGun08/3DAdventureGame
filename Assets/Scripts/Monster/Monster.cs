@@ -7,6 +7,8 @@ public class Monster : MonoBehaviour
     protected Vector3 moveVec;
     protected Animator anim;
 
+    private GameManager gameManager;
+
     [Header("몬스터 기본 설정")]
     [SerializeField, Tooltip("몬스터의 이동속도")] protected float moveSpeed;
     [SerializeField, Tooltip("몬스터의 이동을 멈춤")] protected bool moveStop;
@@ -27,6 +29,8 @@ public class Monster : MonoBehaviour
     [Space]
     [SerializeField, Tooltip("입은 데미지를 표시할 프리팹")] private GameObject hitDamagePrefab;
     [SerializeField, Tooltip("머리위에 생성되는 높이")] private float heightValue;
+    [Space]
+    [SerializeField, Tooltip("플레이어에게 전달한 경험치")] private float setExp;
 
     protected virtual void Awake()
     {
@@ -35,6 +39,11 @@ public class Monster : MonoBehaviour
 
         randomRotateTime = Random.Range(rotateTime.x, rotateTime.y);
         randomRotateY = Random.Range(rotateY.x, rotateY.y);
+    }
+
+    protected virtual void Start()
+    {
+        gameManager = GameManager.Instance;
     }
 
     protected virtual void Update()
@@ -83,6 +92,7 @@ public class Monster : MonoBehaviour
     {
         if (hp <= 0.0f)
         {
+            gameManager.SetExp(setExp);
             Destroy(gameObject);
         }
     }
