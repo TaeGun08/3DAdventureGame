@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -42,6 +43,10 @@ public class InputController : MonoBehaviour
 
     [Header("플레이어 애니메이션 변경")]
     [SerializeField, Range(0, 1)] private int idleChange;
+
+    [Header("플레이어 중력")]
+    [SerializeField] private float gravity;
+    private float verticalValue;
 
     [Header("플레이어 이동속도")]
     [SerializeField] private float moveSpeed;
@@ -104,6 +109,8 @@ public class InputController : MonoBehaviour
     [SerializeField] private GameObject playerBar;
     private Image playerHpBar; //플레이어의 체력 이미지
     private Image playerStaminaBar; //플레이어의 스테미너 이미지
+    private TMP_Text playerHpValue; //플레이어의 현재 체력값을 받아올 텍스트
+    private TMP_Text playerStaminaValue; //플레이어의 현재 스테미너를 받아올 텍스트
 
     private void Awake()
     {
@@ -125,6 +132,10 @@ public class InputController : MonoBehaviour
         playerHpBar = playerBar.transform.Find("LayOut/Hp").GetComponent<Image>();
 
         playerStaminaBar = playerBar.transform.Find("LayOut/Stamina").GetComponent<Image>();
+
+        playerHpValue = playerHpBar.transform.GetChild(0).GetComponent<TMP_Text>();
+
+        playerStaminaValue = playerStaminaBar.transform.GetChild(0).GetComponent<TMP_Text>();
 
         curStamina = maxStamina;
 
@@ -153,12 +164,13 @@ public class InputController : MonoBehaviour
 
             if (playerCriticalAttack == true)
             {
-                monsterSc.monsterHit(playerAttackDamage + (playerAttackDamage * playerCriticalDamage));
+                monsterSc.monsterHit(playerAttackDamage + (playerAttackDamage * playerCriticalDamage), 
+                    Color.red);
                 playerCriticalAttack = false;
             }
             else
             {
-                monsterSc.monsterHit(playerAttackDamage);
+                monsterSc.monsterHit(playerAttackDamage, Color.white);
                 playerCriticalAttack = false;
             }
         }
@@ -181,6 +193,7 @@ public class InputController : MonoBehaviour
         playerColliderCheck();
         playerTimers();
         playerLookAtScreen();
+        playerGravity();
         playerMove();
         playerStamina();
         playerDiveRoll();
@@ -231,10 +244,11 @@ public class InputController : MonoBehaviour
             Collider[] attackColl = Physics.OverlapBox(hitArea.bounds.center, hitArea.bounds.size * 0.3f, Quaternion.identity,
                 LayerMask.GetMask("Monster"));
 
-            if (attackColl != null)
+            int attackCount = attackColl.Length;
+
+            if (attackCount > 0)
             {
-                int count = attackColl.Length;
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < attackCount; i++)
                 {
                     OnTrigger(attackColl[i]);
                 }
@@ -247,10 +261,11 @@ public class InputController : MonoBehaviour
             Collider[] attackColl = Physics.OverlapBox(hitArea.bounds.center, hitArea.bounds.size * 0.5f, Quaternion.identity,
                 LayerMask.GetMask("Monster"));
 
-            if (attackColl != null)
+            int attackCount = attackColl.Length;
+
+            if (attackCount > 0)
             {
-                int count = attackColl.Length;
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < attackCount; i++)
                 {
                     OnTrigger(attackColl[i]);
                 }
@@ -259,10 +274,11 @@ public class InputController : MonoBehaviour
             }
         }
 
-        if (pickUpColl != null)
+        int pickUpCount = pickUpColl.Length;
+
+        if (pickUpCount > 0)
         {
-            int count = pickUpColl.Length;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < pickUpCount; i++)
             {
                 OnTrigger(pickUpColl[0]);
             }
@@ -332,6 +348,21 @@ public class InputController : MonoBehaviour
         }
 
         transform.rotation = Quaternion.Euler(0f, mainCam.transform.eulerAngles.y, 0f);
+    }
+
+    /// <summary>
+    /// 플레이어의 중력을 담당하는 함수
+    /// </summary>
+    private void playerGravity()
+    {
+        if (characterController.isGrounded == false)
+        {
+            characterController.Move(new Vector3(0f, -gravity, 0f) * Time.deltaTime);
+        }
+        else
+        {
+            characterController.Move(new Vector3(0f, 0f, 0f));
+        }
     }
 
     /// <summary>
@@ -635,6 +666,10 @@ public class InputController : MonoBehaviour
         {
             playerStaminaBar.fillAmount = curStamina / 100;
         }
+
+        playerHpValue.text = $"{playerMaxCurHp.y.ToString("F0")} / {playerMaxCurHp.x.ToString("F0")}";
+
+        playerStaminaValue.text = $"{curStamina.ToString("F0")} / {maxStamina.ToString("F0")}";
     }
 
     /// <summary>
