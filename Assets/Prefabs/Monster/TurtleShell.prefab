@@ -1163,7 +1163,7 @@ Transform:
   - {fileID: 4879217746512638740}
   - {fileID: 6574549439809457793}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &3221853970862673870
 Animator:
@@ -1248,7 +1248,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 1
   moveStop: 0
-  moveXYZ: {x: 0, y: 0, z: 1}
   rotateTime: {x: 2, y: 4}
   rotateY: {x: 0, y: 359}
   smoothMaxSpeed: 10
@@ -1259,4 +1258,3 @@ MonoBehaviour:
   hitDamagePrefab: {fileID: 3816709212189601542, guid: 65334bdfbc3d6614aa0ee2281336d641, type: 3}
   heightValue: 2
   setExp: 2
-  player: {fileID: 0}

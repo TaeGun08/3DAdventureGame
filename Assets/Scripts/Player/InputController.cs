@@ -147,7 +147,11 @@ public class InputController : MonoBehaviour
         if (collision.gameObject.tag == "Item" && Input.GetKeyDown(KeyCode.E))
         {
             Weapon weaponSc = collision.gameObject.GetComponent<Weapon>();
+            Rigidbody weaponRigid = collision.gameObject.GetComponent<Rigidbody>();
+            BoxCollider weaponColl = collision.gameObject.GetComponent<BoxCollider>();
             weaponNumber = weaponSc.WeaponNumber();
+            weaponRigid.useGravity = false;
+            weaponColl.isTrigger = true;
             if (weaponSc.WeaponLevel() <= playerLevel)
             {
                 weapon = collision.gameObject;

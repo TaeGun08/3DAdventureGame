@@ -31,6 +31,8 @@ public class Monster : MonoBehaviour
     [Space]
     [SerializeField, Tooltip("플레이어에게 전달한 경험치")] private float setExp;
 
+    private bool noHit; //죽는 애니메이션이 실행될 때 히트판정을 막기 위한 변수
+
     private InputController player;
 
     protected virtual void OnTrigger(Collider collider)
@@ -57,6 +59,11 @@ public class Monster : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (noHit == true)
+        {
+            return;
+        }
+
         playerCheck();
         monsterTimers();
         monsterMove();
@@ -126,11 +133,14 @@ public class Monster : MonoBehaviour
             //
             //transform.rotation = Quaternion.Euler(0.0f, smoothDamp, 0.0f);
 
-            transform.LookAt(player.transform);
+            Vector3 vec = player.transform.position - transform.position;
+            transform.rotation = Quaternion.LookRotation(vec);
+            transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
 
             moveVec = transform.forward * moveSpeed;
         }
 
+        moveVec.y = rigid.velocity.y;
         rigid.velocity = moveVec;
     }
 
@@ -142,7 +152,9 @@ public class Monster : MonoBehaviour
         if (hp <= 0.0f)
         {
             gameManager.SetExp(setExp);
-            Destroy(gameObject);
+            anim.Play("Die");
+            noHit = true;
+            Destroy(gameObject, 2f);
         }
     }
 
@@ -154,12 +166,16 @@ public class Monster : MonoBehaviour
         anim.SetFloat("isWalk", moveVec.z);
     }
 
-
     /// <summary>
     /// 몬스터가 맞았는지 체크해주는 함수
     /// </summary>
     public virtual void monsterHit(float _hitDamge, Color _damageText)
     {
+        if (noHit == true)
+        {
+            return;
+        }
+
         float donwDamage = _hitDamge - armor;
 
         GameObject hitDamageObj = Instantiate(hitDamagePrefab,
