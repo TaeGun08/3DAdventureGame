@@ -109,8 +109,10 @@ public class InputController : MonoBehaviour
     [SerializeField] private GameObject playerBar;
     private Image playerHpBar; //플레이어의 체력 이미지
     private Image playerStaminaBar; //플레이어의 스테미너 이미지
+    private Image playerExpBar; //플레이어의 경험치 이미지
     private TMP_Text playerHpValue; //플레이어의 현재 체력값을 받아올 텍스트
     private TMP_Text playerStaminaValue; //플레이어의 현재 스테미너를 받아올 텍스트
+    private TMP_Text playerExpValue; //플레이어의 현재 경험치를 받아올 텍스트
 
     private void Awake()
     {
@@ -133,9 +135,13 @@ public class InputController : MonoBehaviour
 
         playerStaminaBar = playerBar.transform.Find("LayOut/Stamina").GetComponent<Image>();
 
+        playerExpBar = playerBar.transform.Find("LayOut/Exp").GetComponent<Image>();
+
         playerHpValue = playerHpBar.transform.GetChild(0).GetComponent<TMP_Text>();
 
         playerStaminaValue = playerStaminaBar.transform.GetChild(0).GetComponent<TMP_Text>();
+
+        playerExpValue = playerExpBar.transform.GetChild(0).GetComponent<TMP_Text>();
 
         curStamina = maxStamina;
 
@@ -659,6 +665,13 @@ public class InputController : MonoBehaviour
             skillPoint += 3;
             playerMaxExp *= 1.3f;
         }
+
+        if (playerCurExp <= playerMaxExp)
+        {
+            playerExpBar.fillAmount = playerCurExp / playerMaxExp;
+        }
+
+        playerExpValue.text = $"{(playerExpBar.fillAmount * 100).ToString("F0")}% / {100}%";
     }
 
     /// <summary>

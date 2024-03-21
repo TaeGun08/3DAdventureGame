@@ -135,7 +135,6 @@ public class Monster : MonoBehaviour
 
             Vector3 vec = player.transform.position - transform.position;
             transform.rotation = Quaternion.LookRotation(vec);
-            transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
 
             moveVec = transform.forward * moveSpeed;
         }
