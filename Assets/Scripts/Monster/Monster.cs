@@ -127,14 +127,14 @@ public class Monster : MonoBehaviour
             moveVec = transform.forward * moveSpeed;
         }
         else
-        {
-            //float smoothDamp = Mathf.SmoothDampAngle(transform.eulerAngles.y, player.transform.position.x + player.transform.position.y, 
-            //    ref curVelocity, 0.3f, smoothMaxSpeed);
-            //
-            //transform.rotation = Quaternion.Euler(0.0f, smoothDamp, 0.0f);
-
+        {   
             Vector3 vec = player.transform.position - transform.position;
-            transform.rotation = Quaternion.LookRotation(vec);
+            float targetAngle = Quaternion.FromToRotation(Vector3.forward, vec).eulerAngles.y;
+
+            float smoothDamp = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle,
+                ref curVelocity, 0.3f, smoothMaxSpeed);
+
+            transform.rotation = Quaternion.Euler(0.0f, smoothDamp, 0.0f);
 
             moveVec = transform.forward * moveSpeed;
         }
@@ -178,7 +178,7 @@ public class Monster : MonoBehaviour
         float donwDamage = _hitDamge - armor;
 
         GameObject hitDamageObj = Instantiate(hitDamagePrefab,
-            new Vector3(transform.localPosition.x, heightValue, transform.localPosition.z), Quaternion.identity, transform);
+            new Vector3(transform.localPosition.x, transform.localPosition.y + heightValue, transform.localPosition.z), Quaternion.identity, transform);
         TMP_Text hitText = hitDamageObj.transform.GetChild(0).GetComponent<TMP_Text>();
 
         string damgeTest = donwDamage.ToString("F0");

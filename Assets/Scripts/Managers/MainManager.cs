@@ -9,17 +9,17 @@ public class MainManager : MonoBehaviour
 {
     public class SaveSetting
     {
-        public int widthSize = 1280;
-        public int heightSize = 720;
+        public int widthSize = 1920;
+        public int heightSize = 1080;
         public bool windowOn = true;
-        public int dropdownValue = 3;
+        public int dropdownValue = 4;
         public float bgmValue = 50f;
         public float fxsValue = 50f;
     }
 
     public class SaveScene
     {
-        public string sceneName = "TutorialStage";
+        public string sceneName = "Tutorial";
     }
 
     private SaveSetting saveSetting = new SaveSetting();
@@ -71,8 +71,8 @@ public class MainManager : MonoBehaviour
 
         if (PlayerPrefs.GetString(saveSettingValue) == string.Empty)
         {
-            Screen.SetResolution(1280, 720, true);
-            dropdown.value = 3;
+            Screen.SetResolution(1920, 1080, true);
+            dropdown.value = 4;
             toggle.isOn = true;
             bgm.value = 75f / 100f;
             fxs.value = 75 / 100f;
@@ -198,7 +198,7 @@ public class MainManager : MonoBehaviour
 
                 if (PlayerPrefs.GetString(saveSceneName) == string.Empty)
                 {
-                    SceneManager.LoadSceneAsync("TutorialStage");
+                    SceneManager.LoadSceneAsync("Tutorial");
                 }
                 else
                 {
@@ -234,6 +234,11 @@ public class MainManager : MonoBehaviour
         {
             saveSetting.widthSize = 1280;
             saveSetting.heightSize = 720;
+        }
+        else if (dropdown.value == 4)
+        {
+            saveSetting.widthSize = 1920;
+            saveSetting.heightSize = 1080;
         }
     }
 

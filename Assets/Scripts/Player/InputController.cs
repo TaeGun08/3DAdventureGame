@@ -113,6 +113,7 @@ public class InputController : MonoBehaviour
     private TMP_Text playerHpValue; //플레이어의 현재 체력값을 받아올 텍스트
     private TMP_Text playerStaminaValue; //플레이어의 현재 스테미너를 받아올 텍스트
     private TMP_Text playerExpValue; //플레이어의 현재 경험치를 받아올 텍스트
+    private TMP_Text playerLevelText; //플레이어 레벨을 받아올 텍스트
 
     private void Awake()
     {
@@ -131,17 +132,19 @@ public class InputController : MonoBehaviour
 
         gameManager = GameManager.Instance;
 
-        playerHpBar = playerBar.transform.Find("LayOut/Hp").GetComponent<Image>();
+        playerHpBar = playerBar.transform.Find("Bar/Hp").GetComponent<Image>();
 
-        playerStaminaBar = playerBar.transform.Find("LayOut/Stamina").GetComponent<Image>();
+        playerStaminaBar = playerBar.transform.Find("Bar/Stamina").GetComponent<Image>();
 
-        playerExpBar = playerBar.transform.Find("LayOut/Exp").GetComponent<Image>();
+        playerExpBar = playerBar.transform.Find("Bar/Exp").GetComponent<Image>();
 
         playerHpValue = playerHpBar.transform.GetChild(0).GetComponent<TMP_Text>();
 
         playerStaminaValue = playerStaminaBar.transform.GetChild(0).GetComponent<TMP_Text>();
 
         playerExpValue = playerExpBar.transform.GetChild(0).GetComponent<TMP_Text>();
+
+        playerLevelText = playerBar.transform.Find("LevelText").GetComponent<TMP_Text>();
 
         curStamina = maxStamina;
 
@@ -320,6 +323,9 @@ public class InputController : MonoBehaviour
                 {
                     attackCombo = true;
                 }
+
+                monsterAttack = false;
+
                 attackTimer = 0f;
                 isAttack = false;
             }
@@ -352,7 +358,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerLookAtScreen()
     {
-        if (useDieveRoll == true)
+        if (useDieveRoll == true || isAttack == true)
         {
             return;
         }
@@ -470,11 +476,11 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerDiveRoll()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && useDieveRoll == false && curStamina > 30f)
+        if (Input.GetKeyDown(KeyCode.Space) && useDieveRoll == false && curStamina > 20f)
         {
             anim.Play("Unarmed-DiveRoll-Forward1");
             diveVec = new Vector3(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
-            curStamina -= 30;
+            curStamina -= 20;
             diveNoHit = true;
             useDieveRoll = true;
         }
@@ -660,7 +666,8 @@ public class InputController : MonoBehaviour
         if (playerMaxExp <= playerCurExp)
         {
             playerCurExp -= playerMaxExp;
-            playerLevel++;
+            ++playerLevel;
+            playerLevelText.text = $"Lv. {playerLevel}";
             statusPoint += 3;
             skillPoint += 3;
             playerMaxExp *= 1.3f;
