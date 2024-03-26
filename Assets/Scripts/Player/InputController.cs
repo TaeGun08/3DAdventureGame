@@ -46,7 +46,6 @@ public class InputController : MonoBehaviour
 
     [Header("플레이어 중력")]
     [SerializeField] private float gravity;
-    private float verticalValue;
 
     [Header("플레이어 이동속도")]
     [SerializeField] private float moveSpeed;
@@ -67,8 +66,8 @@ public class InputController : MonoBehaviour
     [SerializeField, Tooltip("플레이어 레벨")] private int playerLevel = 1;
     [SerializeField, Tooltip("플레이어 최대 경험치")] private float playerMaxExp;
     [SerializeField, Tooltip("플레이어 현재 경험치")] private float playerCurExp;
-    private int statusPoint; //능력치를 올릴 수 있는 포인트
-    private int skillPoint; //스킬 레벨을 올릴 수 있는 포인트
+    [SerializeField, Tooltip("능력치를 올릴 수 있는 포인트")] private int statusPoint;
+    [SerializeField, Tooltip("스킬 레벨을 올릴 수 있는 포인트")] private int skillPoint;
 
     //공격 모션을 위한 변수들
     private bool isAttack = false; //공격을 했는지 여부를 확인하기 위한 변수
