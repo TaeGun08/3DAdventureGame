@@ -30,6 +30,7 @@ public class InputController : MonoBehaviour
 
     private SaveManager saveManager;
     private GameManager gameManager;
+    private StatusManager statusManager;
 
     private CharacterController characterController; //플레이어가 가지고 있는 캐릭터 컨트롤러를 받아올 변수
     private Vector3 moveVec; //플레이어의 입력값을 받아올 변수
@@ -66,8 +67,6 @@ public class InputController : MonoBehaviour
     [SerializeField, Tooltip("플레이어 레벨")] private int playerLevel = 1;
     [SerializeField, Tooltip("플레이어 최대 경험치")] private float playerMaxExp;
     [SerializeField, Tooltip("플레이어 현재 경험치")] private float playerCurExp;
-    [SerializeField, Tooltip("능력치를 올릴 수 있는 포인트")] private int statusPoint;
-    [SerializeField, Tooltip("스킬 레벨을 올릴 수 있는 포인트")] private int skillPoint;
 
     //공격 모션을 위한 변수들
     private bool isAttack = false; //공격을 했는지 여부를 확인하기 위한 변수
@@ -118,6 +117,7 @@ public class InputController : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
+
         Cursor.lockState = CursorLockMode.Locked;
 
         diveRollTimer = diveRollCoolTime;
@@ -130,6 +130,8 @@ public class InputController : MonoBehaviour
         saveManager = SaveManager.Instance;
 
         gameManager = GameManager.Instance;
+
+        statusManager = StatusManager.Instance;
 
         playerHpBar = playerBar.transform.Find("Bar/Hp").GetComponent<Image>();
 
@@ -148,44 +150,6 @@ public class InputController : MonoBehaviour
         curStamina = maxStamina;
 
         playerMaxCurHp.y = playerMaxCurHp.x;
-    }
-
-    private void OnTrigger(Collider collision)
-    {
-        if (collision.gameObject.tag == "Item" && Input.GetKeyDown(KeyCode.E))
-        {
-            Weapon weaponSc = collision.gameObject.GetComponent<Weapon>();
-            Rigidbody weaponRigid = collision.gameObject.GetComponent<Rigidbody>();
-            BoxCollider weaponColl = collision.gameObject.GetComponent<BoxCollider>();
-            weaponNumber = weaponSc.WeaponNumber();
-            weaponRigid.useGravity = false;
-            weaponColl.isTrigger = true;
-            if (weaponSc.WeaponLevel() <= playerLevel)
-            {
-                weapon = collision.gameObject;
-                playerDamage = (playerDamage + weaponSc.WeaponDamage());
-                weapon.transform.SetParent(playerBackTrs.transform);
-                weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
-                weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-            }
-        }
-
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Monster") && monsterAttack == true)
-        {
-            Monster monsterSc = collision.GetComponent<Monster>();
-
-            if (playerCriticalAttack == true)
-            {
-                monsterSc.monsterHit(playerAttackDamage + (playerAttackDamage * playerCriticalDamage), 
-                    Color.red);
-                playerCriticalAttack = false;
-            }
-            else
-            {
-                monsterSc.monsterHit(playerAttackDamage, Color.white);
-                playerCriticalAttack = false;
-            }
-        }
     }
 
     private void Update()
@@ -214,6 +178,7 @@ public class InputController : MonoBehaviour
         playerExpCheck();
         playerLevelUp();
         playerBarCheck();
+        playerStatusCheck();
         playerAnim();
     }
 
@@ -242,6 +207,44 @@ public class InputController : MonoBehaviour
     //        }
     //    }
     //#endif
+
+    private void OnTrigger(Collider collision)
+    {
+        if (collision.gameObject.tag == "Item" && Input.GetKeyDown(KeyCode.E))
+        {
+            Weapon weaponSc = collision.gameObject.GetComponent<Weapon>();
+            Rigidbody weaponRigid = collision.gameObject.GetComponent<Rigidbody>();
+            BoxCollider weaponColl = collision.gameObject.GetComponent<BoxCollider>();
+            weaponNumber = weaponSc.WeaponNumber();
+            weaponRigid.useGravity = false;
+            weaponColl.isTrigger = true;
+            if (weaponSc.WeaponLevel() <= playerLevel)
+            {
+                weapon = collision.gameObject;
+                playerDamage = (playerDamage + weaponSc.WeaponDamage());
+                weapon.transform.SetParent(playerBackTrs.transform);
+                weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
+                weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            }
+        }
+
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Monster") && monsterAttack == true)
+        {
+            Monster monsterSc = collision.GetComponent<Monster>();
+
+            if (playerCriticalAttack == true)
+            {
+                monsterSc.monsterHit(playerAttackDamage + (playerAttackDamage * playerCriticalDamage),
+                    Color.red);
+                playerCriticalAttack = false;
+            }
+            else
+            {
+                monsterSc.monsterHit(playerAttackDamage, Color.white);
+                playerCriticalAttack = false;
+            }
+        }
+    }
 
     /// <summary>
     /// 아이템을 줍기 위한 함수
@@ -667,8 +670,7 @@ public class InputController : MonoBehaviour
             playerCurExp -= playerMaxExp;
             ++playerLevel;
             playerLevelText.text = $"Lv. {playerLevel}";
-            statusPoint += 3;
-            skillPoint += 3;
+            statusManager.SetStatPoint(3);
             playerMaxExp *= 1.3f;
         }
 
@@ -693,6 +695,14 @@ public class InputController : MonoBehaviour
         playerHpValue.text = $"{playerMaxCurHp.y.ToString("F0")} / {playerMaxCurHp.x.ToString("F0")}";
 
         playerStaminaValue.text = $"{curStamina.ToString("F0")} / {maxStamina.ToString("F0")}";
+    }
+
+    /// <summary>
+    /// 스테이터스 매니저를 불러와 플레이어의 데이터를 넣어 주는 함수
+    /// </summary>
+    private void playerStatusCheck()
+    {
+
     }
 
     /// <summary>
