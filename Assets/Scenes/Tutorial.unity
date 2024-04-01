@@ -2797,11 +2797,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 978f918fc29992949ae2562c389d9b1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 0
-  speed: 0
-  hp: 0
+  damage: 1
+  speed: 4
+  hp: 100
   armor: 0
-  stamina: 0
+  stamina: 100
   criitical: 0
   criiticalDamage: 0
   cameraObj: {fileID: 6465051}
@@ -5519,12 +5519,36 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
+      propertyPath: moveSpeed
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
+      propertyPath: maxStamina
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
       propertyPath: skillPoint
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
       propertyPath: statusPoint
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
+      propertyPath: playerDamage
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
+      propertyPath: playerCritical
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
+      propertyPath: playerMaxCurHp.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 574703504852908471, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
+      propertyPath: playerCriticalDamage
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 595926113764507009, guid: 1135ba3f05c0fe24d9fc8a2e02ade01e, type: 3}
       propertyPath: m_AnchorMax.y

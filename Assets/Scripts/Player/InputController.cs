@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -91,6 +90,8 @@ public class InputController : MonoBehaviour
     [Header("플레이어 방어력 설정")]
     [SerializeField] private float playerArmor;
 
+    private List<float> playerStatUpValue = new List<float>();
+
     [Header("플레이어의 무기 설정")]
     [SerializeField] private Transform playerHandTrs; //플레이어의 손 위치
     [SerializeField] private Transform playerBackTrs; //플레이어의 등 위치
@@ -99,6 +100,7 @@ public class InputController : MonoBehaviour
     private float weaponChangeDelay; //플레이어의 손과 무기를 변경하기 위한 딜레이 시간
     private bool weaponChange = false; //플레이어가 무기를 변경하였는지 체크하기 위한 변수
     private int weaponLevel; //무기 레벨을 받아 올 변수
+    private float weaponDamage;
 
     [Header("아이템을 줍기 위한 콜라이더")]
     [SerializeField] private BoxCollider pickUpArea;
@@ -212,19 +214,24 @@ public class InputController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Item" && Input.GetKeyDown(KeyCode.E))
         {
-            Weapon weaponSc = collision.gameObject.GetComponent<Weapon>();
-            Rigidbody weaponRigid = collision.gameObject.GetComponent<Rigidbody>();
-            BoxCollider weaponColl = collision.gameObject.GetComponent<BoxCollider>();
-            weaponNumber = weaponSc.WeaponNumber();
-            weaponRigid.useGravity = false;
-            weaponColl.isTrigger = true;
-            if (weaponSc.WeaponLevel() <= playerLevel)
+            if (weapon == null)
             {
-                weapon = collision.gameObject;
-                playerDamage = (playerDamage + weaponSc.WeaponDamage());
-                weapon.transform.SetParent(playerBackTrs.transform);
-                weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
-                weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                Weapon weaponSc = collision.gameObject.GetComponent<Weapon>();
+                Rigidbody weaponRigid = collision.gameObject.GetComponent<Rigidbody>();
+                BoxCollider weaponColl = collision.gameObject.GetComponent<BoxCollider>();
+                weaponNumber = weaponSc.WeaponNumber();
+                weaponRigid.useGravity = false;
+                weaponRigid.isKinematic = true;
+                weaponColl.isTrigger = true;
+                if (weaponSc.WeaponLevel() <= playerLevel)
+                {
+                    weapon = collision.gameObject;
+                    weaponDamage = weaponSc.WeaponDamage();
+                    playerDamage = statusManager.GetPlayerStatDamage() + weaponDamage;
+                    weapon.transform.SetParent(playerBackTrs.transform);
+                    weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
+                    weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                }
             }
         }
 
@@ -702,7 +709,10 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerStatusCheck()
     {
-
+        if (statusManager.GetBoolTest() == true)
+        {
+            playerDamage = statusManager.GetPlayerStatDamage() + weaponDamage;
+        }
     }
 
     /// <summary>

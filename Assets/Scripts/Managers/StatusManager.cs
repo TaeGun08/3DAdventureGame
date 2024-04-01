@@ -216,4 +216,9 @@ public class StatusManager : MonoBehaviour
     {
         statPoint += _statPoint;
     }
+
+    public bool GetBoolTest()
+    {
+        return statUpCheck;
+    }
 }
