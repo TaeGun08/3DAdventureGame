@@ -55,7 +55,6 @@ public class InputController : MonoBehaviour
     [SerializeField] private float curStamina;
 
     [Header("플레이어 구르기")]
-    [SerializeField, Tooltip("플레이어의 구르기 힘")] private float diveRollForce;
     [SerializeField, Tooltip("구르기 쿨타임")] private float diveRollCoolTime;
     private float diveRollTimer; //구르기 쿨타임을 적용할 타이머 변수
     private bool useDieveRoll = false; //구르기를 사용했는지 체크하기 위한 변수
@@ -343,7 +342,7 @@ public class InputController : MonoBehaviour
         if (attackCombo == true)
         {
             comboTimer += Time.deltaTime;
-            if (comboTimer >= 0.3f)
+            if (comboTimer >= 0.3f - (0.3f * statusManager.GetPlayerStatAttackSpeed()))
             {
                 comboTimer = 0f;
                 attackCount = 0;
@@ -399,11 +398,11 @@ public class InputController : MonoBehaviour
         {
             if (idleChange == 0)
             {
-                characterController.Move(Quaternion.Euler(diveVec) * new Vector3(0f, 0f, diveRollForce * 1.5f) * Time.deltaTime);
+                characterController.Move(Quaternion.Euler(diveVec) * new Vector3(0f, 0f, (moveSpeed + 1) * 1.5f) * Time.deltaTime);
             }
             else
             {
-                characterController.Move(Quaternion.Euler(diveVec) * new Vector3(0f, 0f, diveRollForce * 1.2f) * Time.deltaTime);
+                characterController.Move(Quaternion.Euler(diveVec) * new Vector3(0f, 0f, (moveSpeed + 1) * 1.2f) * Time.deltaTime);
             }
             return;
         }
@@ -576,7 +575,7 @@ public class InputController : MonoBehaviour
                 }
 
                 anim.Play("Attack Tree");
-                attackDelay = 1f;
+                attackDelay = 1f - (1f * statusManager.GetPlayerStatAttackSpeed());
                 isAttack = true;
             }
             else
@@ -592,7 +591,7 @@ public class InputController : MonoBehaviour
 
                 if (attackCount == 0)
                 {
-                    playerAttackDamage = playerDamage;
+                    playerAttackDamage = playerDamage + (playerDamage * 0.3f);
                 }
                 else
                 {
@@ -611,7 +610,7 @@ public class InputController : MonoBehaviour
                 }
 
                 anim.Play("Attack Tree");
-                attackDelay = 1f;
+                attackDelay = 1f - (1f * statusManager.GetPlayerStatAttackSpeed());
                 isAttack = true;
             }
         }
@@ -648,7 +647,7 @@ public class InputController : MonoBehaviour
             }
 
             anim.Play("Attack Tree");
-            attackDelay = 1f;
+            attackDelay = 1f - (1f * statusManager.GetPlayerStatAttackSpeed());
             isAttack = true;
 
             curStamina -= 30f;
@@ -712,6 +711,12 @@ public class InputController : MonoBehaviour
         if (statusManager.GetBoolTest() == true)
         {
             playerDamage = statusManager.GetPlayerStatDamage() + weaponDamage;
+            moveSpeed = statusManager.GetPlayerStatSpeed();
+            playerMaxCurHp = new Vector2(statusManager.GetPlayerStatHp(), playerMaxCurHp.y);
+            playerArmor = statusManager.GetPlayerStatArmor();
+            playerCritical = statusManager.GetPlayerStatCritical();
+            playerCriticalDamage = statusManager.GetPlayerStatCriticalDamage();
+            maxStamina = statusManager.GetPlayerStatStamina();
         }
     }
 
@@ -726,6 +731,7 @@ public class InputController : MonoBehaviour
         anim.SetFloat("ChangeAttack", idleChange);
         anim.SetFloat("AttackCount", attackCount);
         anim.SetFloat("StaminaAttack", changeStaminaAttack);
+        anim.SetFloat("AttackSpeed", statusManager.GetPlayerStatAttackSpeedAnim());
     }
 
     public void AttackHit()
