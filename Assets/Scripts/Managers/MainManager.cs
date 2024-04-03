@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -77,13 +78,13 @@ public class MainManager : MonoBehaviour
             bgm.value = 75f / 100f;
             fxs.value = 75 / 100f;
 
-            string getScreenSize = JsonUtility.ToJson(saveSetting);
+            string getScreenSize = JsonConvert.SerializeObject(saveSetting);
             PlayerPrefs.SetString(saveSettingValue, getScreenSize);
         }
         else
         {
             string saveScreenData = PlayerPrefs.GetString(saveSettingValue);
-            saveSetting = JsonUtility.FromJson<SaveSetting>(saveScreenData);
+            saveSetting = JsonConvert.DeserializeObject<SaveSetting>(saveScreenData);
             setSaveSettingData(saveSetting);
         }
 
@@ -91,7 +92,7 @@ public class MainManager : MonoBehaviour
         {
             if (PlayerPrefs.GetString(saveSceneName) == string.Empty)
             {
-                string setScene = JsonUtility.ToJson(saveScene);
+                string setScene = JsonConvert.SerializeObject(saveScene);
                 PlayerPrefs.SetString(saveSceneName, setScene);
 
                 fadeInOut.gameObject.SetActive(true);
@@ -107,7 +108,7 @@ public class MainManager : MonoBehaviour
         loadButton.onClick.AddListener(() =>
         {
             string loadSceneData = PlayerPrefs.GetString(saveSceneName);
-            saveScene = JsonUtility.FromJson<SaveScene>(loadSceneData);
+            saveScene = JsonConvert.DeserializeObject<SaveScene>(loadSceneData);
 
             if (saveScene != null)
             {
@@ -162,11 +163,11 @@ public class MainManager : MonoBehaviour
             saveSetting.bgmValue = bgm.value;
             saveSetting.fxsValue = fxs.value;
 
-            string getScreenSize = JsonUtility.ToJson(saveSetting);
+            string getScreenSize = JsonConvert.SerializeObject(saveSetting);
             PlayerPrefs.SetString(saveSettingValue, getScreenSize);
 
             string saveScreenData = PlayerPrefs.GetString(saveSettingValue);
-            saveSetting = JsonUtility.FromJson<SaveSetting>(saveScreenData);
+            saveSetting = JsonConvert.DeserializeObject<SaveSetting>(saveScreenData);
             setSaveSettingData(saveSetting);
         });
 
@@ -193,7 +194,7 @@ public class MainManager : MonoBehaviour
             if (fadeColor.a >= 1.0f)
             {
                 string loadSceneData = PlayerPrefs.GetString(saveSceneName);
-                saveScene = JsonUtility.FromJson<SaveScene>(loadSceneData);
+                saveScene = JsonConvert.DeserializeObject<SaveScene>(loadSceneData);
 
 
                 if (PlayerPrefs.GetString(saveSceneName) == string.Empty)

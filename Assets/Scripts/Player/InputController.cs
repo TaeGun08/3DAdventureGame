@@ -151,12 +151,12 @@ public class InputController : MonoBehaviour
         curStamina = maxStamina;
 
         playerMaxCurHp.y = playerMaxCurHp.x;
+
+        playerStatusCheck();
     }
 
     private void Update()
     {
-        playerDataLoad();
-
         if (gameManager.GetGamePause() == true)
         {
             gameManager.SetGamePause(true);
@@ -179,16 +179,13 @@ public class InputController : MonoBehaviour
         playerExpCheck();
         playerLevelUp();
         playerBarCheck();
-        playerStatusCheck();
+
+        if (statusManager.GetBoolTest() == true)
+        {
+            playerStatusCheck();
+        }
+
         playerAnim();
-    }
-
-    /// <summary>
-    /// 플레이어의 데이터를 불러오기 위한 함수
-    /// </summary>
-    private void playerDataLoad()
-    {
-
     }
 
     //#if UNITY_EDITOR//전처리
@@ -211,6 +208,11 @@ public class InputController : MonoBehaviour
 
     private void OnTrigger(Collider collision)
     {
+        if (statusManager.GetStatusOnOff() == true)
+        {
+            return;
+        }
+
         if (collision.gameObject.tag == "Item" && Input.GetKeyDown(KeyCode.E))
         {
             if (weapon == null)
@@ -366,7 +368,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerLookAtScreen()
     {
-        if (useDieveRoll == true || isAttack == true)
+        if (useDieveRoll == true || isAttack == true || statusManager.GetStatusOnOff() == true)
         {
             return;
         }
@@ -394,6 +396,11 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerMove()
     {
+        if (statusManager.GetStatusOnOff() == true)
+        {
+            return;
+        }
+
         if (useDieveRoll == true)
         {
             if (idleChange == 0)
@@ -484,6 +491,11 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerDiveRoll()
     {
+        if (statusManager.GetStatusOnOff() == true)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Space) && useDieveRoll == false && curStamina > 20f)
         {
             anim.Play("Unarmed-DiveRoll-Forward1");
@@ -499,6 +511,11 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerWeaponChange()
     {
+        if (statusManager.GetStatusOnOff() == true)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Q) && weapon != null && weaponChange == false)
         {
             if (idleChange == 0)
@@ -527,6 +544,11 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerAttack()
     {
+        if (statusManager.GetStatusOnOff() == true)
+        {
+            return;
+        }
+
         if (useDieveRoll == true)
         {
             isAttack = false;
@@ -708,16 +730,13 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerStatusCheck()
     {
-        if (statusManager.GetBoolTest() == true)
-        {
-            playerDamage = statusManager.GetPlayerStatDamage() + weaponDamage;
-            moveSpeed = statusManager.GetPlayerStatSpeed();
-            playerMaxCurHp = new Vector2(statusManager.GetPlayerStatHp(), playerMaxCurHp.y);
-            playerArmor = statusManager.GetPlayerStatArmor();
-            playerCritical = statusManager.GetPlayerStatCritical();
-            playerCriticalDamage = statusManager.GetPlayerStatCriticalDamage();
-            maxStamina = statusManager.GetPlayerStatStamina();
-        }
+        playerDamage = statusManager.GetPlayerStatDamage() + weaponDamage;
+        moveSpeed = statusManager.GetPlayerStatSpeed();
+        playerMaxCurHp = new Vector2(statusManager.GetPlayerStatHp(), playerMaxCurHp.y);
+        playerArmor = statusManager.GetPlayerStatArmor();
+        playerCritical = statusManager.GetPlayerStatCritical();
+        playerCriticalDamage = statusManager.GetPlayerStatCriticalDamage();
+        maxStamina = statusManager.GetPlayerStatStamina();
     }
 
     /// <summary>

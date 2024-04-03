@@ -19,6 +19,52 @@ public class Weapon : MonoBehaviour
     [SerializeField] private int weaponLevel;
     [SerializeField] private float weaponDamage;
 
+    private void Start()
+    {
+        randomWeaponOption();
+    }
+
+    private void randomWeaponOption()
+    {
+        if (type.ToString() == "Common")
+        {
+            weaponLevel = 1;
+            float randomDamage = Random.Range(1f, 5f);
+            string dmamgeString = $"{randomDamage.ToString("F1")}";
+            float dmamge = float.Parse(dmamgeString);
+            weaponDamage = dmamge;
+        }
+        else if (type.ToString() == "Rare")
+        {
+            weaponLevel = 5;
+            float randomDamage = Random.Range(8f, 15f);
+            string dmamgeString = $"{randomDamage.ToString("F1")}";
+            float dmamge = float.Parse(dmamgeString);
+            weaponDamage = dmamge;
+        }
+        else if (type.ToString() == "Epic")
+        {
+            weaponLevel = 15;
+            float randomDamage = Random.Range(20f, 30f);
+            string dmamgeString = $"{randomDamage.ToString("F1")}";
+            float dmamge = float.Parse(dmamgeString);
+            weaponDamage = dmamge;
+        }
+        else if (type.ToString() == "Legendary")
+        {
+            weaponLevel = 30;
+            float randomDamage = Random.Range(40f, 60f);
+            string dmamgeString = $"{randomDamage.ToString("F1")}";
+            float dmamge = float.Parse(dmamgeString);
+            weaponDamage = dmamge;
+        }
+        else if (type.ToString() == "Mythology")
+        {
+            weaponLevel = 50;
+            weaponDamage = 100f;
+        }
+    }
+
     /// <summary>
     /// 무기의 번호를 다른 스크립트에서 가져올 수 있게 하는 함수
     /// </summary>

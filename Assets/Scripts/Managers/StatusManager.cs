@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,23 +9,39 @@ public class StatusManager : MonoBehaviour
 {
     public static StatusManager Instance;
 
+    public class StatusData
+    {
+        public float damage;
+        public float attackSpeed;
+        public float speed;
+        public float hp;
+        public float armor;
+        public float critical;
+        public float criticalDamage;
+        public float stamina;
+        public int statPoint;
+    }
+
+    private StatusData statusData = new StatusData();
+
     [Header("스테이터스 설정")]
     [SerializeField, Tooltip("스테이터스 공격력")] private float damage;
     [SerializeField, Tooltip("스테이터스 공격속도")] private float attackSpeed;
     [SerializeField, Tooltip("스테이터스 이동속도")] private float speed;
     [SerializeField, Tooltip("스테이터스 최대체력")] private float hp;
     [SerializeField, Tooltip("스테이터스 방어력")] private float armor;
-    [SerializeField, Tooltip("스테이터스 치명타확률")] private float criitical;
-    [SerializeField, Tooltip("스테이터스 치명타공격력")] private float criiticalDamage;
+    [SerializeField, Tooltip("스테이터스 치명타확률")] private float critical;
+    [SerializeField, Tooltip("스테이터스 치명타공격력")] private float criticalDamage;
     [SerializeField, Tooltip("스테이터스 기력")] private float stamina;
+    [SerializeField, Tooltip("스텟 포인트")] private int statPoint;
     [Space]
     [SerializeField, Tooltip("스테이터스가 켜졌을 때 카메라 움직임을 멈춤")] private GameObject cameraObj;
     [Space]
     [SerializeField, Tooltip("스테이터스")] private GameObject statusObj;
+    private bool statusOnOffCheck = false; //스테이터스가 켜졌는지 꺼졌는지 체크하기 위한 변수
     [SerializeField, Tooltip("스텟 상승 버튼")] private List<Button> statUpButtons;
     private bool statUpCheck; //스텟이 올랐는지 체크하는 변수
     private List<int> statIndex = new List<int>(); //스텟이 얼마나 상승했는지 저장하는 리스트
-    private int statPoint = 3; //스텟 포인트
     [Space]
     [SerializeField, Tooltip("스킬 상승 버튼")] private List<Button> skillUpButtons;
     [Space]
@@ -52,7 +69,7 @@ public class StatusManager : MonoBehaviour
         //공격력을 상승시키는 버튼
         statUpButtons[0].onClick.AddListener(() => 
         {
-            if (statPoint == 0)
+            if (statPoint == 0 || statIndex[0] >= 100)
             {
                 return;
             }
@@ -81,7 +98,7 @@ public class StatusManager : MonoBehaviour
         //체력을 상승시키는 버튼
         statUpButtons[2].onClick.AddListener(() =>
         {
-            if (statPoint == 0)
+            if (statPoint == 0 || statIndex[2] >= 100)
             {
                 return;
             }
@@ -95,7 +112,7 @@ public class StatusManager : MonoBehaviour
         //방어력을 상승시키는 버튼
         statUpButtons[3].onClick.AddListener(() =>
         {
-            if (statPoint <= 0)
+            if (statPoint <= 0 || statIndex[3] >= 100)
             {
                 return;
             }
@@ -109,22 +126,22 @@ public class StatusManager : MonoBehaviour
         //크리티컬 관련 능력치를 상승시키는 버튼
         statUpButtons[4].onClick.AddListener(() =>
         {
-            if (statPoint <= 0)
+            if (statPoint <= 0 || statIndex[4] >= 100)
             {
                 return;
             }
 
             statUpCheck = true;
             statIndex[4]++;
-            criitical += 0.5f;
-            criiticalDamage += 0.05f;
+            critical += 0.5f;
+            criticalDamage += 0.05f;
             statPoint--;
         });
 
         //스테미너를 상승시키는 버튼
         statUpButtons[5].onClick.AddListener(() =>
         {
-            if (statPoint <= 0)
+            if (statPoint <= 0 || statIndex[5] >= 100)
             {
                 return;
             }
@@ -134,6 +151,25 @@ public class StatusManager : MonoBehaviour
             stamina += 10;
             statPoint--;
         });
+
+        if (PlayerPrefs.GetString("saveStatusData") != string.Empty)
+        {
+            string getSaveStat = PlayerPrefs.GetString("saveStatusData");
+            statusData = JsonConvert.DeserializeObject<StatusData>(getSaveStat);
+            getSaveStatus(statusData);
+        }
+        else
+        {
+            statusData.damage = 1f;
+            statusData.attackSpeed = 1f;
+            statusData.speed = 4f;
+            statusData.hp = 100f;
+            statusData.armor = 0f;
+            statusData.critical = 0f;
+            statusData.criticalDamage = 0.5f;
+            statusData.stamina = 100f;
+            statusData.statPoint = 3;
+        }
     }
 
     private void Start()
@@ -154,11 +190,11 @@ public class StatusManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.K))
         {
-            bool onOffCheck = statusObj == statusObj.activeSelf ? false : true;
-            statusObj.SetActive(onOffCheck);
-            cameraObj.SetActive(!onOffCheck);
+            statusOnOffCheck = statusObj == statusObj.activeSelf ? false : true;
+            statusObj.SetActive(statusOnOffCheck);
+            cameraObj.SetActive(!statusOnOffCheck);
 
-            if (onOffCheck == true)
+            if (statusOnOffCheck == true)
             {
                 Cursor.lockState = CursorLockMode.None;
             }
@@ -182,10 +218,56 @@ public class StatusManager : MonoBehaviour
             statText[3].text = $"AMR : {statIndex[3]}";
             statText[4].text = $"LUK : {statIndex[4]}";
             statText[5].text = $"SP : {statIndex[5]}";
+            setSaveStatus();
             statUpCheck = false;
         }
 
         statText[6].text = $"스탯 포인트 : {statPoint}";
+    }
+
+    /// <summary>
+    /// 스테이터스를 저장하는 함수
+    /// </summary>
+    private void setSaveStatus()
+    {
+        statusData.damage = damage;
+        statusData.attackSpeed = attackSpeed;
+        statusData.speed = speed;
+        statusData.hp = hp;
+        statusData.armor = armor;
+        statusData.critical = critical;
+        statusData.criticalDamage = criticalDamage;
+        statusData.stamina = stamina;
+        statusData.statPoint = statPoint;
+
+        string setSaveStat = JsonConvert.SerializeObject(statusData);
+        PlayerPrefs.SetString("saveStatusData", setSaveStat);
+    }
+
+    /// <summary>
+    /// 저장된 스테이터스 데이터를 받아오는 함수
+    /// </summary>
+    /// <param name="_statusData"></param>
+    private void getSaveStatus(StatusData _statusData)
+    {
+        damage = _statusData.damage;
+        attackSpeed = _statusData.attackSpeed;
+        speed = _statusData.speed;
+        hp = _statusData.hp;
+        armor = _statusData.armor;
+        critical = _statusData.critical;
+        criticalDamage = _statusData.criticalDamage;
+        stamina = _statusData.stamina;
+        statPoint = _statusData.statPoint;
+    }
+
+    /// <summary>
+    /// 스테이터스 온 오프를 체크하는 변수를 반환하는 함수
+    /// </summary>
+    /// <returns></returns>
+    public bool GetStatusOnOff()
+    {
+        return statusOnOffCheck;
     }
 
     /// <summary>
@@ -248,7 +330,7 @@ public class StatusManager : MonoBehaviour
     /// <returns></returns>
     public float GetPlayerStatCritical()
     {
-        return criitical;
+        return critical;
     }
 
     /// <summary>
@@ -257,7 +339,7 @@ public class StatusManager : MonoBehaviour
     /// <returns></returns>
     public float GetPlayerStatCriticalDamage()
     {
-        return criiticalDamage;
+        return criticalDamage;
     }
 
     /// <summary>
