@@ -20,6 +20,7 @@ public class StatusManager : MonoBehaviour
         public float criticalDamage;
         public float stamina;
         public int statPoint;
+        public List<int> statIndex = new List<int>();
     }
 
     private StatusData statusData = new StatusData();
@@ -169,6 +170,10 @@ public class StatusManager : MonoBehaviour
             statusData.criticalDamage = 0.5f;
             statusData.stamina = 100f;
             statusData.statPoint = 3;
+            for (int i = 0; i < count; i++)
+            {
+                statusData.statIndex.Add(0);
+            }
         }
     }
 
@@ -239,6 +244,11 @@ public class StatusManager : MonoBehaviour
         statusData.criticalDamage = criticalDamage;
         statusData.stamina = stamina;
         statusData.statPoint = statPoint;
+        int count = statIndex.Count;
+        for (int i = 0; i < count; i++)
+        {
+            statusData.statIndex[i] = statIndex[i];
+        }
 
         string setSaveStat = JsonConvert.SerializeObject(statusData);
         PlayerPrefs.SetString("saveStatusData", setSaveStat);
@@ -259,6 +269,11 @@ public class StatusManager : MonoBehaviour
         criticalDamage = _statusData.criticalDamage;
         stamina = _statusData.stamina;
         statPoint = _statusData.statPoint;
+        int count = statIndex.Count;
+        for (int i = 0; i < count; i++)
+        {
+            statIndex[i] = _statusData.statIndex[i];
+        }
     }
 
     /// <summary>

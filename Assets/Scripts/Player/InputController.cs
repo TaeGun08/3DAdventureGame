@@ -62,7 +62,7 @@ public class InputController : MonoBehaviour
     private bool diveNoHit = false; //구르기 시 잠시 무적을 위한 변수
 
     [Header("플레이어 레벨 설정")]
-    [SerializeField, Tooltip("플레이어 레벨")] private int playerLevel = 1;
+    [SerializeField, Tooltip("플레이어 레벨")] private int playerLevel;
     [SerializeField, Tooltip("플레이어 최대 경험치")] private float playerMaxExp;
     [SerializeField, Tooltip("플레이어 현재 경험치")] private float playerCurExp;
 
@@ -76,9 +76,10 @@ public class InputController : MonoBehaviour
     private float changeStaminaAttack; //공격모션을 변경하기 위한 변수
     [Header("플레이어 공격 설정")]
     [SerializeField] private Collider hitArea;
-    [SerializeField] private float playerDamage = 1;
+    [SerializeField] private float playerDamage;
+    [SerializeField] private float playerAttackSpeed;
     [SerializeField, Range(0.0f, 100.0f)] private float playerCritical;
-    [SerializeField, Range(0.5f, 4.0f)] private float playerCriticalDamage = 0.5f;
+    [SerializeField, Range(0.5f, 4.0f)] private float playerCriticalDamage;
     private float playerAttackDamage; //계속 변경되어서 들어갈 데미지 변수
     private bool playerCriticalAttack = false; //플에이어가 공격 시 크리티컬이 발동되었는지
     private bool monsterAttack = false; //몬스터를 공격하기 위한 변수
@@ -100,12 +101,13 @@ public class InputController : MonoBehaviour
     private bool weaponChange = false; //플레이어가 무기를 변경하였는지 체크하기 위한 변수
     private int weaponLevel; //무기 레벨을 받아 올 변수
     private float weaponDamage;
+    private float weaponAttackSpeed;
 
     [Header("아이템을 줍기 위한 콜라이더")]
     [SerializeField] private BoxCollider pickUpArea;
 
     [Header("플레이어 상태바")]
-    [SerializeField] private GameObject playerBar;
+    [SerializeField] private GameObject playerBar; //플레이어의 체력바 오브젝트
     private Image playerHpBar; //플레이어의 체력 이미지
     private Image playerStaminaBar; //플레이어의 스테미너 이미지
     private Image playerExpBar; //플레이어의 경험치 이미지
@@ -221,14 +223,16 @@ public class InputController : MonoBehaviour
                 Rigidbody weaponRigid = collision.gameObject.GetComponent<Rigidbody>();
                 BoxCollider weaponColl = collision.gameObject.GetComponent<BoxCollider>();
                 weaponNumber = weaponSc.WeaponNumber();
-                weaponRigid.useGravity = false;
-                weaponRigid.isKinematic = true;
-                weaponColl.isTrigger = true;
                 if (weaponSc.WeaponLevel() <= playerLevel)
                 {
+                    weaponRigid.isKinematic = true;
+                    weaponColl.isTrigger = true;
                     weapon = collision.gameObject;
-                    weaponDamage = weaponSc.WeaponDamage();
+                    weaponDamage = weaponSc.WeaponDamage();   
+                    weaponAttackSpeed = weaponSc.WeaponAttackSpeed();
                     playerDamage = statusManager.GetPlayerStatDamage() + weaponDamage;
+                    playerAttackSpeed = statusManager.GetPlayerStatAttackSpeedAnim()
+                        + (statusManager.GetPlayerStatAttackSpeedAnim() * weaponAttackSpeed);
                     weapon.transform.SetParent(playerBackTrs.transform);
                     weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
                     weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
@@ -344,7 +348,7 @@ public class InputController : MonoBehaviour
         if (attackCombo == true)
         {
             comboTimer += Time.deltaTime;
-            if (comboTimer >= 0.3f - (0.3f * statusManager.GetPlayerStatAttackSpeed()))
+            if (comboTimer >= 0.3f - (0.3f * (playerAttackSpeed - 1)))
             {
                 comboTimer = 0f;
                 attackCount = 0;
@@ -597,7 +601,7 @@ public class InputController : MonoBehaviour
                 }
 
                 anim.Play("Attack Tree");
-                attackDelay = 1f - (1f * statusManager.GetPlayerStatAttackSpeed());
+                attackDelay = 1f - (1f * (playerAttackSpeed - 1));
                 isAttack = true;
             }
             else
@@ -632,7 +636,7 @@ public class InputController : MonoBehaviour
                 }
 
                 anim.Play("Attack Tree");
-                attackDelay = 1f - (1f * statusManager.GetPlayerStatAttackSpeed());
+                attackDelay = 1f - (1f * (playerAttackSpeed - 1));
                 isAttack = true;
             }
         }
@@ -669,7 +673,7 @@ public class InputController : MonoBehaviour
             }
 
             anim.Play("Attack Tree");
-            attackDelay = 1f - (1f * statusManager.GetPlayerStatAttackSpeed());
+            attackDelay = 1f - (1f * (playerAttackSpeed - 1));
             isAttack = true;
 
             curStamina -= 30f;
@@ -731,6 +735,7 @@ public class InputController : MonoBehaviour
     private void playerStatusCheck()
     {
         playerDamage = statusManager.GetPlayerStatDamage() + weaponDamage;
+        playerAttackSpeed = statusManager.GetPlayerStatAttackSpeedAnim();
         moveSpeed = statusManager.GetPlayerStatSpeed();
         playerMaxCurHp = new Vector2(statusManager.GetPlayerStatHp(), playerMaxCurHp.y);
         playerArmor = statusManager.GetPlayerStatArmor();
@@ -750,7 +755,7 @@ public class InputController : MonoBehaviour
         anim.SetFloat("ChangeAttack", idleChange);
         anim.SetFloat("AttackCount", attackCount);
         anim.SetFloat("StaminaAttack", changeStaminaAttack);
-        anim.SetFloat("AttackSpeed", statusManager.GetPlayerStatAttackSpeedAnim());
+        anim.SetFloat("AttackSpeed", playerAttackSpeed);
     }
 
     public void AttackHit()
