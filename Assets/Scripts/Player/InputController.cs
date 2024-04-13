@@ -1,35 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class InputController : MonoBehaviour
 {
-    public class PlayerData
-    {
-        public int idleChange;
-        public float moveSpeed;
-        public float maxStamina;
-        public float curStamina;
-        public float playerMaxExp;
-        public int playerCurExp;
-        public float levelPoint;
-        public int statusPoint;
-        public int skillPoint;
-        public int weaponLevel;
-        public float playerDamage;
-        public float playerMaxHp;
-        public float playerCurHp;
-        public float playerArmor;
-        public int weaponNumber;
-    }
-
-    private PlayerData playerData = new PlayerData();
-
-    private SaveManager saveManager;
     private GameManager gameManager;
     private StatusManager statusManager;
+    private PlayerStateManager playerStateManager;
 
     private CharacterController characterController; //플레이어가 가지고 있는 캐릭터 컨트롤러를 받아올 변수
     private Vector3 moveVec; //플레이어의 입력값을 받아올 변수
@@ -61,11 +38,6 @@ public class InputController : MonoBehaviour
     private Vector3 diveVec; //구르기 시 화면을 회전해도 내가 바라봤던 방향으로 구르기를 하기 위해 값을 담을 변수
     private bool diveNoHit = false; //구르기 시 잠시 무적을 위한 변수
 
-    [Header("플레이어 레벨 설정")]
-    [SerializeField, Tooltip("플레이어 레벨")] private int playerLevel;
-    [SerializeField, Tooltip("플레이어 최대 경험치")] private float playerMaxExp;
-    [SerializeField, Tooltip("플레이어 현재 경험치")] private float playerCurExp;
-
     //공격 모션을 위한 변수들
     private bool isAttack = false; //공격을 했는지 여부를 확인하기 위한 변수
     private float attackTimer; //공격 후 딜레이를 위해 돌아가는 타이머
@@ -90,8 +62,6 @@ public class InputController : MonoBehaviour
     [Header("플레이어 방어력 설정")]
     [SerializeField] private float playerArmor;
 
-    private List<float> playerStatUpValue = new List<float>();
-
     [Header("플레이어의 무기 설정")]
     [SerializeField] private Transform playerHandTrs; //플레이어의 손 위치
     [SerializeField] private Transform playerBackTrs; //플레이어의 등 위치
@@ -105,16 +75,6 @@ public class InputController : MonoBehaviour
 
     [Header("아이템을 줍기 위한 콜라이더")]
     [SerializeField] private BoxCollider pickUpArea;
-
-    [Header("플레이어 상태바")]
-    [SerializeField] private GameObject playerBar; //플레이어의 체력바 오브젝트
-    private Image playerHpBar; //플레이어의 체력 이미지
-    private Image playerStaminaBar; //플레이어의 스테미너 이미지
-    private Image playerExpBar; //플레이어의 경험치 이미지
-    private TMP_Text playerHpValue; //플레이어의 현재 체력값을 받아올 텍스트
-    private TMP_Text playerStaminaValue; //플레이어의 현재 스테미너를 받아올 텍스트
-    private TMP_Text playerExpValue; //플레이어의 현재 경험치를 받아올 텍스트
-    private TMP_Text playerLevelText; //플레이어 레벨을 받아올 텍스트
 
     private void Awake()
     {
@@ -130,25 +90,11 @@ public class InputController : MonoBehaviour
     {
         mainCam = Camera.main;
 
-        saveManager = SaveManager.Instance;
-
         gameManager = GameManager.Instance;
 
         statusManager = StatusManager.Instance;
 
-        playerHpBar = playerBar.transform.Find("Bar/Hp").GetComponent<Image>();
-
-        playerStaminaBar = playerBar.transform.Find("Bar/Stamina").GetComponent<Image>();
-
-        playerExpBar = playerBar.transform.Find("Bar/Exp").GetComponent<Image>();
-
-        playerHpValue = playerHpBar.transform.GetChild(0).GetComponent<TMP_Text>();
-
-        playerStaminaValue = playerStaminaBar.transform.GetChild(0).GetComponent<TMP_Text>();
-
-        playerExpValue = playerExpBar.transform.GetChild(0).GetComponent<TMP_Text>();
-
-        playerLevelText = playerBar.transform.Find("LevelText").GetComponent<TMP_Text>();
+        playerStateManager = PlayerStateManager.Instance;
 
         curStamina = maxStamina;
 
@@ -178,8 +124,6 @@ public class InputController : MonoBehaviour
         playerDiveRoll();
         playerWeaponChange();
         playerAttack();
-        playerExpCheck();
-        playerLevelUp();
         playerBarCheck();
 
         if (statusManager.GetBoolTest() == true)
@@ -223,7 +167,7 @@ public class InputController : MonoBehaviour
                 Rigidbody weaponRigid = collision.gameObject.GetComponent<Rigidbody>();
                 BoxCollider weaponColl = collision.gameObject.GetComponent<BoxCollider>();
                 weaponNumber = weaponSc.WeaponNumber();
-                if (weaponSc.WeaponLevel() <= playerLevel)
+                if (weaponSc.WeaponLevel() <= statusManager.GetLevel())
                 {
                     weaponRigid.isKinematic = true;
                     weaponColl.isTrigger = true;
@@ -681,52 +625,18 @@ public class InputController : MonoBehaviour
     }
 
     /// <summary>
-    /// 경험치가 존재하는지 안 하는지 체크하고 받아오기 위한 함수
-    /// </summary>
-    private void playerExpCheck()
-    {
-        if (gameManager.GetExp() > 0)
-        {
-            playerCurExp += gameManager.GetExp();
-            gameManager.SetExp(-gameManager.GetExp());
-        }
-    }
-
-    /// <summary>
-    /// 플레이어가 일정 경험치 이상 쌓였을 때 레벨업하기 위한 함수
-    /// </summary>
-    private void playerLevelUp()
-    {
-        if (playerMaxExp <= playerCurExp)
-        {
-            playerCurExp -= playerMaxExp;
-            ++playerLevel;
-            playerLevelText.text = $"Lv. {playerLevel}";
-            statusManager.SetStatPoint(3);
-            playerMaxExp *= 1.3f;
-        }
-
-        if (playerCurExp <= playerMaxExp)
-        {
-            playerExpBar.fillAmount = playerCurExp / playerMaxExp;
-        }
-
-        playerExpValue.text = $"{(playerExpBar.fillAmount * 100).ToString("F0")}% / {100}%";
-    }
-
-    /// <summary>
     /// 플레이어가 체력  또는 스테미너가 닳았을 때 체크해주기 위한 함수
     /// </summary>
     private void playerBarCheck()
     {
-        if (curStamina != 100)
+        if (curStamina != maxStamina)
         {
-            playerStaminaBar.fillAmount = curStamina / 100;
+            playerStateManager.SetPlayerStaminaBar(curStamina, maxStamina);
         }
 
-        playerHpValue.text = $"{playerMaxCurHp.y.ToString("F0")} / {playerMaxCurHp.x.ToString("F0")}";
+        //playerHpValue.text = $"{playerMaxCurHp.y.ToString("F0")} / {playerMaxCurHp.x.ToString("F0")}";
 
-        playerStaminaValue.text = $"{curStamina.ToString("F0")} / {maxStamina.ToString("F0")}";
+        //playerStaminaValue.text = $"{curStamina.ToString("F0")} / {maxStamina.ToString("F0")}";
     }
 
     /// <summary>

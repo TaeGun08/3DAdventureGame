@@ -11,6 +11,9 @@ public class StatusManager : MonoBehaviour
 
     public class StatusData
     {
+        public int level;
+        public float maxExp;
+        public float curExp;
         public float damage;
         public float attackSpeed;
         public float speed;
@@ -25,7 +28,14 @@ public class StatusManager : MonoBehaviour
 
     private StatusData statusData = new StatusData();
 
+    private GameManager gameManager;
+    private PlayerStateManager playerStateManager;
+
     [Header("스테이터스 설정")]
+    [SerializeField, Tooltip("플레이어 레벨")] private int level;
+    [SerializeField, Tooltip("플레이어 최대 경험치")] private float maxExp;
+    [SerializeField, Tooltip("플레이어 현재 경험치")] private float curExp;
+    [Space]
     [SerializeField, Tooltip("스테이터스 공격력")] private float damage;
     [SerializeField, Tooltip("스테이터스 공격속도")] private float attackSpeed;
     [SerializeField, Tooltip("스테이터스 이동속도")] private float speed;
@@ -161,6 +171,9 @@ public class StatusManager : MonoBehaviour
         }
         else
         {
+            statusData.level = 1;
+            statusData.maxExp = 5;
+            statusData.curExp = 0;
             statusData.damage = 1f;
             statusData.attackSpeed = 1f;
             statusData.speed = 4f;
@@ -179,13 +192,46 @@ public class StatusManager : MonoBehaviour
 
     private void Start()
     {
+        gameManager = GameManager.Instance;
+
+        playerStateManager = PlayerStateManager.Instance;
+
         statUpCheck = true;
     }
 
     private void Update()
     {
+        levelUpCheck();
         statusOnOff();
         statusStatUI();
+    }
+
+    /// <summary>
+    /// 플레이어가 레벨업을 했는지 체크해주는 함수
+    /// </summary>
+    private void levelUpCheck()
+    {
+        if (maxExp <= curExp)
+        {
+            curExp -= maxExp;
+            ++level;
+            playerStateManager.SetPlayerLevelText(level);
+            statPoint += 3;
+            maxExp *= 1.3f;
+            string maxExpValue = $"{maxExp.ToString("F2")}";
+            maxExp = float.Parse(maxExpValue);
+        }
+
+        if (curExp <= maxExp)
+        {
+            playerStateManager.SetPlayerExpBar(curExp, maxExp);
+        }
+
+        if (gameManager.GetExp() > 0)
+        {
+            curExp += gameManager.GetExp();
+            gameManager.SetExp(-gameManager.GetExp());
+        }
     }
 
     /// <summary>
@@ -217,6 +263,7 @@ public class StatusManager : MonoBehaviour
     {
         if (statUpCheck == true)
         {
+            playerStateManager.SetPlayerLevelText(level);
             statText[0].text = $"STR : {statIndex[0]}";
             statText[1].text = $"DEX : {statIndex[1]}";
             statText[2].text = $"HP : {statIndex[2]}";
@@ -235,6 +282,9 @@ public class StatusManager : MonoBehaviour
     /// </summary>
     private void setSaveStatus()
     {
+        statusData.level = level;
+        statusData.maxExp = maxExp;
+        statusData.curExp = curExp;
         statusData.damage = damage;
         statusData.attackSpeed = attackSpeed;
         statusData.speed = speed;
@@ -260,6 +310,9 @@ public class StatusManager : MonoBehaviour
     /// <param name="_statusData"></param>
     private void getSaveStatus(StatusData _statusData)
     {
+        level =_statusData.level;
+        maxExp = _statusData.maxExp;
+        curExp = _statusData.curExp;
         damage = _statusData.damage;
         attackSpeed = _statusData.attackSpeed;
         speed = _statusData.speed;
@@ -274,6 +327,33 @@ public class StatusManager : MonoBehaviour
         {
             statIndex[i] = _statusData.statIndex[i];
         }
+    }
+
+    /// <summary>
+    /// 현재 레벨을 보내주기 위한 함수
+    /// </summary>
+    /// <returns></returns>
+    public int GetLevel()
+    {
+        return level;
+    }
+
+    /// <summary>
+    /// 현재 최대 경험치를 보내주기 위한 함수
+    /// </summary>
+    /// <returns></returns>
+    public float GetMaxExp()
+    {
+        return maxExp;
+    }
+
+    /// <summary>
+    /// 현재 경험치를 보내주기 위한 함수
+    /// </summary>
+    /// <returns></returns>
+    public float GetCurExp()
+    {
+        return curExp;
     }
 
     /// <summary>
@@ -364,15 +444,6 @@ public class StatusManager : MonoBehaviour
     public float GetPlayerStatStamina()
     {
         return stamina;
-    }
-
-    /// <summary>
-    /// 스텟포인트를 받아
-    /// </summary>
-    /// <param name="_statPoint"></param>
-    public void SetStatPoint(int _statPoint)
-    {
-        statPoint += _statPoint;
     }
 
     /// <summary>
