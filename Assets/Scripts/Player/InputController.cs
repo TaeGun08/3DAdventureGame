@@ -5,7 +5,7 @@ using UnityEngine;
 public class InputController : MonoBehaviour
 {
     private GameManager gameManager;
-    private StatusManager statusManager;
+    private InformationManager InformationManager;
     private PlayerStateManager playerStateManager;
 
     private CharacterController characterController; //플레이어가 가지고 있는 캐릭터 컨트롤러를 받아올 변수
@@ -14,9 +14,6 @@ public class InputController : MonoBehaviour
     private Camera mainCam;
 
     private Animator anim; //플레이어의 애니메이션을 받아올 변수
-
-    [Header("저장 파일 불러오기")]
-    [SerializeField] private bool dataLoad = false;
 
     [Header("플레이어 애니메이션 변경")]
     [SerializeField, Range(0, 1)] private int idleChange;
@@ -47,11 +44,11 @@ public class InputController : MonoBehaviour
     private float comboTimer; //콤보 어택을 위한 시간
     private float changeStaminaAttack; //공격모션을 변경하기 위한 변수
     [Header("플레이어 공격 설정")]
-    [SerializeField] private Collider hitArea;
+    [SerializeField] private List<Collider> hitArea;
     [SerializeField] private float playerDamage;
     [SerializeField] private float playerAttackSpeed;
     [SerializeField, Range(0.0f, 100.0f)] private float playerCritical;
-    [SerializeField, Range(0.5f, 4.0f)] private float playerCriticalDamage;
+    [SerializeField, Range(0.0f, 10.0f)] private float playerCriticalDamage;
     private float playerAttackDamage; //계속 변경되어서 들어갈 데미지 변수
     private bool playerCriticalAttack = false; //플에이어가 공격 시 크리티컬이 발동되었는지
     private bool monsterAttack = false; //몬스터를 공격하기 위한 변수
@@ -92,7 +89,7 @@ public class InputController : MonoBehaviour
 
         gameManager = GameManager.Instance;
 
-        statusManager = StatusManager.Instance;
+        InformationManager = InformationManager.Instance;
 
         playerStateManager = PlayerStateManager.Instance;
 
@@ -126,7 +123,7 @@ public class InputController : MonoBehaviour
         playerAttack();
         playerBarCheck();
 
-        if (statusManager.GetBoolTest() == true)
+        if (InformationManager.GetBoolTest() == true)
         {
             playerStatusCheck();
         }
@@ -154,7 +151,7 @@ public class InputController : MonoBehaviour
 
     private void OnTrigger(Collider collision)
     {
-        if (statusManager.GetStatusOnOff() == true)
+        if (InformationManager.GetStatusOnOff() == true)
         {
             return;
         }
@@ -167,16 +164,16 @@ public class InputController : MonoBehaviour
                 Rigidbody weaponRigid = collision.gameObject.GetComponent<Rigidbody>();
                 BoxCollider weaponColl = collision.gameObject.GetComponent<BoxCollider>();
                 weaponNumber = weaponSc.WeaponNumber();
-                if (weaponSc.WeaponLevel() <= statusManager.GetLevel())
+                if (weaponSc.WeaponLevel() <= InformationManager.GetLevel())
                 {
                     weaponRigid.isKinematic = true;
                     weaponColl.isTrigger = true;
                     weapon = collision.gameObject;
                     weaponDamage = weaponSc.WeaponDamage();   
                     weaponAttackSpeed = weaponSc.WeaponAttackSpeed();
-                    playerDamage = statusManager.GetPlayerStatDamage() + weaponDamage;
-                    playerAttackSpeed = statusManager.GetPlayerStatAttackSpeedAnim()
-                        + (statusManager.GetPlayerStatAttackSpeedAnim() * weaponAttackSpeed);
+                    playerDamage = InformationManager.GetPlayerStatDamage() + weaponDamage;
+                    playerAttackSpeed = InformationManager.GetPlayerStatAttackSpeedAnim()
+                        + (InformationManager.GetPlayerStatAttackSpeedAnim() * weaponAttackSpeed);
                     weapon.transform.SetParent(playerBackTrs.transform);
                     weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
                     weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
@@ -212,7 +209,7 @@ public class InputController : MonoBehaviour
 
         if (idleChange == 0)
         {
-            Collider[] attackColl = Physics.OverlapBox(hitArea.bounds.center, hitArea.bounds.size * 0.3f, Quaternion.identity,
+            Collider[] attackColl = Physics.OverlapBox(hitArea[0].bounds.center, hitArea[0].bounds.size * 0.5f, Quaternion.identity,
                 LayerMask.GetMask("Monster"));
 
             int attackCount = attackColl.Length;
@@ -229,7 +226,7 @@ public class InputController : MonoBehaviour
         }
         else
         {
-            Collider[] attackColl = Physics.OverlapBox(hitArea.bounds.center, hitArea.bounds.size * 0.5f, Quaternion.identity,
+            Collider[] attackColl = Physics.OverlapBox(hitArea[1].bounds.center, hitArea[1].bounds.size * 0.5f, Quaternion.identity,
                 LayerMask.GetMask("Monster"));
 
             int attackCount = attackColl.Length;
@@ -316,7 +313,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerLookAtScreen()
     {
-        if (useDieveRoll == true || isAttack == true || statusManager.GetStatusOnOff() == true)
+        if (useDieveRoll == true || isAttack == true || InformationManager.GetStatusOnOff() == true)
         {
             return;
         }
@@ -344,7 +341,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerMove()
     {
-        if (statusManager.GetStatusOnOff() == true)
+        if (InformationManager.GetStatusOnOff() == true)
         {
             return;
         }
@@ -439,7 +436,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerDiveRoll()
     {
-        if (statusManager.GetStatusOnOff() == true)
+        if (InformationManager.GetStatusOnOff() == true)
         {
             return;
         }
@@ -459,7 +456,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerWeaponChange()
     {
-        if (statusManager.GetStatusOnOff() == true)
+        if (InformationManager.GetStatusOnOff() == true)
         {
             return;
         }
@@ -492,7 +489,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerAttack()
     {
-        if (statusManager.GetStatusOnOff() == true)
+        if (InformationManager.GetStatusOnOff() == true)
         {
             return;
         }
@@ -644,14 +641,14 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerStatusCheck()
     {
-        playerDamage = statusManager.GetPlayerStatDamage() + weaponDamage;
-        playerAttackSpeed = statusManager.GetPlayerStatAttackSpeedAnim();
-        moveSpeed = statusManager.GetPlayerStatSpeed();
-        playerMaxCurHp = new Vector2(statusManager.GetPlayerStatHp(), playerMaxCurHp.y);
-        playerArmor = statusManager.GetPlayerStatArmor();
-        playerCritical = statusManager.GetPlayerStatCritical();
-        playerCriticalDamage = statusManager.GetPlayerStatCriticalDamage();
-        maxStamina = statusManager.GetPlayerStatStamina();
+        playerDamage = InformationManager.GetPlayerStatDamage() + weaponDamage;
+        playerAttackSpeed = InformationManager.GetPlayerStatAttackSpeedAnim();
+        moveSpeed = InformationManager.GetPlayerStatSpeed();
+        playerMaxCurHp = new Vector2(InformationManager.GetPlayerStatHp(), playerMaxCurHp.y);
+        playerArmor = InformationManager.GetPlayerStatArmor();
+        playerCritical = InformationManager.GetPlayerStatCritical();
+        playerCriticalDamage = InformationManager.GetPlayerStatCriticalDamage();
+        maxStamina = InformationManager.GetPlayerStatStamina();
     }
 
     /// <summary>
