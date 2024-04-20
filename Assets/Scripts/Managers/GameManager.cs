@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour
     [Header("게임 정지")]
     [SerializeField] private bool gamePause;
 
+    [Header("버츄얼 카메라")]
+    [SerializeField] private GameObject cameraObj;
+
     private float playerExp; //플레이어에게 전달할 경험치
 
     private void Awake()
@@ -66,5 +69,14 @@ public class GameManager : MonoBehaviour
     public float GetExp()
     {
         return playerExp;
+    }
+
+    /// <summary>
+    /// 특정 창이 켜졌을 때 화면을 움직이지 않게 해주는 함수
+    /// </summary>
+    /// <param name="_cameraOnOff"></param>
+    public void SetCameraMoveStop(bool _cameraOnOff)
+    {
+        cameraObj.SetActive(_cameraOnOff);
     }
 }

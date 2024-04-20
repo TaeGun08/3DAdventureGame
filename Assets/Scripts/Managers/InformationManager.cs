@@ -46,11 +46,9 @@ public class InformationManager : MonoBehaviour
     [SerializeField, Tooltip("스테이터스 기력")] private float stamina;
     [SerializeField, Tooltip("스텟 포인트")] private int statPoint;
     [Space]
-    [SerializeField, Tooltip("스테이터스가 켜졌을 때 카메라 움직임을 멈춤")] private GameObject cameraObj;
-    [Space]
-    [SerializeField, Tooltip("정보창")] private GameObject InformationObj;
-    [SerializeField, Tooltip("정보창 닫기 버튼")] private Button InformationExitButton;
-    private bool statusOnOffCheck = false; //스테이터스가 켜졌는지 꺼졌는지 체크하기 위한 변수
+    [SerializeField, Tooltip("정보창")] private GameObject informationObj;
+    [SerializeField, Tooltip("정보창 닫기 버튼")] private Button informationExitButton;
+    private bool informationOnOffCheck = false; //스테이터스가 켜졌는지 꺼졌는지 체크하기 위한 변수
     [SerializeField, Tooltip("스텟 상승 버튼")] private List<Button> statUpButtons;
     private bool statUpCheck; //스텟이 올랐는지 체크하는 변수
     private List<int> statIndex = new List<int>(); //스텟이 얼마나 상승했는지 저장하는 리스트
@@ -76,7 +74,7 @@ public class InformationManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        InformationObj.SetActive(false);
+        informationObj.SetActive(false);
 
         int count = statUpButtons.Count;
         for (int i = 0; i < count; i++)
@@ -176,13 +174,11 @@ public class InformationManager : MonoBehaviour
             statWindow.SetActive(statWindowOpen);
         });
 
-        InformationExitButton.onClick.AddListener(() =>
+        informationExitButton.onClick.AddListener(() =>
         {
-            InformationObj.SetActive(false);
+            informationObj.SetActive(false);
 
-            cameraObj.SetActive(true);
-
-            statusOnOffCheck = false;
+            informationOnOffCheck = false;
 
             Cursor.lockState = CursorLockMode.Locked;
         });
@@ -213,7 +209,7 @@ public class InformationManager : MonoBehaviour
             }
         }
 
-        InformationObj.SetActive(false);
+        informationObj.SetActive(false);
         statWindow.SetActive(false);
     }
 
@@ -269,11 +265,11 @@ public class InformationManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
-            statusOnOffCheck = InformationObj == InformationObj.activeSelf ? false : true;
-            InformationObj.SetActive(statusOnOffCheck);
-            cameraObj.SetActive(!statusOnOffCheck);
+            informationOnOffCheck = informationObj == informationObj.activeSelf ? false : true;
+            informationObj.SetActive(informationOnOffCheck);
+            informationObj.transform.SetAsLastSibling();
 
-            if (statusOnOffCheck == true)
+            if (informationOnOffCheck == true)
             {
                 Cursor.lockState = CursorLockMode.None;
             }
@@ -320,7 +316,7 @@ public class InformationManager : MonoBehaviour
             statInformationTexts[5].text = $"치명타확률 : {critical.ToString("F2")}%";
             statInformationTexts[6].text = $"치명타공격력 : {criticalDamage.ToString("P2")}";
             statInformationTexts[7].text = $"이동속도 : {(speed - 3).ToString("P2")}";
-            statInformationTexts[8].text = $"전투력 : {(damage)}";
+            statInformationTexts[8].text = $"전투력 : {((damage * 10f) + (hp * 0.1f) + (armor * 5f) + (attackSpeed * 10f) + (critical * 10f) + (criticalDamage * 100f) + (speed * 10f)).ToString("F0")}";
         }
     }
 
@@ -407,9 +403,9 @@ public class InformationManager : MonoBehaviour
     /// 스테이터스 온 오프를 체크하는 변수를 반환하는 함수
     /// </summary>
     /// <returns></returns>
-    public bool GetStatusOnOff()
+    public bool GetInformationOnOffCheck()
     {
-        return statusOnOffCheck;
+        return informationOnOffCheck;
     }
 
     /// <summary>
@@ -488,7 +484,7 @@ public class InformationManager : MonoBehaviour
     /// 스텟을 상승시켰는지 체크하는 변수를 반환하는 함수
     /// </summary>
     /// <returns></returns>
-    public bool GetBoolTest()
+    public bool GetStatUpCheck()
     {
         return statUpCheck;
     }

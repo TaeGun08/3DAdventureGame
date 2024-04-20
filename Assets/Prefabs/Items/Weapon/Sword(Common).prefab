@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 4415982756053392406}
   - component: {fileID: 3476602547134133509}
   - component: {fileID: 3979943230954139393}
+  - component: {fileID: 5827770049666751793}
   - component: {fileID: 4189396475089305244}
   m_Layer: 7
   m_Name: Sword(Common)
@@ -166,6 +167,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.4535983, y: 0.3625875, z: 2.8652768}
   m_Center: {x: -0.17672859, y: -0.07667148, z: 0.9112757}
+--- !u!114 &5827770049666751793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7876288913048008015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b85d262cd19c55647bd02654348338a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemIndex: 100
+  itemType: 10
 --- !u!114 &4189396475089305244
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,3 +197,4 @@ MonoBehaviour:
   type: 0
   weaponLevel: 1
   weaponDamage: 1
+  weaponAttackSpeed: 0

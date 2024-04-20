@@ -5,8 +5,9 @@ using UnityEngine;
 public class InputController : MonoBehaviour
 {
     private GameManager gameManager;
-    private InformationManager InformationManager;
+    private InformationManager informationManager;
     private PlayerStateManager playerStateManager;
+    private InventoryManger inventoryManger;
 
     private CharacterController characterController; //플레이어가 가지고 있는 캐릭터 컨트롤러를 받아올 변수
     private Vector3 moveVec; //플레이어의 입력값을 받아올 변수
@@ -89,9 +90,11 @@ public class InputController : MonoBehaviour
 
         gameManager = GameManager.Instance;
 
-        InformationManager = InformationManager.Instance;
+        informationManager = InformationManager.Instance;
 
         playerStateManager = PlayerStateManager.Instance;
+
+        inventoryManger = InventoryManger.Instance;
 
         curStamina = maxStamina;
 
@@ -112,23 +115,34 @@ public class InputController : MonoBehaviour
             gameManager.SetGamePause(false);
         }
 
-        playerColliderCheck();
         playerTimers();
-        playerLookAtScreen();
         playerGravity();
-        playerMove();
         playerStamina();
-        playerDiveRoll();
-        playerWeaponChange();
-        playerAttack();
         playerBarCheck();
 
-        if (InformationManager.GetBoolTest() == true)
+        if (informationManager.GetInformationOnOffCheck() == false && inventoryManger.GetInventoryOnOffCheck() == false)
+        {
+            checkItem();
+            monsterCollCheck();
+            playerLookAtScreen();
+            playerMove();
+            playerDiveRoll();
+            playerWeaponChange();
+            playerAttack();
+            playerAnim();
+            gameManager.SetCameraMoveStop(true);
+        }
+        else
+        {
+            anim.SetFloat("VeticalMove", 0f);
+            anim.SetFloat("HorizontalMove", 0f);
+            gameManager.SetCameraMoveStop(false);
+        }
+
+        if (informationManager.GetStatUpCheck() == true)
         {
             playerStatusCheck();
         }
-
-        playerAnim();
     }
 
     //#if UNITY_EDITOR//전처리
@@ -149,38 +163,68 @@ public class InputController : MonoBehaviour
     //    }
     //#endif
 
-    private void OnTrigger(Collider collision)
+    private Collider getClosedCollider(Collider[] _arr)
     {
-        if (InformationManager.GetStatusOnOff() == true)
-        {
-            return;
-        }
+        int count = _arr.Length;
+        Collider returnValue = _arr[0];
+        float distance = Vector3.Distance(_arr[0].transform.position, transform.position);
 
-        if (collision.gameObject.tag == "Item" && Input.GetKeyDown(KeyCode.E))
+        for (int iNum = 1; iNum < count; ++iNum)
         {
-            if (weapon == null)
+            float checkDistance = Vector3.Distance(_arr[iNum].transform.position, transform.position);
+            if (distance > checkDistance)
             {
-                Weapon weaponSc = collision.gameObject.GetComponent<Weapon>();
-                Rigidbody weaponRigid = collision.gameObject.GetComponent<Rigidbody>();
-                BoxCollider weaponColl = collision.gameObject.GetComponent<BoxCollider>();
-                weaponNumber = weaponSc.WeaponNumber();
-                if (weaponSc.WeaponLevel() <= InformationManager.GetLevel())
-                {
-                    weaponRigid.isKinematic = true;
-                    weaponColl.isTrigger = true;
-                    weapon = collision.gameObject;
-                    weaponDamage = weaponSc.WeaponDamage();   
-                    weaponAttackSpeed = weaponSc.WeaponAttackSpeed();
-                    playerDamage = InformationManager.GetPlayerStatDamage() + weaponDamage;
-                    playerAttackSpeed = InformationManager.GetPlayerStatAttackSpeedAnim()
-                        + (InformationManager.GetPlayerStatAttackSpeedAnim() * weaponAttackSpeed);
-                    weapon.transform.SetParent(playerBackTrs.transform);
-                    weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
-                    weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                }
+                returnValue = _arr[iNum];
+                distance = checkDistance;
             }
         }
 
+       return returnValue;
+    }
+
+    private void checkItem()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Collider[] pickUpColl = Physics.OverlapBox(pickUpArea.bounds.center, pickUpArea.bounds.size * 0.5f, Quaternion.identity,
+            LayerMask.GetMask("PickUpItem"));
+
+            if (pickUpColl.Length != 0)
+            {
+                Collider collision = getClosedCollider(pickUpColl);
+
+                if (collision.gameObject.tag == "Item")
+                {
+                    inventoryManger.SetItem(collision.gameObject);
+                }
+            }
+
+            if (weapon == null)
+            {
+                //Weapon weaponSc = collision.gameObject.GetComponent<Weapon>();
+                //Rigidbody weaponRigid = collision.gameObject.GetComponent<Rigidbody>();
+                //BoxCollider weaponColl = collision.gameObject.GetComponent<BoxCollider>();
+                //weaponNumber = weaponSc.WeaponNumber();
+                //if (weaponSc.WeaponLevel() <= informationManager.GetLevel())
+                //{
+                //    weaponRigid.isKinematic = true;
+                //    weaponColl.isTrigger = true;
+                //    weapon = collision.gameObject;
+                //    weaponDamage = weaponSc.WeaponDamage();   
+                //    weaponAttackSpeed = weaponSc.WeaponAttackSpeed();
+                //    playerDamage = informationManager.GetPlayerStatDamage() + weaponDamage;
+                //    playerAttackSpeed = informationManager.GetPlayerStatAttackSpeedAnim()
+                //        + (informationManager.GetPlayerStatAttackSpeedAnim() * weaponAttackSpeed);
+                //    weapon.transform.SetParent(playerBackTrs.transform);
+                //    weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
+                //    weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                //}
+            }
+        }
+    }
+
+    private void attackTrigger(Collider collision)
+    {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Monster") && monsterAttack == true)
         {
             Monster monsterSc = collision.GetComponent<Monster>();
@@ -202,11 +246,8 @@ public class InputController : MonoBehaviour
     /// <summary>
     /// 아이템을 줍기 위한 함수
     /// </summary>
-    private void playerColliderCheck()
+    private void monsterCollCheck()
     {
-        Collider[] pickUpColl = Physics.OverlapBox(pickUpArea.bounds.center, pickUpArea.bounds.size * 0.5f, Quaternion.identity,
-            LayerMask.GetMask("Weapon"));
-
         if (idleChange == 0)
         {
             Collider[] attackColl = Physics.OverlapBox(hitArea[0].bounds.center, hitArea[0].bounds.size * 0.5f, Quaternion.identity,
@@ -218,7 +259,7 @@ public class InputController : MonoBehaviour
             {
                 for (int i = 0; i < attackCount; i++)
                 {
-                    OnTrigger(attackColl[i]);
+                    attackTrigger(attackColl[i]);
                 }
 
                 monsterAttack = false;
@@ -235,20 +276,10 @@ public class InputController : MonoBehaviour
             {
                 for (int i = 0; i < attackCount; i++)
                 {
-                    OnTrigger(attackColl[i]);
+                    attackTrigger(attackColl[i]);
                 }
 
                 monsterAttack = false;
-            }
-        }
-
-        int pickUpCount = pickUpColl.Length;
-
-        if (pickUpCount > 0)
-        {
-            for (int i = 0; i < pickUpCount; i++)
-            {
-                OnTrigger(pickUpColl[0]);
             }
         }
     }
@@ -313,7 +344,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerLookAtScreen()
     {
-        if (useDieveRoll == true || isAttack == true || InformationManager.GetStatusOnOff() == true)
+        if (useDieveRoll == true || isAttack == true)
         {
             return;
         }
@@ -341,11 +372,6 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerMove()
     {
-        if (InformationManager.GetStatusOnOff() == true)
-        {
-            return;
-        }
-
         if (useDieveRoll == true)
         {
             if (idleChange == 0)
@@ -436,11 +462,6 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerDiveRoll()
     {
-        if (InformationManager.GetStatusOnOff() == true)
-        {
-            return;
-        }
-
         if (Input.GetKeyDown(KeyCode.Space) && useDieveRoll == false && curStamina > 20f)
         {
             anim.Play("Unarmed-DiveRoll-Forward1");
@@ -456,11 +477,6 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerWeaponChange()
     {
-        if (InformationManager.GetStatusOnOff() == true)
-        {
-            return;
-        }
-
         if (Input.GetKeyDown(KeyCode.Q) && weapon != null && weaponChange == false)
         {
             if (idleChange == 0)
@@ -489,11 +505,6 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerAttack()
     {
-        if (InformationManager.GetStatusOnOff() == true)
-        {
-            return;
-        }
-
         if (useDieveRoll == true)
         {
             isAttack = false;
@@ -641,14 +652,14 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerStatusCheck()
     {
-        playerDamage = InformationManager.GetPlayerStatDamage() + weaponDamage;
-        playerAttackSpeed = InformationManager.GetPlayerStatAttackSpeedAnim();
-        moveSpeed = InformationManager.GetPlayerStatSpeed();
-        playerMaxCurHp = new Vector2(InformationManager.GetPlayerStatHp(), playerMaxCurHp.y);
-        playerArmor = InformationManager.GetPlayerStatArmor();
-        playerCritical = InformationManager.GetPlayerStatCritical();
-        playerCriticalDamage = InformationManager.GetPlayerStatCriticalDamage();
-        maxStamina = InformationManager.GetPlayerStatStamina();
+        playerDamage = informationManager.GetPlayerStatDamage() + weaponDamage;
+        playerAttackSpeed = informationManager.GetPlayerStatAttackSpeedAnim();
+        moveSpeed = informationManager.GetPlayerStatSpeed();
+        playerMaxCurHp = new Vector2(informationManager.GetPlayerStatHp(), playerMaxCurHp.y);
+        playerArmor = informationManager.GetPlayerStatArmor();
+        playerCritical = informationManager.GetPlayerStatCritical();
+        playerCriticalDamage = informationManager.GetPlayerStatCriticalDamage();
+        maxStamina = informationManager.GetPlayerStatStamina();
     }
 
     /// <summary>

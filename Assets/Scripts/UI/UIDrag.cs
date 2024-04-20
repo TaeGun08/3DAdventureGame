@@ -6,7 +6,6 @@ using UnityEngine.EventSystems;
 
 public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    private RectTransform rectTrs;
     [SerializeField] private RectTransform parentRectTrs;
 
     void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
@@ -16,17 +15,11 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     void IDragHandler.OnDrag(PointerEventData eventData)
     {
-        rectTrs.position = eventData.position;
         parentRectTrs.position = eventData.position;
     }
 
     void IEndDragHandler.OnEndDrag(PointerEventData eventData)
     {
 
-    }
-
-    private void Awake()
-    {
-        rectTrs = GetComponent<RectTransform>();
     }
 }
