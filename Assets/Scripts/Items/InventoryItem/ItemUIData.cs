@@ -37,7 +37,7 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     void IEndDragHandler.OnEndDrag(PointerEventData eventData)
     {
-        if (transform.parent == inventoryManger.GetCanvas())
+        if (transform.parent == inventoryManger.GetCanvas().transform)
         {
             transform.SetParent(itemParenTrs);
 
