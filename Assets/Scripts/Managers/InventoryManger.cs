@@ -21,6 +21,8 @@ public class InventoryManger : MonoBehaviour
 
     private InventoryData inventoryData = new InventoryData();
 
+    private WearItemManager wearItemManager;
+
     [Header("인벤토리 설정")]
     [SerializeField, Tooltip("캔버스")] private Canvas canvas;
     [SerializeField, Tooltip("슬롯")] private GameObject slotPrefab;
@@ -40,8 +42,10 @@ public class InventoryManger : MonoBehaviour
     private List<int> itemIndex = new List<int>(); //아이템 인덱스
     private List<int> itemType = new List<int>(); //아이템 타입
     private List<int> itemQuantity = new List<int>(); //아이템 개수
-    private List<float> weaponDamage = new List<float>(); //무기 공격력
+    [SerializeField] private List<float> weaponDamage = new List<float>(); //무기 공격력
     private List<float> weaponAttackSpeed = new List<float>(); //무기 공격속도
+
+    private List<int>  swapItem = new List<int>(); //아이템을 스왑할 슬롯의 번호를 받아올 변수
 
     private void Awake()
     {
@@ -61,11 +65,18 @@ public class InventoryManger : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
         });
 
+        for (int i = 0; i < 2; i++)
+        {
+            swapItem.Add(0);
+        }
+
         InventoryObj.SetActive(false);
     }
 
     private void Start()
     {
+        wearItemManager = WearItemManager.Instance;
+
         if (PlayerPrefs.GetString("saveInventoryData") != string.Empty)
         {
             string getSlot = PlayerPrefs.GetString("saveInventoryData");
@@ -76,9 +87,13 @@ public class InventoryManger : MonoBehaviour
         {
             inventoryData.slotIndex = 12;
 
+            int slotNumber = 1;
+
             for (int i = 0; i < slotIndex; i++)
             {
                 GameObject slotObj = Instantiate(slotPrefab, contentTrs);
+                ItemInvenDrop dropSc = slotObj.GetComponent<ItemInvenDrop>();
+                dropSc.SetNumber(slotNumber++);
                 slotTrs.Add(slotObj.transform);
                 itemList.Add(null);
                 itemSlotIndex.Add(0);
@@ -104,6 +119,7 @@ public class InventoryManger : MonoBehaviour
     private void Update()
     {
         inventoyOnOff();
+        itemSwapCheck();
     }
 
     /// <summary>
@@ -138,9 +154,13 @@ public class InventoryManger : MonoBehaviour
 
         slotIndex = _slotData.slotIndex;
 
+        int slotNumber = 1;
+
         for (int i = 0; i < count; i++)
         {
             GameObject slotObj = Instantiate(slotPrefab, contentTrs);
+            ItemInvenDrop dropSc = slotObj.GetComponent<ItemInvenDrop>();
+            dropSc.SetNumber(slotNumber++);
             slotTrs.Add(slotObj.transform);
             itemSlotIndex.Add(_slotData.itemSlotIndex[i]);
             itemIndex.Add(_slotData.itemIndex[i]);
@@ -153,7 +173,7 @@ public class InventoryManger : MonoBehaviour
             {
                 GameObject itemObj = Instantiate(itemPrefab, slotTrs[i]);
                 ItemUIData itemUISc = itemObj.GetComponent<ItemUIData>();
-                itemUISc.SetItemImage(itemIndex[i], itemType[i], itemQuantity[i]);
+                itemUISc.SetItemImage(itemIndex[i], itemType[i], itemQuantity[i], weaponDamage[i], weaponAttackSpeed[i]);
                 itemList.Add(itemObj);
             }
             else
@@ -188,6 +208,56 @@ public class InventoryManger : MonoBehaviour
     }
 
     /// <summary>
+    /// 아이템 위치를 바꿨는지 체크하기 위한 함수
+    /// </summary>
+    private void itemSwapCheck()
+    {
+        if ((swapItem[0] != swapItem[1]) && swapItem[0] != 0 && swapItem[1] != 0)
+        {
+            itemSwap();
+        }
+    }
+
+    /// <summary>
+    /// 아이템의 위치를 서로 바꾸는 함수
+    /// </summary>
+    private void itemSwap()
+    {
+        GameObject itemObj = itemList[swapItem[0] - 1];
+        itemList[swapItem[0] - 1] = itemList[swapItem[1] - 1];
+        itemList[swapItem[1] - 1] = itemObj;
+
+        int itemSlotIdx = itemSlotIndex[swapItem[0] - 1];
+        itemSlotIndex[swapItem[0] - 1] = itemSlotIndex[swapItem[1] - 1];
+        itemSlotIndex[swapItem[1] - 1] = itemSlotIdx;
+
+        int itemIdx = itemIndex[swapItem[0] - 1];
+        itemIndex[swapItem[0] - 1] = itemIndex[swapItem[1] - 1];
+        itemIndex[swapItem[1] - 1] = itemIdx;
+
+        int itemTp = itemType[swapItem[0] - 1];
+        itemType[swapItem[0] - 1] = itemType[swapItem[1] - 1];
+        itemType[swapItem[1] - 1] = itemTp;
+
+        int itemQuant = itemQuantity[swapItem[0] - 1];
+        itemQuantity[swapItem[0] - 1] = itemQuantity[swapItem[1] - 1];
+        itemQuantity[swapItem[1] - 1] = itemQuant;
+
+        float weaponDmg = weaponDamage[swapItem[0] - 1];
+        weaponDamage[swapItem[0] - 1] = weaponDamage[swapItem[1] - 1];
+        weaponDamage[swapItem[1] - 1] = weaponDmg;
+
+        float weaponAttSpd = weaponAttackSpeed[swapItem[0] - 1];
+        weaponAttackSpeed[swapItem[0] - 1] = weaponAttackSpeed[swapItem[1] - 1];
+        weaponAttackSpeed[swapItem[1] - 1] = weaponAttSpd;
+
+        swapItem[0] = 0;
+        swapItem[1] = 0;
+
+        setSaveItem();
+    }
+
+    /// <summary>
     /// 플레이어가 먹은 아이템을 넣기 위한 함수, 무기X
     /// </summary>
     public void SetItem(GameObject _itemObj)
@@ -196,7 +266,12 @@ public class InventoryManger : MonoBehaviour
 
         for (int i = 0; i < slotIndex; i++)
         {
-            if (itemSc.GetItemType() == 10)
+            if (itemSc.GetItemPickUpCheck() == true)
+            {
+                return;
+            }
+
+            if (itemSc.GetItemType() == 10) //아이템 타입이 무기인지 아닌지 체크
             {
                 if (itemIndex[i] == 0)
                 {
@@ -207,7 +282,7 @@ public class InventoryManger : MonoBehaviour
                     GameObject itemObj = Instantiate(itemPrefab, slotTrs[i]);
                     itemList[i] = itemObj;
                     ItemUIData itemUISc = itemObj.GetComponent<ItemUIData>();
-                    itemUISc.SetItemImage(itemIndex[i], itemType[i], 1);
+                    itemUISc.SetItemImage(itemIndex[i], itemType[i], 1, weaponDamage[i], weaponAttackSpeed[i]);
 
                     Weapon weaponSc = itemSc.GetComponent<Weapon>();
                     weaponDamage[i] = weaponSc.WeaponDamage();
@@ -221,20 +296,30 @@ public class InventoryManger : MonoBehaviour
                     return;
                 }
             }
-            else if (itemSc.GetItemType() != 10)
+            else if (itemSc.GetItemType() != 10) //무기가 아니라면 99개까지 아이템이 합쳐짐
             {
+                bool itemCheck = false;
+                int count = itemSlotIndex.Count;
+                for (int j = 0; j < count; j++)
+                {
+                    if (itemIndex[j] == itemSc.GetItemIndex() && itemQuantity[j] < 99)
+                    {
+                        itemCheck = true;
+                    }
+                }
+
                 if (itemIndex[i] == itemSc.GetItemIndex() && itemQuantity[i] < 99)
                 {
                     itemQuantity[i]++;
                     ItemUIData itemUISc = itemList[i].GetComponent<ItemUIData>();
-                    itemUISc.SetItemImage(itemIndex[i], itemType[i], itemQuantity[i]);
+                    itemUISc.SetItemImage(itemIndex[i], itemType[i], itemQuantity[i], weaponDamage[i], weaponAttackSpeed[i]);
 
                     setSaveItem();
 
                     Destroy(_itemObj);
                     return;
                 }
-                else if (itemIndex[i] == 0)
+                else if (itemIndex[i] == 0 && itemCheck == false)
                 {
                     itemIndex[i] = itemSc.GetItemIndex();
                     itemType[i] = itemSc.GetItemType();
@@ -243,7 +328,7 @@ public class InventoryManger : MonoBehaviour
                     GameObject itemObj = Instantiate(itemPrefab, slotTrs[i]);
                     itemList[i] = itemObj;
                     ItemUIData itemUISc = itemObj.GetComponent<ItemUIData>();
-                    itemUISc.SetItemImage(itemIndex[i], itemType[i], 1);
+                    itemUISc.SetItemImage(itemIndex[i], itemType[i], 1, weaponDamage[i], weaponAttackSpeed[i]);
 
                     itemSlotIndex[i] = 1;
 
@@ -272,5 +357,99 @@ public class InventoryManger : MonoBehaviour
     public bool GetInventoryOnOffCheck()
     {
         return inventoryOnOffCheck;
+    }
+
+    /// <summary>
+    /// 아이템을 스왑하기 위해 받아올 슬롯 번호
+    /// </summary>
+    /// <param name="_swapItem"></param>
+    public void ItemSwapA(int _swapItem)
+    {
+        swapItem[0] = _swapItem;
+    }
+
+    /// <summary>
+    /// 아이템을 스왑하기 위해 받아올 슬롯 번호
+    /// </summary>
+    /// <param name="_swapItem"></param>
+    public void ItemSwapB(int _swapItem)
+    {
+        swapItem[1] = _swapItem;
+    }
+
+    /// <summary>
+    /// 아이템을 놓았을 때 아이템이 있는지 확인하기 위한 함수
+    /// </summary>
+    /// <param name="_slotNumber"></param>
+    /// <returns></returns>
+    public bool ItemInCheck(int _slotNumber)
+    {
+        if (itemIndex[swapItem[0] - 1] == itemIndex[_slotNumber - 1]) //아이템 인덱스가 같을 때
+        {
+            if (itemQuantity[swapItem[0] - 1] < 99 && itemIndex[_slotNumber - 1] < 99) //내가 선택한 아이템과 놓을 위치의 아이템이 99개 미만이라면 합침
+            {
+                itemList[swapItem[0] - 1] = null;
+
+                itemSlotIndex[swapItem[0] - 1] = 0;
+
+                itemIndex[swapItem[0] - 1] = 0;
+
+                itemType[swapItem[0] - 1] = 0;
+
+                itemQuantity[_slotNumber - 1] += itemQuantity[swapItem[0] - 1];
+                itemQuantity[swapItem[0] - 1] = 0;
+
+                swapItem[0] = 0;
+                swapItem[1] = 0;
+
+                setSaveItem();
+
+                return false;
+            }
+            else //위 조건에 맞지 않으면 원래 위치로 돌아감
+            {
+                return true;
+            }
+        }
+        else if (itemList[_slotNumber - 1] != null &&
+            itemIndex[swapItem[0] - 1] != itemIndex[_slotNumber - 1]) //슬롯에 아이템이 있거나, 아이템 인덱스가 같지 않으면 서로의 위치를 바꿔 줌
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 착용 가능한 아이템을 확인하기 위한 함수
+    /// </summary>
+    /// <returns></returns>
+    public bool WearItemCheck()
+    {
+        if (itemType[swapItem[0] - 1] == 10)
+        {
+            itemList[swapItem[0] - 1] = null;
+
+            itemSlotIndex[swapItem[0] - 1] = 0;
+
+            itemIndex[swapItem[0] - 1] = 0;
+
+            itemType[swapItem[0] - 1] = 0;
+
+            itemQuantity[swapItem[0] - 1] = 0;
+
+            weaponDamage[swapItem[0] - 1] = 0;
+
+            weaponAttackSpeed[swapItem[0] - 1] = 0;
+
+            swapItem[0] = 0;
+            swapItem[1] = 0;
+
+            setSaveItem();
+
+            return false;
+        }
+
+        return true;
     }
 }

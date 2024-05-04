@@ -8,6 +8,7 @@ public class InputController : MonoBehaviour
     private InformationManager informationManager;
     private PlayerStateManager playerStateManager;
     private InventoryManger inventoryManger;
+    private WearItemManager wearItemManager;
 
     private CharacterController characterController; //플레이어가 가지고 있는 캐릭터 컨트롤러를 받아올 변수
     private Vector3 moveVec; //플레이어의 입력값을 받아올 변수
@@ -96,6 +97,8 @@ public class InputController : MonoBehaviour
 
         inventoryManger = InventoryManger.Instance;
 
+        wearItemManager = WearItemManager.Instance;
+
         curStamina = maxStamina;
 
         playerMaxCurHp.y = playerMaxCurHp.x;
@@ -119,6 +122,7 @@ public class InputController : MonoBehaviour
         playerGravity();
         playerStamina();
         playerBarCheck();
+        wearItemCheck();
 
         if (informationManager.GetInformationOnOffCheck() == false && inventoryManger.GetInventoryOnOffCheck() == false)
         {
@@ -197,28 +201,6 @@ public class InputController : MonoBehaviour
                 {
                     inventoryManger.SetItem(collision.gameObject);
                 }
-            }
-
-            if (weapon == null)
-            {
-                //Weapon weaponSc = collision.gameObject.GetComponent<Weapon>();
-                //Rigidbody weaponRigid = collision.gameObject.GetComponent<Rigidbody>();
-                //BoxCollider weaponColl = collision.gameObject.GetComponent<BoxCollider>();
-                //weaponNumber = weaponSc.WeaponNumber();
-                //if (weaponSc.WeaponLevel() <= informationManager.GetLevel())
-                //{
-                //    weaponRigid.isKinematic = true;
-                //    weaponColl.isTrigger = true;
-                //    weapon = collision.gameObject;
-                //    weaponDamage = weaponSc.WeaponDamage();   
-                //    weaponAttackSpeed = weaponSc.WeaponAttackSpeed();
-                //    playerDamage = informationManager.GetPlayerStatDamage() + weaponDamage;
-                //    playerAttackSpeed = informationManager.GetPlayerStatAttackSpeedAnim()
-                //        + (informationManager.GetPlayerStatAttackSpeedAnim() * weaponAttackSpeed);
-                //    weapon.transform.SetParent(playerBackTrs.transform);
-                //    weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
-                //    weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-                //}
             }
         }
     }
@@ -660,6 +642,34 @@ public class InputController : MonoBehaviour
         playerCritical = informationManager.GetPlayerStatCritical();
         playerCriticalDamage = informationManager.GetPlayerStatCriticalDamage();
         maxStamina = informationManager.GetPlayerStatStamina();
+    }
+
+    private void wearItemCheck()
+    {
+        if (wearItemManager.GetWearWeapon() != null && weapon == null)
+        {
+            GameObject weaponObj = Instantiate(wearItemManager.GetWearWeapon(), playerBackTrs.transform);
+            Item itemSc = weaponObj.GetComponent<Item>();
+            itemSc.SetItemPickUpCheck(true);
+            Weapon weaponSc = weaponObj.GetComponent<Weapon>();
+            Rigidbody weaponRigid = weaponSc.GetComponent<Rigidbody>();
+            BoxCollider weaponColl = weaponSc.GetComponent<BoxCollider>();
+            weaponNumber = weaponSc.WeaponNumber();
+            if (weaponSc.WeaponLevel() <= informationManager.GetLevel())
+            {
+                weaponRigid.isKinematic = true;
+                weaponColl.isTrigger = true;
+                weapon = weaponSc.gameObject;
+                weaponDamage = wearItemManager.GetWeaponDamage();
+                weaponAttackSpeed = wearItemManager.GetWeaponAttackSpeed();
+                playerDamage = informationManager.GetPlayerStatDamage() + weaponDamage;
+                playerAttackSpeed = informationManager.GetPlayerStatAttackSpeedAnim()
+                    + (informationManager.GetPlayerStatAttackSpeedAnim() * weaponAttackSpeed);
+                weapon.transform.SetParent(playerBackTrs.transform);
+                weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
+                weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            }
+        }
     }
 
     /// <summary>

@@ -5,18 +5,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class WearItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     private InventoryManger inventoryManger;
+    private WearItemManager wearItemManager;
 
     [Header("아이템 설정")]
     [SerializeField, Tooltip("아이템 이미지")] private List<Sprite> itemSprite;
     private Image itemImage; //아이템 이미지
-    [SerializeField, Tooltip("아이템 텍스트")] private TMP_Text quantityText;
-    private int itemIndex; //아이템 데이터에 받아올 인덱스
-    private int itemType; //아이템 데이터에 받아올 타입
-    private float weaponDamage; //아이템 데이터에 받아올 무기 공격력
-    private float weaponAttackSpeed; //아이템 데이터에 받아올 무기 공격속도
 
     private RectTransform itemRectTrs; //아이템의 렉트트랜스폼
     private Transform itemParenTrs; //아이템의 부모위치
@@ -26,19 +22,10 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     {
         itemParenTrs = transform.parent;
 
-        ItemInvenDrop dropSc = itemParenTrs.GetComponent<ItemInvenDrop>();
-
-        if (dropSc != null)
-        {
-            inventoryManger.ItemSwapA(dropSc.GetNumber());
-        }
-
         transform.SetParent(inventoryManger.GetCanvas().transform);
         transform.SetAsLastSibling();
 
         canvasGroup.blocksRaycasts = false;
-
-        quantityText.gameObject.SetActive(false);
     }
 
     void IDragHandler.OnDrag(PointerEventData eventData)
@@ -56,31 +43,24 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         }
 
         canvasGroup.blocksRaycasts = true;
-
-        quantityText.gameObject.SetActive(true);
     }
 
     private void Awake()
     {
         itemRectTrs = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
-    }
 
-    private void Start()
-    {
         inventoryManger = InventoryManger.Instance;
 
-        quantityText.gameObject.SetActive(true);
+        wearItemManager = WearItemManager.Instance;
     }
 
-    public void SetItemImage(int _itemIndex, int _itemType, int _itemQuantity, float _weaponDamage, float _weaponAttackSpeed)
+
+    public void SetItemImage(int _itemIndex, float _weaponDamage, float _weaponAttackSpeed)
     {
         itemImage = GetComponent<Image>();
 
-        itemIndex = _itemIndex;
-        itemType = _itemType;
-        weaponDamage = _weaponDamage;
-        weaponAttackSpeed = _weaponAttackSpeed;
+        wearItemManager.SetWearItem(_itemIndex, _weaponDamage, _weaponAttackSpeed);
 
         switch (_itemIndex)
         {
@@ -99,33 +79,6 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
             case 104:
                 itemImage.sprite = itemSprite[4];
                 break;
-            case 200:
-                itemImage.sprite = itemSprite[5];
-                break;
         }
-
-        if (_itemType != 10)
-        {
-            quantityText.text = $"x {_itemQuantity}";
-        }
-        else
-        {
-            quantityText.text = "";
-        }
-    }
-
-    public int GetItemIndex()
-    {
-        return itemIndex;
-    }
-
-    public float GetWeaponDamage() 
-    {
-        return weaponDamage;
-    }
-
-    public float GetWeaponAttackSpeed()
-    {
-        return weaponAttackSpeed;
     }
 }
