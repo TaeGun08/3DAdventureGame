@@ -27,7 +27,7 @@ public class InventoryManger : MonoBehaviour
     [SerializeField, Tooltip("캔버스")] private Canvas canvas;
     [SerializeField, Tooltip("슬롯")] private GameObject slotPrefab;
     [SerializeField, Tooltip("아이템")] private GameObject itemPrefab;
-    [SerializeField] private List<GameObject> itemList; //아이템 리스트
+    private List<GameObject> itemList = new List<GameObject>(); //아이템 리스트
     [SerializeField, Tooltip("슬롯을 생성할 위치")] private Transform contentTrs;
     private List<Transform> slotTrs = new List<Transform>(); //아이템이 생성될 때 넣어 줄 위치
     [Space]
@@ -42,10 +42,12 @@ public class InventoryManger : MonoBehaviour
     private List<int> itemIndex = new List<int>(); //아이템 인덱스
     private List<int> itemType = new List<int>(); //아이템 타입
     private List<int> itemQuantity = new List<int>(); //아이템 개수
-    [SerializeField] private List<float> weaponDamage = new List<float>(); //무기 공격력
+    private List<float> weaponDamage = new List<float>(); //무기 공격력
     private List<float> weaponAttackSpeed = new List<float>(); //무기 공격속도
 
     private List<int>  swapItem = new List<int>(); //아이템을 스왑할 슬롯의 번호를 받아올 변수
+
+    [SerializeField] private List<GameObject> itemParent = new List<GameObject>(); //아이템 부모를 스왑할 변수
 
     private void Awake()
     {
@@ -68,6 +70,7 @@ public class InventoryManger : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             swapItem.Add(0);
+            itemParent.Add(null);
         }
 
         InventoryObj.SetActive(false);
@@ -378,6 +381,22 @@ public class InventoryManger : MonoBehaviour
     }
 
     /// <summary>
+    /// 드래그한 아이템의 부모를 받아올 함수
+    /// </summary>
+    public void ItemParentA(GameObject _itemParent)
+    {
+        itemParent[0] = _itemParent;
+    }
+
+    /// <summary>
+    /// 드랍한 아이템의 부모를 받아올 함수
+    /// </summary>
+    public void ItemParentB(GameObject _itemParent)
+    {
+        itemParent[1] = _itemParent;
+    }
+
+    /// <summary>
     /// 아이템을 놓았을 때 아이템이 있는지 확인하기 위한 함수
     /// </summary>
     /// <param name="_slotNumber"></param>
@@ -403,8 +422,6 @@ public class InventoryManger : MonoBehaviour
                 swapItem[1] = 0;
 
                 setSaveItem();
-
-                return false;
             }
             else //위 조건에 맞지 않으면 원래 위치로 돌아감
             {
@@ -414,7 +431,40 @@ public class InventoryManger : MonoBehaviour
         else if (itemList[_slotNumber - 1] != null &&
             itemIndex[swapItem[0] - 1] != itemIndex[_slotNumber - 1]) //슬롯에 아이템이 있거나, 아이템 인덱스가 같지 않으면 서로의 위치를 바꿔 줌
         {
-            return true;
+            GameObject itemObj = itemList[swapItem[0] - 1];
+            itemList[swapItem[0] - 1] = itemList[_slotNumber - 1];
+            itemList[_slotNumber - 1] = itemObj;
+
+            itemList[swapItem[0] - 1].transform.SetParent(itemParent[0].transform);
+            itemList[_slotNumber - 1].transform.SetParent(itemParent[1].transform);
+
+            int itemSlotIdx = itemSlotIndex[swapItem[0] - 1];
+            itemSlotIndex[swapItem[0] - 1] = itemSlotIndex[_slotNumber - 1];
+            itemSlotIndex[_slotNumber - 1] = itemSlotIdx;
+
+            int itemIdx = itemIndex[swapItem[0] - 1];
+            itemIndex[swapItem[0] - 1] = itemIndex[_slotNumber - 1];
+            itemIndex[_slotNumber - 1] = itemIdx;
+
+            int itemTp = itemType[swapItem[0] - 1];
+            itemType[swapItem[0] - 1] = itemType[_slotNumber - 1];
+            itemType[_slotNumber - 1] = itemTp;
+
+            int itemQuant = itemQuantity[swapItem[0] - 1];
+            itemQuantity[swapItem[0] - 1] = itemQuantity[_slotNumber - 1];
+            itemQuantity[_slotNumber - 1] = itemQuant;
+
+            float weaponDmg = weaponDamage[swapItem[0] - 1];
+            weaponDamage[swapItem[0] - 1] = weaponDamage[_slotNumber - 1];
+            weaponDamage[_slotNumber - 1] = weaponDmg;
+
+            float weaponAttSpd = weaponAttackSpeed[swapItem[0] - 1];
+            weaponAttackSpeed[swapItem[0] - 1] = weaponAttackSpeed[_slotNumber - 1];
+            weaponAttackSpeed[_slotNumber - 1] = weaponAttSpd;
+
+            swapItem[0] = 0;
+
+            setSaveItem();
         }
 
         return false;

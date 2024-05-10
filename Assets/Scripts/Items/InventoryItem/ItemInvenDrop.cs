@@ -13,14 +13,21 @@ public class ItemInvenDrop : MonoBehaviour, IDropHandler
 
     void IDropHandler.OnDrop(PointerEventData eventData)
     {
-        if (eventData.pointerDrag.gameObject.tag == "Item" && inventoryManger.ItemInCheck(slotNumber) == false)
+        if (eventData.pointerDrag.gameObject.tag == "Item")
         {
-            eventData.pointerDrag.transform.SetParent(transform);
+            inventoryManger.ItemParentB(transform.gameObject);
 
-            RectTransform eventRect = eventData.pointerDrag.GetComponent<RectTransform>();
-            eventRect.position = rectTrs.position;
+            if (inventoryManger.ItemInCheck(slotNumber) == false)
+            {
+                eventData.pointerDrag.transform.SetParent(transform);
 
-            inventoryManger.ItemSwapB(slotNumber);
+                RectTransform eventRect = eventData.pointerDrag.GetComponent<RectTransform>();
+                eventRect.position = rectTrs.position;
+
+                inventoryManger.ItemSwapB(slotNumber);
+
+                inventoryManger.ItemParentB(null);
+            }
         }
     }
 

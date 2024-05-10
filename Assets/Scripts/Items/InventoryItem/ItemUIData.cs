@@ -33,6 +33,8 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
             inventoryManger.ItemSwapA(dropSc.GetNumber());
         }
 
+        inventoryManger.ItemParentA(transform.parent.gameObject);
+
         transform.SetParent(inventoryManger.GetCanvas().transform);
         transform.SetAsLastSibling();
 
@@ -58,6 +60,8 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         canvasGroup.blocksRaycasts = true;
 
         quantityText.gameObject.SetActive(true);
+
+        inventoryManger.ItemParentA(null);
     }
 
     private void Awake()
