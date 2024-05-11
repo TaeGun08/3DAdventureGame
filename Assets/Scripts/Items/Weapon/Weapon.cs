@@ -20,9 +20,14 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float weaponDamage;
     [SerializeField] private float weaponAttackSpeed;
 
+    private bool initWeapon = false; 
+
     private void Start()
     {
-        randomWeaponOption();
+        if (initWeapon == false)
+        { 
+            randomWeaponOption();
+        }
     }
 
     private void randomWeaponOption()
@@ -93,6 +98,16 @@ public class Weapon : MonoBehaviour
             weaponDamage = 100f;
             weaponAttackSpeed = 0.5f;
         }
+    }
+
+    /// <summary>
+    /// 저장된 무기의 데이터를 받아올 함수
+    /// </summary>
+    public void SetWeaponData(float _weaponDamage, float _weaponAttackSpeed)
+    {
+        weaponDamage = _weaponDamage;
+        weaponAttackSpeed = _weaponAttackSpeed;
+        initWeapon = true;
     }
 
     /// <summary>

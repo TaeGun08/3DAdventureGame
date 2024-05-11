@@ -660,6 +660,8 @@ public class InputController : MonoBehaviour
                 weaponRigid.isKinematic = true;
                 weaponColl.isTrigger = true;
                 weapon = weaponSc.gameObject;
+                weaponSc.SetWeaponData(wearItemManager.GetWeaponDamage(), wearItemManager.GetWeaponAttackSpeed());
+                informationManager.SetStatUpCheck(wearItemManager.GetWeaponDamage(), wearItemManager.GetWeaponAttackSpeed());
                 weaponDamage = wearItemManager.GetWeaponDamage();
                 weaponAttackSpeed = wearItemManager.GetWeaponAttackSpeed();
                 playerDamage = informationManager.GetPlayerStatDamage() + weaponDamage;
@@ -669,6 +671,11 @@ public class InputController : MonoBehaviour
                 weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
                 weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
             }
+        }
+        else if (wearItemManager.GetWearWeapon() == null && weapon != null)
+        {
+            Destroy(weapon);
+            idleChange = 0;
         }
     }
 

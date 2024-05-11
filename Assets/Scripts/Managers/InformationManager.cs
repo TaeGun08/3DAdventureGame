@@ -63,6 +63,9 @@ public class InformationManager : MonoBehaviour
     [Space]
     [SerializeField, Tooltip("스텟 정보 텍스트")] private List<TMP_Text> statInformationTexts;
 
+    private float weaponDamage;
+    private float weaponAttackSpeed;
+
     private void Awake()
     {
         if (Instance == null)
@@ -308,11 +311,11 @@ public class InformationManager : MonoBehaviour
     {
         if (statWindowOpen == true)
         {
-            statInformationTexts[0].text = $"공격력 : {damage.ToString("F0")}";
+            statInformationTexts[0].text = $"공격력 : {(damage + weaponDamage).ToString("F0")}";
             statInformationTexts[1].text = $"체력 : {hp.ToString("F0")}";
             statInformationTexts[2].text = $"방어력 : {armor.ToString("F0")}";
             statInformationTexts[3].text = $"스테미너 : {stamina.ToString("F0")}";
-            statInformationTexts[4].text = $"공격속도 : {attackSpeed.ToString("P2")}";
+            statInformationTexts[4].text = $"공격속도 : {(attackSpeed + weaponAttackSpeed).ToString("P2")}";
             statInformationTexts[5].text = $"치명타확률 : {critical.ToString("F2")}%";
             statInformationTexts[6].text = $"치명타공격력 : {criticalDamage.ToString("P2")}";
             statInformationTexts[7].text = $"이동속도 : {(speed - 3).ToString("P2")}";
@@ -487,5 +490,14 @@ public class InformationManager : MonoBehaviour
     public bool GetStatUpCheck()
     {
         return statUpCheck;
+    }
+
+    /// <summary>
+    /// 스텟을 상승시키기 위한 함수
+    /// </summary>
+    public void SetStatUpCheck(float _weaponDamage, float _weaponAttackSpeed)
+    {
+        weaponDamage = _weaponDamage;
+        weaponAttackSpeed = _weaponAttackSpeed;
     }
 }

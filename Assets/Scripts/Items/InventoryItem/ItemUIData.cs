@@ -132,4 +132,9 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     {
         return weaponAttackSpeed;
     }
+
+    public int GetItemType()
+    {
+        return itemType;
+    }
 }

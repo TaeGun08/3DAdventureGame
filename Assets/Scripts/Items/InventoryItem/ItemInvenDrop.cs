@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 public class ItemInvenDrop : MonoBehaviour, IDropHandler
 {
     private InventoryManger inventoryManger;
+    private WearItemManager wearItemManager;
 
     private RectTransform rectTrs; //½½·ÔÀÇ ·ºÆ®Æ®·£½ºÆû
 
@@ -16,15 +17,27 @@ public class ItemInvenDrop : MonoBehaviour, IDropHandler
         if (eventData.pointerDrag.gameObject.tag == "Item")
         {
             inventoryManger.ItemParentB(transform.gameObject);
+            inventoryManger.ItemSwapB(slotNumber);
 
-            if (inventoryManger.ItemInCheck(slotNumber) == false)
+            WearItemData wearItemDataSc = eventData.pointerDrag.GetComponent<WearItemData>();
+
+            if (inventoryManger.ItemInCheck(slotNumber) == false && wearItemDataSc == null)
             {
                 eventData.pointerDrag.transform.SetParent(transform);
 
                 RectTransform eventRect = eventData.pointerDrag.GetComponent<RectTransform>();
                 eventRect.position = rectTrs.position;
 
-                inventoryManger.ItemSwapB(slotNumber);
+                inventoryManger.ItemParentB(null);
+            }
+            else if (wearItemDataSc != null)
+            {
+                inventoryManger.ItemInstantaite(slotNumber, gameObject, wearItemDataSc.GetItemType(), 
+                    wearItemDataSc.GetItemIndex(), wearItemDataSc.GetWeaponDamage(), wearItemDataSc.GetWeaponAttackSpeed());
+
+                wearItemManager.WearWeaponDisarm();
+
+                Destroy(eventData.pointerDrag.gameObject);
 
                 inventoryManger.ItemParentB(null);
             }
@@ -39,6 +52,8 @@ public class ItemInvenDrop : MonoBehaviour, IDropHandler
     private void Start()
     {
         inventoryManger = InventoryManger.Instance;
+
+        wearItemManager = WearItemManager.Instance;
     }
 
     /// <summary>

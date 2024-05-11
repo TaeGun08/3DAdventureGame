@@ -18,6 +18,11 @@ public class WearItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     private Transform itemParenTrs; //아이템의 부모위치
     private CanvasGroup canvasGroup; //캔버스그룹
 
+    private int itemType;
+    private int itemIndex;
+    private float weaponDamage;
+    private float weaponAttackSpeed;
+
     void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
     {
         itemParenTrs = transform.parent;
@@ -56,11 +61,16 @@ public class WearItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     }
 
 
-    public void SetItemImage(int _itemIndex, float _weaponDamage, float _weaponAttackSpeed)
+    public void SetItemImage(int _itemType, int _itemIndex, float _weaponDamage, float _weaponAttackSpeed)
     {
         itemImage = GetComponent<Image>();
 
-        wearItemManager.SetWearItem(_itemIndex, _weaponDamage, _weaponAttackSpeed);
+        itemType = _itemType;
+        itemIndex = _itemIndex;
+        weaponDamage = _weaponDamage;
+        weaponAttackSpeed = _weaponAttackSpeed;
+
+        wearItemManager.SetWearItem(_itemType, _itemIndex, _weaponDamage, _weaponAttackSpeed);
 
         switch (_itemIndex)
         {
@@ -80,5 +90,41 @@ public class WearItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
                 itemImage.sprite = itemSprite[4];
                 break;
         }
+    }
+
+    /// <summary>
+    /// 아이템 타입
+    /// </summary>
+    /// <returns></returns>
+    public int GetItemType()
+    {
+        return itemType;
+    }
+
+    /// <summary>
+    /// 아이템 인덱스
+    /// </summary>
+    /// <returns></returns>
+    public int GetItemIndex()
+    {
+        return itemIndex;
+    }
+
+    /// <summary>
+    /// 무기 아이템의 공격력
+    /// </summary>
+    /// <returns></returns>
+    public float GetWeaponDamage()
+    {
+        return weaponDamage;
+    }
+
+    /// <summary>
+    /// 무기 아이템의 공격속도
+    /// </summary>
+    /// <returns></returns>
+    public float GetWeaponAttackSpeed()
+    {
+        return weaponAttackSpeed;
     }
 }
