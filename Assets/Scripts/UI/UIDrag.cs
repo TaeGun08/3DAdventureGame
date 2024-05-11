@@ -28,7 +28,7 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     void IDragHandler.OnDrag(PointerEventData eventData)
     {
-        parentRectTrs.position = eventData.position + ;
+        parentRectTrs.position = eventData.position;
     }
 
     void IEndDragHandler.OnEndDrag(PointerEventData eventData)
