@@ -21,8 +21,6 @@ public class InventoryManger : MonoBehaviour
 
     private InventoryData inventoryData = new InventoryData();
 
-    private WearItemManager wearItemManager;
-
     [Header("인벤토리 설정")]
     [SerializeField, Tooltip("캔버스")] private Canvas canvas;
     [SerializeField, Tooltip("슬롯")] private GameObject slotPrefab;
@@ -35,15 +33,17 @@ public class InventoryManger : MonoBehaviour
     [Space]
     [SerializeField, Tooltip("인벤토리")] private GameObject InventoryObj;
     private bool inventoryOnOffCheck = false; //인벤토리가 켜졌는지 꺼졌는지 확인하기 위한 변수
+    private float screenWidth; //스크린의 가로 길이를 계산하기 위한 변수
+    private float screenHeight; //스크린의 세로 길이를 계산하기 위한 변수
 
     private int slotIndex = 12; //슬롯을 생성할 인덱스
 
     private List<int> itemSlotIndex = new List<int>(); // 아이템이 존재하는 위치
-    [SerializeField] private List<int> itemIndex = new List<int>(); //아이템 인덱스
+    private List<int> itemIndex = new List<int>(); //아이템 인덱스
     private List<int> itemType = new List<int>(); //아이템 타입
     private List<int> itemQuantity = new List<int>(); //아이템 개수
-    [SerializeField] private List<float> weaponDamage = new List<float>(); //무기 공격력
-    [SerializeField] private List<float> weaponAttackSpeed = new List<float>(); //무기 공격속도
+    private List<float> weaponDamage = new List<float>(); //무기 공격력
+    private List<float> weaponAttackSpeed = new List<float>(); //무기 공격속도
 
     private List<int> swapItem = new List<int>(); //아이템을 스왑할 슬롯의 번호를 받아올 변수
 
@@ -78,8 +78,6 @@ public class InventoryManger : MonoBehaviour
 
     private void Start()
     {
-        wearItemManager = WearItemManager.Instance;
-
         if (PlayerPrefs.GetString("saveInventoryData") != string.Empty)
         {
             string getSlot = PlayerPrefs.GetString("saveInventoryData");
@@ -131,6 +129,17 @@ public class InventoryManger : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
+            screenWidth = Screen.width;
+            screenHeight = Screen.height;
+
+            if (InventoryObj.transform.position.x >= screenWidth ||
+                InventoryObj.transform.position.x <= 0 ||
+                InventoryObj.transform.position.y >= screenHeight ||
+                InventoryObj.transform.position.y <= 0)
+            {
+                InventoryObj.transform.position = new Vector3((screenWidth * 0.5f) - 400f, (screenHeight * 0.5f) + 350f, 0f);
+            }
+
             inventoryOnOffCheck = InventoryObj == InventoryObj.activeSelf ? false : true;
             InventoryObj.SetActive(inventoryOnOffCheck);
             InventoryObj.transform.SetAsLastSibling();

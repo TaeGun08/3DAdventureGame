@@ -34,7 +34,7 @@ public class TreasureBox : MonoBehaviour
     /// </summary>
     private void randomWeapons()
     {
-        if (playerIn == true && Input.GetKeyDown(KeyCode.X))
+        if (playerIn == true && Input.GetKeyDown(KeyCode.F))
         {
             float itemRandom = Random.Range(0.0f, 100.0f);
 

@@ -10,8 +10,9 @@ public class PlayerStateManager : MonoBehaviour
 
     [Header("플레이어 상태를 보여주는 UI")]
     [SerializeField, Tooltip("화면에 출력할 레벨 텍스트")] private TMP_Text playerLevelText;
-    [SerializeField, Tooltip("화면에 출력할 스테미너 바")] private Image playerStaminaBar;
-    [SerializeField, Tooltip("화면에 출력할 경험치 바")] private Image playerExpBar;
+    [SerializeField, Tooltip("화면에 출력할 체력바")] private Image playerHpBar;
+    [SerializeField, Tooltip("화면에 출력할 스테미너바")] private Image playerStaminaBar;
+    [SerializeField, Tooltip("화면에 출력할 경험치바")] private Image playerExpBar;
 
     private void Awake()
     {
@@ -35,13 +36,13 @@ public class PlayerStateManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 플레이어의 현재 경험치와 최대 경험치를 나눠 이미지로 표현할 수 있게 해주는 함수
+    /// 플레이어의 현재 스테미너 최대 스테미너를 나눠 이미지로 표현할 수 있게 해주는 함수
     /// </summary>
-    /// <param name="_playerCurExp"></param>
-    /// <param name="_playerMaxExp"></param>
-    public void SetPlayerExpBar(float _playerCurExp, float _playerMaxExp)
+    /// <param name="_curStamina"></param>
+    /// <param name="_maxStamina"></param>
+    public void SetPlayerHpBar(float _curHp, float _maxHp)
     {
-        playerExpBar.fillAmount = _playerCurExp / _playerMaxExp;
+        playerHpBar.fillAmount = _curHp / _maxHp;
     }
 
     /// <summary>
@@ -52,5 +53,15 @@ public class PlayerStateManager : MonoBehaviour
     public void SetPlayerStaminaBar(float _curStamina, float _maxStamina)
     {
         playerStaminaBar.fillAmount = _curStamina / _maxStamina;
+    }
+
+    /// <summary>
+    /// 플레이어의 현재 경험치와 최대 경험치를 나눠 이미지로 표현할 수 있게 해주는 함수
+    /// </summary>
+    /// <param name="_playerCurExp"></param>
+    /// <param name="_playerMaxExp"></param>
+    public void SetPlayerExpBar(float _playerCurExp, float _playerMaxExp)
+    {
+        playerExpBar.fillAmount = _playerCurExp / _playerMaxExp;
     }
 }

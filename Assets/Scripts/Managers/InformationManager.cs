@@ -60,6 +60,8 @@ public class InformationManager : MonoBehaviour
     [SerializeField, Tooltip("스텟 창을 여는 버튼")] private Button statWindowButton;
     [SerializeField, Tooltip("스텟 확인 창")] private GameObject statWindow;
     private bool statWindowOpen = false; //스텟 정보창을 열었는지 닫았는지 체크하기 위한 변수
+    private float screenWidth; //스크린의 가로 길이를 계산하기 위한 변수
+    private float screenHeight; //스크린의 세로 길이를 계산하기 위한 변수
     [Space]
     [SerializeField, Tooltip("스텟 정보 텍스트")] private List<TMP_Text> statInformationTexts;
 
@@ -268,6 +270,17 @@ public class InformationManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
+            screenWidth = Screen.width;
+            screenHeight = Screen.height;
+
+            if (informationObj.transform.position.x >= screenWidth ||
+                informationObj.transform.position.x <= 0 ||
+                informationObj.transform.position.y >= screenHeight ||
+                informationObj.transform.position.y <= 0)
+            {
+                informationObj.transform.position = new Vector3((screenWidth * 0.5f) + 400f, (screenHeight * 0.5f) + 350f, 0f);
+            }
+
             informationOnOffCheck = informationObj == informationObj.activeSelf ? false : true;
             informationObj.SetActive(informationOnOffCheck);
             informationObj.transform.SetAsLastSibling();

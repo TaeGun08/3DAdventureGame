@@ -31,7 +31,7 @@ public class Monster : MonoBehaviour
     [Space]
     [SerializeField, Tooltip("플레이어에게 전달한 경험치")] private float setExp;
 
-    private bool noHit; //죽는 애니메이션이 실행될 때 히트판정을 막기 위한 변수
+    protected bool noHit; //죽는 애니메이션이 실행될 때 히트판정을 막기 위한 변수
 
     private InputController player;
 
@@ -150,9 +150,9 @@ public class Monster : MonoBehaviour
     {
         if (hp <= 0.0f)
         {
+            noHit = true;
             gameManager.SetExp(setExp);
             anim.Play("Die");
-            noHit = true;
             Destroy(gameObject, 2f);
         }
     }

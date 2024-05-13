@@ -37,14 +37,6 @@ public class InputController : MonoBehaviour
     private Vector3 diveVec; //구르기 시 화면을 회전해도 내가 바라봤던 방향으로 구르기를 하기 위해 값을 담을 변수
     private bool diveNoHit = false; //구르기 시 잠시 무적을 위한 변수
 
-    //공격 모션을 위한 변수들
-    private bool isAttack = false; //공격을 했는지 여부를 확인하기 위한 변수
-    private float attackTimer; //공격 후 딜레이를 위해 돌아가는 타이머
-    private float attackDelay; //딜레이 시간
-    private int attackCount; //몇 번째 공격을 했는지 체크하기 위한 변수
-    private bool attackCombo; //콤보 어택을 위한 변수
-    private float comboTimer; //콤보 어택을 위한 시간
-    private float changeStaminaAttack; //공격모션을 변경하기 위한 변수
     [Header("플레이어 공격 설정")]
     [SerializeField] private List<Collider> hitArea;
     [SerializeField] private float playerDamage;
@@ -55,8 +47,21 @@ public class InputController : MonoBehaviour
     private bool playerCriticalAttack = false; //플에이어가 공격 시 크리티컬이 발동되었는지
     private bool monsterAttack = false; //몬스터를 공격하기 위한 변수
 
+    //공격 모션을 위한 변수들
+    private bool isAttack = false; //공격을 했는지 여부를 확인하기 위한 변수
+    private float attackTimer; //공격 후 딜레이를 위해 돌아가는 타이머
+    private float attackDelay; //딜레이 시간
+    private int attackCount; //몇 번째 공격을 했는지 체크하기 위한 변수
+    private bool attackCombo; //콤보 어택을 위한 변수
+    private float comboTimer; //콤보 어택을 위한 시간
+    private float changeStaminaAttack; //공격모션을 변경하기 위한 변수
+
     [Header("플레이어 체력 설정 x = max, y = cur")]
     [SerializeField] private Vector2 playerMaxCurHp;
+
+    //공격 당했을 때 모션을 위한 변수들
+    private bool isHit = false;
+    private float hitDelayTimer;
 
     [Header("플레이어 방어력 설정")]
     [SerializeField] private float playerArmor;
@@ -126,14 +131,23 @@ public class InputController : MonoBehaviour
 
         if (informationManager.GetInformationOnOffCheck() == false && inventoryManger.GetInventoryOnOffCheck() == false)
         {
-            checkItem();
-            monsterCollCheck();
-            playerLookAtScreen();
-            playerMove();
-            playerDiveRoll();
-            playerWeaponChange();
-            playerAttack();
-            playerAnim();
+            if (isHit == false)
+            {
+                checkItem();
+                monsterCollCheck();
+                playerLookAtScreen();
+                playerMove();
+                playerDiveRoll();
+                playerWeaponChange();
+                playerAttack();
+                playerAnim();
+            }
+            else
+            {
+                anim.SetFloat("VeticalMove", 0f);
+                anim.SetFloat("HorizontalMove", 0f);
+            }
+
             gameManager.SetCameraMoveStop(true);
         }
         else
@@ -319,6 +333,17 @@ public class InputController : MonoBehaviour
                 weaponChange = false;
             }
         }
+
+        if (isHit == true)
+        {
+            hitDelayTimer += Time.deltaTime;
+
+            if (hitDelayTimer >= 0.5f)
+            {
+                hitDelayTimer = 0f;
+                isHit = false;
+            }
+        }
     }
 
     /// <summary>
@@ -464,6 +489,9 @@ public class InputController : MonoBehaviour
             if (idleChange == 0)
             {
                 idleChange = 1;
+                playerDamage = informationManager.GetPlayerStatDamage() + weaponDamage;
+                playerAttackSpeed = informationManager.GetPlayerStatAttackSpeedAnim()
+                    + (informationManager.GetPlayerStatAttackSpeedAnim() * weaponAttackSpeed);
                 weapon.transform.position = playerHandTrs.transform.position;
                 weapon.transform.rotation = playerHandTrs.transform.rotation;
                 weapon.transform.SetParent(playerHandTrs.transform);
@@ -472,6 +500,8 @@ public class InputController : MonoBehaviour
             else
             {
                 idleChange = 0;
+                playerDamage = informationManager.GetPlayerStatDamage();
+                playerAttackSpeed = informationManager.GetPlayerStatAttackSpeedAnim();
                 weapon.transform.position = playerBackTrs.transform.position;
                 weapon.transform.rotation = playerBackTrs.transform.rotation;
                 weapon.transform.SetParent(playerBackTrs.transform);
@@ -623,10 +653,6 @@ public class InputController : MonoBehaviour
         {
             playerStateManager.SetPlayerStaminaBar(curStamina, maxStamina);
         }
-
-        //playerHpValue.text = $"{playerMaxCurHp.y.ToString("F0")} / {playerMaxCurHp.x.ToString("F0")}";
-
-        //playerStaminaValue.text = $"{curStamina.ToString("F0")} / {maxStamina.ToString("F0")}";
     }
 
     /// <summary>
@@ -634,7 +660,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerStatusCheck()
     {
-        playerDamage = informationManager.GetPlayerStatDamage() + weaponDamage;
+        playerDamage = informationManager.GetPlayerStatDamage();
         playerAttackSpeed = informationManager.GetPlayerStatAttackSpeedAnim();
         moveSpeed = informationManager.GetPlayerStatSpeed();
         playerMaxCurHp = new Vector2(informationManager.GetPlayerStatHp(), playerMaxCurHp.y);
@@ -664,9 +690,6 @@ public class InputController : MonoBehaviour
                 informationManager.SetStatUpCheck(wearItemManager.GetWeaponDamage(), wearItemManager.GetWeaponAttackSpeed());
                 weaponDamage = wearItemManager.GetWeaponDamage();
                 weaponAttackSpeed = wearItemManager.GetWeaponAttackSpeed();
-                playerDamage = informationManager.GetPlayerStatDamage() + weaponDamage;
-                playerAttackSpeed = informationManager.GetPlayerStatAttackSpeedAnim()
-                    + (informationManager.GetPlayerStatAttackSpeedAnim() * weaponAttackSpeed);
                 weapon.transform.SetParent(playerBackTrs.transform);
                 weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
                 weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
@@ -693,8 +716,34 @@ public class InputController : MonoBehaviour
         anim.SetFloat("AttackSpeed", playerAttackSpeed);
     }
 
+    /// <summary>
+    /// 애니메이션에 맞춰 몬스터를 공격하기 위한 함수
+    /// </summary>
     public void AttackHit()
     {
         monsterAttack = true;
+    }
+
+    /// <summary>
+    /// 플레이어가 몬스터에게 맞았는지 체크하는 함수
+    /// </summary>
+    public void PlayerHitCheck(float _hitDamage)
+    {
+        if (diveNoHit == false && isHit == false)
+        {
+            playerMaxCurHp.y -= _hitDamage;
+            playerStateManager.SetPlayerHpBar(playerMaxCurHp.y, playerMaxCurHp.x);
+
+            if (idleChange == 0)
+            {
+                anim.Play("Unarmed-GetHit-B1");
+            }
+            else
+            {
+                anim.Play("2Hand-Sword-GetHit-B1");
+            }
+
+            isHit = true;
+        }
     }
 }
