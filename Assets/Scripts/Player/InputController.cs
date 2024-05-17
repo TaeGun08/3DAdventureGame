@@ -128,12 +128,13 @@ public class InputController : MonoBehaviour
         playerStamina();
         playerBarCheck();
         wearItemCheck();
+        checkNotPickUpItem();
 
         if (informationManager.GetInformationOnOffCheck() == false && inventoryManger.GetInventoryOnOffCheck() == false)
         {
             if (isHit == false)
             {
-                checkItem();
+                checkPickUpItem();
                 monsterCollCheck();
                 playerLookAtScreen();
                 playerMove();
@@ -197,10 +198,10 @@ public class InputController : MonoBehaviour
             }
         }
 
-       return returnValue;
+        return returnValue;
     }
 
-    private void checkItem()
+    private void checkPickUpItem()
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -212,6 +213,27 @@ public class InputController : MonoBehaviour
                 Collider collision = getClosedCollider(pickUpColl);
 
                 if (collision.gameObject.tag == "Item")
+                {
+                    inventoryManger.SetItem(collision.gameObject);
+                }
+            }
+        }
+    }
+
+    private void checkNotPickUpItem()
+    {
+        Collider[] pickUpColl = Physics.OverlapBox(pickUpArea.bounds.center, pickUpArea.bounds.size * 0.5f, Quaternion.identity,
+        LayerMask.GetMask("NotPickUpItem"));
+
+        if (pickUpColl.Length != 0)
+        {
+            Collider collision = getClosedCollider(pickUpColl);
+
+            if (collision.gameObject.tag == "Item")
+            {
+                collision.gameObject.transform.position += (transform.position - collision.gameObject.transform.position) * 2f * Time.deltaTime;
+                float checkDistance = Vector3.Distance(collision.gameObject.transform.position, transform.position);
+                if (checkDistance <= 0.5f)
                 {
                     inventoryManger.SetItem(collision.gameObject);
                 }
@@ -670,6 +692,9 @@ public class InputController : MonoBehaviour
         maxStamina = informationManager.GetPlayerStatStamina();
     }
 
+    /// <summary>
+    /// 장비를 착용했는지 했다면 플레이어가 사용할 수 있게 생성해주는 함수
+    /// </summary>
     private void wearItemCheck()
     {
         if (wearItemManager.GetWearWeapon() != null && weapon == null)
@@ -697,6 +722,9 @@ public class InputController : MonoBehaviour
         }
         else if (wearItemManager.GetWearWeapon() == null && weapon != null)
         {
+            playerDamage = informationManager.GetPlayerStatDamage();
+            playerAttackSpeed = informationManager.GetPlayerStatAttackSpeedAnim();
+            informationManager.SetStatUpCheck(0, 0);
             Destroy(weapon);
             idleChange = 0;
         }

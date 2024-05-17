@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,7 @@ public class InventoryManger : MonoBehaviour
 
     public class InventoryData
     {
+        public int coin; //코인의 개수
         public int slotIndex; //슬롯 개수
         public List<int> itemSlotIndex = new List<int>(); //아이템이 위치한 순서
         public List<int> itemIndex = new List<int>(); //아이템의 번호
@@ -36,8 +38,12 @@ public class InventoryManger : MonoBehaviour
     private float screenWidth; //스크린의 가로 길이를 계산하기 위한 변수
     private float screenHeight; //스크린의 세로 길이를 계산하기 위한 변수
 
+    [Header("코인을 표시할 텍스트")]
+    [SerializeField] private TMP_Text coinText;
+
     private int slotIndex = 12; //슬롯을 생성할 인덱스
 
+    private int coin; //인벤토리에 있는 코인의 개수
     private List<int> itemSlotIndex = new List<int>(); // 아이템이 존재하는 위치
     private List<int> itemIndex = new List<int>(); //아이템 인덱스
     private List<int> itemType = new List<int>(); //아이템 타입
@@ -89,6 +95,10 @@ public class InventoryManger : MonoBehaviour
             inventoryData.slotIndex = 12;
 
             int slotNumber = 0;
+
+            coin = 0;
+            inventoryData.coin = 0;
+            coinText.text = $"코인 : {coin}";
 
             for (int i = 0; i < slotIndex; i++)
             {
@@ -167,6 +177,9 @@ public class InventoryManger : MonoBehaviour
 
         int slotNumber = 0;
 
+        coin = _slotData.coin;
+        coinText.text = $"코인 : {coin}";
+
         for (int i = 0; i < count; i++)
         {
             GameObject slotObj = Instantiate(slotPrefab, contentTrs);
@@ -203,6 +216,9 @@ public class InventoryManger : MonoBehaviour
     private void setSaveItem()
     {
         int count = slotIndex;
+
+        inventoryData.coin = coin;
+        coinText.text = $"코인 : {coin}";
 
         for (int i = 0; i < count; i++)
         {
@@ -273,7 +289,19 @@ public class InventoryManger : MonoBehaviour
                 return;
             }
 
-            if (itemSc.GetItemType() == 10) //아이템 타입이 무기인지 아닌지 체크
+            if (itemSc.GetItemType() == 1 && itemSc.GetItemPickUpCheck() == false)
+            {
+                Coin coinSc = itemSc.GetComponent<Coin>();
+                coin += coinSc.SetCoin();
+                coinText.text = $"코인 : {coin}";
+
+                setSaveItem();
+
+                Destroy(_itemObj);
+
+                return;
+            }
+            else if (itemSc.GetItemType() == 10 && itemSc.GetItemPickUpCheck() == false) //아이템 타입이 무기인지 아닌지 체크
             {
                 if (itemIndex[i] == 0)
                 {
@@ -298,7 +326,7 @@ public class InventoryManger : MonoBehaviour
                     return;
                 }
             }
-            else if (itemSc.GetItemType() >= 20) //장비가 아니라면 99개까지 아이템이 합쳐짐
+            else if (itemSc.GetItemType() >= 20 && itemSc.GetItemPickUpCheck() == false) //장비가 아니라면 99개까지 아이템이 합쳐짐
             {
                 bool itemCheck = false;
                 int count = itemSlotIndex.Count;

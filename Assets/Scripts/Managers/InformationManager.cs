@@ -249,6 +249,7 @@ public class InformationManager : MonoBehaviour
             maxExp *= 1.3f;
             string maxExpValue = $"{maxExp.ToString("F2")}";
             maxExp = float.Parse(maxExpValue);
+            setSaveStatus();
         }
 
         if (curExp <= maxExp)

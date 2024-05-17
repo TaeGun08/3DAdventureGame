@@ -1312,5 +1312,7 @@ MonoBehaviour:
   hitDamagePrefab: {fileID: 3816709212189601542, guid: 65334bdfbc3d6614aa0ee2281336d641, type: 3}
   heightValue: 2
   setExp: 2
+  coinPrefab: {fileID: 2677218698816984505, guid: 69b04c124c26be04d954f53ee4e88c95, type: 3}
+  dropCoin: 1
   hitCollider: {fileID: 4728511685988595338}
   attackDelay: 3

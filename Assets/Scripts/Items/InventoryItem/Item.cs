@@ -8,7 +8,31 @@ public class Item : MonoBehaviour
     [SerializeField, Tooltip("아이템의 번호")] private int itemIndex;
     [SerializeField, Tooltip("아이템의 타입")] private int itemType;
     [Space]
-    [SerializeField] private bool itemPickUpCheck = false;
+    [SerializeField, Tooltip("아이템을 주울 수 있는지 체크")] private bool itemPickUpCheck = false;
+    [Space]
+    [SerializeField, Tooltip("아이템이 생성됐을 때 줍기 위한 시간")] private float pickUpTime;
+    private float pickUpTimer; //픽업 타이머
+    private bool pickUp = false; //처음으로 생성됐을 때 주울 수 있는지 체크
+
+    private void Start()
+    {
+        itemPickUpCheck = true;
+        pickUpTimer = pickUpTime;
+    }
+
+    private void Update()
+    {
+        if (pickUp == false)
+        {
+            pickUpTimer -= Time.deltaTime;
+            if (0 >= pickUpTimer)
+            {
+                pickUp = true;
+                pickUpTimer = pickUpTime;
+                itemPickUpCheck = false;
+            }
+        }
+    }
 
     /// <summary>
     /// 다른 스크립트에 보내줄 아이템 번호
