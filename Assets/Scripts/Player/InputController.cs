@@ -222,7 +222,7 @@ public class InputController : MonoBehaviour
 
     private void checkNotPickUpItem()
     {
-        Collider[] pickUpColl = Physics.OverlapBox(pickUpArea.bounds.center, pickUpArea.bounds.size * 0.5f, Quaternion.identity,
+        Collider[] pickUpColl = Physics.OverlapBox(pickUpArea.bounds.center, pickUpArea.bounds.size * 0.8f, Quaternion.identity,
         LayerMask.GetMask("NotPickUpItem"));
 
         if (pickUpColl.Length != 0)
@@ -231,9 +231,9 @@ public class InputController : MonoBehaviour
 
             if (collision.gameObject.tag == "Item")
             {
-                collision.gameObject.transform.position += (transform.position - collision.gameObject.transform.position) * 2f * Time.deltaTime;
+                collision.gameObject.transform.position += (transform.position - collision.gameObject.transform.position) * 3f * Time.deltaTime;
                 float checkDistance = Vector3.Distance(collision.gameObject.transform.position, transform.position);
-                if (checkDistance <= 0.5f)
+                if (checkDistance <= 1f)
                 {
                     inventoryManger.SetItem(collision.gameObject);
                 }
@@ -685,7 +685,8 @@ public class InputController : MonoBehaviour
         playerDamage = informationManager.GetPlayerStatDamage();
         playerAttackSpeed = informationManager.GetPlayerStatAttackSpeedAnim();
         moveSpeed = informationManager.GetPlayerStatSpeed();
-        playerMaxCurHp = new Vector2(informationManager.GetPlayerStatHp(), playerMaxCurHp.y);
+        playerMaxCurHp = new Vector2(informationManager.GetPlayerStatHp(), informationManager.GetCurHp());
+        playerStateManager.SetPlayerHpBar(playerMaxCurHp.y, playerMaxCurHp.x);
         playerArmor = informationManager.GetPlayerStatArmor();
         playerCritical = informationManager.GetPlayerStatCritical();
         playerCriticalDamage = informationManager.GetPlayerStatCriticalDamage();
@@ -761,6 +762,7 @@ public class InputController : MonoBehaviour
         {
             playerMaxCurHp.y -= _hitDamage;
             playerStateManager.SetPlayerHpBar(playerMaxCurHp.y, playerMaxCurHp.x);
+            informationManager.SetCurHp(playerMaxCurHp.y);
 
             if (idleChange == 0)
             {

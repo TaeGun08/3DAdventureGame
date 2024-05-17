@@ -18,6 +18,7 @@ public class InformationManager : MonoBehaviour
         public float attackSpeed;
         public float speed;
         public float hp;
+        public float curHp;
         public float armor;
         public float critical;
         public float criticalDamage;
@@ -40,6 +41,7 @@ public class InformationManager : MonoBehaviour
     [SerializeField, Tooltip("스테이터스 공격속도")] private float attackSpeed;
     [SerializeField, Tooltip("스테이터스 이동속도")] private float speed;
     [SerializeField, Tooltip("스테이터스 최대체력")] private float hp;
+    [SerializeField, Tooltip("현재 체력")] private float curHp;
     [SerializeField, Tooltip("스테이터스 방어력")] private float armor;
     [SerializeField, Tooltip("스테이터스 치명타확률")] private float critical;
     [SerializeField, Tooltip("스테이터스 치명타공격력")] private float criticalDamage;
@@ -203,6 +205,7 @@ public class InformationManager : MonoBehaviour
             statData.attackSpeed = 1f;
             statData.speed = 4f;
             statData.hp = 100f;
+            statData.curHp = 100f;
             statData.armor = 0f;
             statData.critical = 0f;
             statData.criticalDamage = 0.5f;
@@ -349,6 +352,7 @@ public class InformationManager : MonoBehaviour
         statData.attackSpeed = attackSpeed;
         statData.speed = speed;
         statData.hp = hp;
+        statData.curHp = curHp;
         statData.armor = armor;
         statData.critical = critical;
         statData.criticalDamage = criticalDamage;
@@ -377,6 +381,7 @@ public class InformationManager : MonoBehaviour
         attackSpeed = _statusData.attackSpeed;
         speed = _statusData.speed;
         hp = _statusData.hp;
+        curHp = _statusData.curHp;
         armor = _statusData.armor;
         critical = _statusData.critical;
         criticalDamage = _statusData.criticalDamage;
@@ -513,5 +518,25 @@ public class InformationManager : MonoBehaviour
     {
         weaponDamage = _weaponDamage;
         weaponAttackSpeed = _weaponAttackSpeed;
+    }
+
+    /// <summary>
+    /// 현재 체력을 전달 받을 함수
+    /// </summary>
+    /// <param name="_curHp"></param>
+    public void SetCurHp(float _curHp)
+    {
+        curHp = _curHp;
+        statData.curHp = _curHp;
+        setSaveStatus();
+    }
+
+    /// <summary>
+    /// 저장한 현재 체력을 플레이어에게 넣어주기 위한 함수
+    /// </summary>
+    /// <returns></returns>
+    public float GetCurHp()
+    {
+        return curHp;
     }
 }

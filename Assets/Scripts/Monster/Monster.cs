@@ -164,10 +164,12 @@ public class Monster : MonoBehaviour
 
             if (dropCoin > 0)
             {
+                float randomTrsPosX = Random.Range(0, 1f);
+                float randomTrsPosZ = Random.Range(0, 1f);
                 for (int i = 0; i < dropCoin; i++)
                 {
-                    Instantiate(coinPrefab, new Vector3(transform.position.x, transform.position.y + 1f, 
-                        transform.position.z), Quaternion.identity, dropTransform.transform);
+                    Instantiate(coinPrefab, new Vector3(transform.position.x + randomTrsPosX, transform.position.y + 1f, 
+                        transform.position.z + randomTrsPosZ), Quaternion.identity, dropTransform.transform);
                 }
             }
 
