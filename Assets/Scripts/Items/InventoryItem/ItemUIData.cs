@@ -17,6 +17,8 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     private int itemType; //아이템 데이터에 받아올 타입
     private float weaponDamage; //아이템 데이터에 받아올 무기 공격력
     private float weaponAttackSpeed; //아이템 데이터에 받아올 무기 공격속도
+    private int weaponUpgrage; //아이템 데이터에 받아올 무기 강화횟수
+    private int slotNumber; //슬롯의 번호
 
     private RectTransform itemRectTrs; //아이템의 렉트트랜스폼
     private Transform itemParenTrs; //아이템의 부모위치
@@ -77,7 +79,7 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         quantityText.gameObject.SetActive(true);
     }
 
-    public void SetItemImage(int _itemIndex, int _itemType, int _itemQuantity, float _weaponDamage, float _weaponAttackSpeed)
+    public void SetItemImage(int _itemIndex, int _itemType, int _itemQuantity, float _weaponDamage, float _weaponAttackSpeed, int _weaponUpgrade)
     {
         itemImage = GetComponent<Image>();
 
@@ -85,6 +87,7 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         itemType = _itemType;
         weaponDamage = _weaponDamage;
         weaponAttackSpeed = _weaponAttackSpeed;
+        weaponUpgrage = _weaponUpgrade;
 
         switch (_itemIndex)
         {
@@ -118,23 +121,48 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         }
     }
 
+    /// <summary>
+    /// 아이템 번호
+    /// </summary>
+    /// <returns></returns>
     public int GetItemIndex()
     {
         return itemIndex;
     }
 
+    /// <summary>
+    /// 무기 공격력
+    /// </summary>
+    /// <returns></returns>
     public float GetWeaponDamage() 
     {
         return weaponDamage;
     }
 
+    /// <summary>
+    /// 무기 공격속도
+    /// </summary>
+    /// <returns></returns>
     public float GetWeaponAttackSpeed()
     {
         return weaponAttackSpeed;
     }
 
+    /// <summary>
+    /// 아이템 타입
+    /// </summary>
+    /// <returns></returns>
     public int GetItemType()
     {
         return itemType;
+    }
+
+    /// <summary>
+    /// 무기 강화 횟수
+    /// </summary>
+    /// <returns></returns>
+    public int GetWeaponUpgrade()
+    {
+        return weaponUpgrage;
     }
 }

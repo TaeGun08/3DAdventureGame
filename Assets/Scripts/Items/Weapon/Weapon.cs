@@ -14,11 +14,13 @@ public class Weapon : MonoBehaviour
     }
 
     [Header("무기 설정")]
-    [SerializeField] private int weaponNumber;
-    [SerializeField] private WeaponType type;
-    [SerializeField] private int weaponLevel;
-    [SerializeField] private float weaponDamage;
-    [SerializeField] private float weaponAttackSpeed;
+    [SerializeField, Tooltip("무기의 번호")] private int weaponNumber;
+    [SerializeField, Tooltip("무기 등급")] private WeaponType type;
+    [SerializeField, Tooltip("무기의 장착 가능 레벨")] private int weaponLevel;
+    [SerializeField, Tooltip("무기의 공격력")] private float weaponDamage;
+    [SerializeField, Tooltip("무기의 공격속도")] private float weaponAttackSpeed;
+    [SerializeField, Tooltip("무기 강화 횟수")] private int weaponUpgrade;
+    private float upgradePercent;
 
     private bool initWeapon = false; 
 
@@ -143,5 +145,172 @@ public class Weapon : MonoBehaviour
     public float WeaponAttackSpeed()
     {
         return weaponAttackSpeed;
+    }
+
+    /// <summary>
+    /// 무기를 강화하는 함수
+    /// </summary>
+    public bool WeaponUpgrade(bool _upgrade)
+    {
+        if (_upgrade == true)
+        {
+            if (weaponUpgrade == 0)
+            {
+                upgradePercent = 100f;
+                float upgradePer = Random.Range(0.0f, 100f);
+                if (upgradePercent >= upgradePer)
+                {
+                    weaponUpgrade++;
+                    weaponDamage = weaponDamage + (weaponDamage * 0.1f);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (weaponUpgrade == 1)
+            {
+                upgradePercent = 100f;
+                float upgradePer = Random.Range(0.0f, 100f);
+                if (upgradePercent >= upgradePer)
+                {
+                    weaponUpgrade++;
+                    weaponDamage = weaponDamage + (weaponDamage * 0.2f);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (weaponUpgrade == 2)
+            {
+                upgradePercent = 100f;
+                float upgradePer = Random.Range(0.0f, 100f);
+                if (upgradePercent >= upgradePer)
+                {
+                    weaponUpgrade++;
+                    weaponDamage = weaponDamage + (weaponDamage * 0.3f);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (weaponUpgrade == 3)
+            {
+                upgradePercent = 80f;
+                float upgradePer = Random.Range(0.0f, 100f);
+                if (upgradePercent >= upgradePer)
+                {
+                    weaponUpgrade++;
+                    weaponDamage = weaponDamage + (weaponDamage * 0.4f);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (weaponUpgrade == 4)
+            {
+                upgradePercent = 70f;
+                float upgradePer = Random.Range(0.0f, 100f);
+                if (upgradePercent >= upgradePer)
+                {
+                    weaponUpgrade++;
+                    weaponDamage = weaponDamage + (weaponDamage * 0.5f);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (weaponUpgrade == 5)
+            {
+                upgradePercent = 60f;
+                float upgradePer = Random.Range(0.0f, 100f);
+                if (upgradePercent >= upgradePer)
+                {
+                    weaponUpgrade++;
+                    weaponDamage = weaponDamage + (weaponDamage * 0.6f);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (weaponUpgrade == 6)
+            {
+                upgradePercent = 50f;
+                float upgradePer = Random.Range(0.0f, 100f);
+                if (upgradePercent >= upgradePer)
+                {
+                    weaponUpgrade++;
+                    weaponDamage = weaponDamage + (weaponDamage * 0.7f);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (weaponUpgrade == 7)
+            {
+                upgradePercent = 30f;
+                float upgradePer = Random.Range(0.0f, 100f);
+                if (upgradePercent >= upgradePer)
+                {
+                    weaponUpgrade++;
+                    weaponDamage = weaponDamage + (weaponDamage * 1.0f);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (weaponUpgrade == 8)
+            {
+                upgradePercent = 10f;
+                float upgradePer = Random.Range(0.0f, 100f);
+                if (upgradePercent >= upgradePer)
+                {
+                    weaponUpgrade++;
+                    weaponDamage = weaponDamage + (weaponDamage * 1.5f);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else if (weaponUpgrade == 9)
+            {
+                upgradePercent = 5f;
+                float upgradePer = Random.Range(0.0f, 100f);
+                if (upgradePercent >= upgradePer)
+                {
+                    weaponUpgrade++;
+                    weaponDamage = weaponDamage + (weaponDamage * 2.0f);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public int WeaponUpgaredValue()
+    {
+        return weaponUpgrade;
     }
 }

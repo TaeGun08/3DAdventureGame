@@ -33,7 +33,7 @@ public class ItemInvenDrop : MonoBehaviour, IDropHandler
             else if (wearItemDataSc != null)
             {
                 inventoryManger.ItemInstantaite(slotNumber, gameObject, wearItemDataSc.GetItemType(), 
-                    wearItemDataSc.GetItemIndex(), wearItemDataSc.GetWeaponDamage(), wearItemDataSc.GetWeaponAttackSpeed());
+                    wearItemDataSc.GetItemIndex(), wearItemDataSc.GetWeaponDamage(), wearItemDataSc.GetWeaponAttackSpeed(), wearItemDataSc.GetWeaponUpgrade());
 
                 wearItemManager.WearWeaponDisarm();
 

@@ -22,6 +22,7 @@ public class WearItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     private int itemIndex;
     private float weaponDamage;
     private float weaponAttackSpeed;
+    private int weaponUpgrade;
 
     void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
     {
@@ -60,8 +61,14 @@ public class WearItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         wearItemManager = WearItemManager.Instance;
     }
 
-
-    public void SetItemImage(int _itemType, int _itemIndex, float _weaponDamage, float _weaponAttackSpeed)
+    /// <summary>
+    /// 이미지를 생성하고 정보를 받아오기 위한 함수
+    /// </summary>
+    /// <param name="_itemType"></param>
+    /// <param name="_itemIndex"></param>
+    /// <param name="_weaponDamage"></param>
+    /// <param name="_weaponAttackSpeed"></param>
+    public void SetItemImage(int _itemType, int _itemIndex, float _weaponDamage, float _weaponAttackSpeed, int _weaponUpgrade)
     {
         itemImage = GetComponent<Image>();
 
@@ -69,8 +76,9 @@ public class WearItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         itemIndex = _itemIndex;
         weaponDamage = _weaponDamage;
         weaponAttackSpeed = _weaponAttackSpeed;
+        weaponUpgrade = _weaponUpgrade;
 
-        wearItemManager.SetWearItem(_itemType, _itemIndex, _weaponDamage, _weaponAttackSpeed);
+        wearItemManager.SetWearItem(_itemType, _itemIndex, _weaponDamage, _weaponAttackSpeed, _weaponUpgrade);
 
         switch (_itemIndex)
         {
@@ -126,5 +134,14 @@ public class WearItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     public float GetWeaponAttackSpeed()
     {
         return weaponAttackSpeed;
+    }
+
+    /// <summary>
+    /// 무기 아이템의 강화 횟수
+    /// </summary>
+    /// <returns></returns>
+    public int GetWeaponUpgrade()
+    {
+        return weaponUpgrade;
     }
 }

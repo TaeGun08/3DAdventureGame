@@ -28,7 +28,7 @@ public class WearDropItem : MonoBehaviour, IDropHandler
 
                     WearItemData wearItemData = itemObj.GetComponent<WearItemData>();
                     wearItemData.SetItemImage(itemUIData.GetItemType(), itemUIData.GetItemIndex(),
-                        itemUIData.GetWeaponDamage(), itemUIData.GetWeaponAttackSpeed());
+                        itemUIData.GetWeaponDamage(), itemUIData.GetWeaponAttackSpeed(), itemUIData.GetWeaponUpgrade());
                     weaponIndex = itemUIData.GetItemIndex();
 
                     inventoryManger.WearItemDropCheck();
@@ -53,7 +53,7 @@ public class WearDropItem : MonoBehaviour, IDropHandler
 
             WearItemData wearItemData = itemObj.GetComponent<WearItemData>();
             wearItemData.SetItemImage(wearItemManager.GetWeaponType(), wearItemManager.GetWeaponIndex(),
-                wearItemManager.GetWeaponDamage(), wearItemManager.GetWeaponAttackSpeed());
+                wearItemManager.GetWeaponDamage(), wearItemManager.GetWeaponAttackSpeed(), wearItemManager.GetWeaponUpgrade());
             weaponIndex = wearItemManager.GetWeaponIndex();
         }
     }

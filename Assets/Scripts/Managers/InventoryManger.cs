@@ -19,6 +19,7 @@ public class InventoryManger : MonoBehaviour
         public List<int> itemQuantity = new List<int>(); //아이템 개수
         public List<float> weaponDamage = new List<float>(); //무기 공격력
         public List<float> weaponAttackSpeed = new List<float>(); //무기 공격속도
+        public List<int> weaponUpgrade = new List<int>(); //무기 강화횟수
     }
 
     private InventoryData inventoryData = new InventoryData();
@@ -43,13 +44,14 @@ public class InventoryManger : MonoBehaviour
 
     private int slotIndex = 12; //슬롯을 생성할 인덱스
 
-    private int coin; //인벤토리에 있는 코인의 개수
+    [SerializeField] private int coin; //인벤토리에 있는 코인의 개수
     private List<int> itemSlotIndex = new List<int>(); // 아이템이 존재하는 위치
     private List<int> itemIndex = new List<int>(); //아이템 인덱스
     private List<int> itemType = new List<int>(); //아이템 타입
     private List<int> itemQuantity = new List<int>(); //아이템 개수
-    private List<float> weaponDamage = new List<float>(); //무기 공격력
+    [SerializeField] private List<float> weaponDamage = new List<float>(); //무기 공격력
     private List<float> weaponAttackSpeed = new List<float>(); //무기 공격속도
+    [SerializeField] private List<int> weaponUpgrade = new List<int>(); //무기 강화횟수
 
     private List<int> swapItem = new List<int>(); //아이템을 스왑할 슬롯의 번호를 받아올 변수
 
@@ -113,6 +115,7 @@ public class InventoryManger : MonoBehaviour
                 itemQuantity.Add(0);
                 weaponDamage.Add(0);
                 weaponAttackSpeed.Add(0);
+                weaponUpgrade.Add(0);
 
                 inventoryData.itemSlotIndex.Add(0);
                 inventoryData.itemIndex.Add(0);
@@ -120,6 +123,7 @@ public class InventoryManger : MonoBehaviour
                 inventoryData.itemQuantity.Add(0);
                 inventoryData.weaponDamage.Add(0);
                 inventoryData.weaponAttackSpeed.Add(0);
+                inventoryData.weaponUpgrade.Add(0);
             }
 
             string setSlot = JsonConvert.SerializeObject(inventoryData);
@@ -192,12 +196,13 @@ public class InventoryManger : MonoBehaviour
             itemQuantity.Add(_slotData.itemQuantity[i]);
             weaponDamage.Add(_slotData.weaponDamage[i]);
             weaponAttackSpeed.Add(_slotData.weaponAttackSpeed[i]);
+            weaponUpgrade.Add(_slotData.weaponUpgrade[i]);
 
             if (itemSlotIndex[i] != 0)
             {
                 GameObject itemObj = Instantiate(itemPrefab, slotTrs[i]);
                 ItemUIData itemUISc = itemObj.GetComponent<ItemUIData>();
-                itemUISc.SetItemImage(itemIndex[i], itemType[i], itemQuantity[i], weaponDamage[i], weaponAttackSpeed[i]);
+                itemUISc.SetItemImage(itemIndex[i], itemType[i], itemQuantity[i], weaponDamage[i], weaponAttackSpeed[i], weaponUpgrade[i]);
                 itemList.Add(itemObj);
             }
             else
@@ -228,6 +233,7 @@ public class InventoryManger : MonoBehaviour
             inventoryData.itemQuantity[i] = itemQuantity[i];
             inventoryData.weaponDamage[i] = weaponDamage[i];
             inventoryData.weaponAttackSpeed[i] = weaponAttackSpeed[i];
+            inventoryData.weaponUpgrade[i] = weaponUpgrade[i];
         }
 
         string setSlot = JsonConvert.SerializeObject(inventoryData);
@@ -273,6 +279,12 @@ public class InventoryManger : MonoBehaviour
         float weaponAttSpd = weaponAttackSpeed[swapItem[0]];
         weaponAttackSpeed[swapItem[0]] = weaponAttackSpeed[_slotNumber];
         weaponAttackSpeed[_slotNumber] = weaponAttSpd;
+
+        int weaponUpg = weaponUpgrade[swapItem[0]];
+        weaponUpgrade[swapItem[0]] = weaponUpgrade[_slotNumber];
+        weaponUpgrade[_slotNumber] = weaponUpg;
+
+        setSaveItem();
     }
 
     /// <summary>
@@ -312,11 +324,12 @@ public class InventoryManger : MonoBehaviour
                     Weapon weaponSc = itemSc.GetComponent<Weapon>();
                     weaponDamage[i] = weaponSc.WeaponDamage();
                     weaponAttackSpeed[i] = weaponSc.WeaponAttackSpeed();
+                    weaponUpgrade[i] = weaponSc.WeaponUpgaredValue();
 
                     GameObject itemObj = Instantiate(itemPrefab, slotTrs[i]);
                     itemList[i] = itemObj;
                     ItemUIData itemUISc = itemObj.GetComponent<ItemUIData>();
-                    itemUISc.SetItemImage(itemIndex[i], itemType[i], 1, weaponDamage[i], weaponAttackSpeed[i]);
+                    itemUISc.SetItemImage(itemIndex[i], itemType[i], 1, weaponDamage[i], weaponAttackSpeed[i], weaponUpgrade[i]);
 
                     itemSlotIndex[i] = 1;
 
@@ -342,7 +355,7 @@ public class InventoryManger : MonoBehaviour
                 {
                     itemQuantity[i]++;
                     ItemUIData itemUISc = itemList[i].GetComponent<ItemUIData>();
-                    itemUISc.SetItemImage(itemIndex[i], itemType[i], itemQuantity[i], weaponDamage[i], weaponAttackSpeed[i]);
+                    itemUISc.SetItemImage(itemIndex[i], itemType[i], itemQuantity[i], weaponDamage[i], weaponAttackSpeed[i], weaponUpgrade[i]);
 
                     setSaveItem();
 
@@ -358,7 +371,7 @@ public class InventoryManger : MonoBehaviour
                     GameObject itemObj = Instantiate(itemPrefab, slotTrs[i]);
                     itemList[i] = itemObj;
                     ItemUIData itemUISc = itemObj.GetComponent<ItemUIData>();
-                    itemUISc.SetItemImage(itemIndex[i], itemType[i], 1, weaponDamage[i], weaponAttackSpeed[i]);
+                    itemUISc.SetItemImage(itemIndex[i], itemType[i], 1, weaponDamage[i], weaponAttackSpeed[i], weaponUpgrade[i]);
 
                     itemSlotIndex[i] = 1;
 
@@ -490,6 +503,12 @@ public class InventoryManger : MonoBehaviour
             float weaponAttSpd = weaponAttackSpeed[swapItem[0]];
             weaponAttackSpeed[swapItem[0]] = weaponAttackSpeed[_slotNumber];
             weaponAttackSpeed[_slotNumber] = weaponAttSpd;
+
+            int weaponUpg = weaponUpgrade[swapItem[0]];
+            weaponUpgrade[swapItem[0]] = weaponUpgrade[_slotNumber];
+            weaponUpgrade[_slotNumber] = weaponUpg;
+
+            setSaveItem();
         }
 
         return false;
@@ -528,6 +547,8 @@ public class InventoryManger : MonoBehaviour
 
         weaponAttackSpeed[swapItem[0]] = 0;
 
+        weaponUpgrade[swapItem[0]] = 0;
+
         swapItem[0] = 0;
         swapItem[1] = 0;
 
@@ -537,13 +558,13 @@ public class InventoryManger : MonoBehaviour
     }
 
     public void ItemInstantaite(int _slotNumber, GameObject _itemParent, int _itemType, int _itemIndex,
-        float _weaponDamage, float _weaponAttackSpeed)
+        float _weaponDamage, float _weaponAttackSpeed, int _weaponUpgrade)
     {
         GameObject itemObj = Instantiate(itemPrefab, _itemParent.transform);
         itemObj.transform.position = _itemParent.transform.position;
 
         ItemUIData itemUIDataSc = itemObj.GetComponent<ItemUIData>();
-        itemUIDataSc.SetItemImage(_itemIndex, _itemType, 1, _weaponDamage, _weaponAttackSpeed);
+        itemUIDataSc.SetItemImage(_itemIndex, _itemType, 1, _weaponDamage, _weaponAttackSpeed, _weaponUpgrade);
 
         itemList[_slotNumber] = itemObj;
 
@@ -559,11 +580,41 @@ public class InventoryManger : MonoBehaviour
 
         weaponAttackSpeed[_slotNumber] = _weaponAttackSpeed;
 
+        weaponUpgrade[_slotNumber] = _weaponUpgrade;
+
         swapItem[0] = 0;
         swapItem[1] = 0;
 
         itemParent[0] = null;
 
         setSaveItem();
+    }
+
+    /// <summary>
+    /// 코인을 사용했는지 얻었는지를 판단해주는 함수
+    /// </summary>
+    /// <param name="_uesCheck"></param>
+    /// <param name="_coin"></param>
+    public void coinCheck(bool _uesCheck, int _coin)
+    {
+        if (_uesCheck == true)
+        {
+            coin -= _coin;
+        }
+        else
+        {
+            coin += _coin;
+        }
+
+        setSaveItem();
+    }
+
+    /// <summary>
+    /// 코인이 얼마있는지 확인하기 위한 함수
+    /// </summary>
+    /// <returns></returns>
+    public int GetCoin()
+    {
+        return coin;
     }
 }

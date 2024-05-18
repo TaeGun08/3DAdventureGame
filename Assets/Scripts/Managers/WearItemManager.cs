@@ -2,8 +2,6 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static InventoryManger;
-using static Weapon;
 
 public class WearItemManager : MonoBehaviour
 {
@@ -15,6 +13,7 @@ public class WearItemManager : MonoBehaviour
         public int wearWeaponIndex;
         public float wearWeaponDamage;
         public float wearWeaponAttackSpeed;
+        public int wearWeaponUpgrade;
     }
 
     private WearItem wearItem = new WearItem();
@@ -24,8 +23,9 @@ public class WearItemManager : MonoBehaviour
 
     private int weaponType; //아이템 타입을 받아올 변수
     private int weaponIndex; //아이템 데이터에 받아올 인덱스
-    [SerializeField] private float weaponDamage; //아이템 데이터에 받아올 타입
-    [SerializeField] private float weaponAttackSpeed; //아이템 데이터에 받아올 개수
+    [SerializeField] private float weaponDamage; //아이템 데이터에 받아올 공격력
+    [SerializeField] private float weaponAttackSpeed; //아이템 데이터에 받아올 공격속도
+    private int wearWeaponUpgrade; //아이템 테이터에 받아올 강화횟수
 
     private void Awake()
     {
@@ -50,6 +50,7 @@ public class WearItemManager : MonoBehaviour
             wearItem.wearWeaponIndex = 0;
             wearItem.wearWeaponDamage = 0;
             wearItem.wearWeaponAttackSpeed = 0;
+            wearItem.wearWeaponUpgrade = 0;
         }
     }
 
@@ -63,9 +64,10 @@ public class WearItemManager : MonoBehaviour
         weaponIndex = _wearItem.wearWeaponIndex;
         weaponDamage = _wearItem.wearWeaponDamage;
         weaponAttackSpeed = _wearItem.wearWeaponAttackSpeed;
+        wearWeaponUpgrade = _wearItem.wearWeaponUpgrade;
     }
 
-    public void SetWearItem(int _weaponType, int _weaponIndex, float _weaponDamage, float _weaponAttackSpeed)
+    public void SetWearItem(int _weaponType, int _weaponIndex, float _weaponDamage, float _weaponAttackSpeed, int _weaponUpgrade)
     {
         weaponType = _weaponType;
         wearItem.wearWeaponType = _weaponType;
@@ -78,6 +80,9 @@ public class WearItemManager : MonoBehaviour
 
         weaponAttackSpeed = _weaponAttackSpeed;
         wearItem.wearWeaponAttackSpeed = _weaponAttackSpeed;
+
+        wearWeaponUpgrade = _weaponUpgrade;
+        wearItem.wearWeaponUpgrade = _weaponUpgrade;
 
         string setWearItem = JsonConvert.SerializeObject(wearItem);
         PlayerPrefs.SetString("wearItemSaveKey", setWearItem);
@@ -142,6 +147,15 @@ public class WearItemManager : MonoBehaviour
         return weaponAttackSpeed;
     }
 
+    /// <summary>
+    /// 무기의 강화 횟수
+    /// </summary>
+    /// <returns></returns>
+    public int GetWeaponUpgrade()
+    {
+        return wearWeaponUpgrade;
+    }
+
     public void WearWeaponDisarm()
     {
         weaponType = 0;
@@ -155,6 +169,9 @@ public class WearItemManager : MonoBehaviour
 
         weaponAttackSpeed = 0;
         wearItem.wearWeaponAttackSpeed = 0;
+
+        wearWeaponUpgrade = 0;
+        wearItem.wearWeaponUpgrade = 0;
 
         string setWearItem = JsonConvert.SerializeObject(wearItem);
         PlayerPrefs.SetString("wearItemSaveKey", setWearItem);
