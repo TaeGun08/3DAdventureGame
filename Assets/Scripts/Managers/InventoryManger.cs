@@ -617,4 +617,44 @@ public class InventoryManger : MonoBehaviour
     {
         return coin;
     }
+
+    /// <summary>
+    /// 인벤토리에 있는 아이템을 업그레이드 시키는 함수
+    /// </summary>
+    public void ItemUpgrade(int _slotIndex, float _weaponDamage)
+    {
+        weaponDamage[_slotIndex] = _weaponDamage;
+
+        setSaveItem();
+    }
+
+    /// <summary>
+    /// 인벤토리에 있는 아이템의  공격력를 전달하기 위한 함수
+    /// </summary>
+    /// <param name="_slotIndex"></param>
+    /// <returns></returns>
+    public float GetWeaponDamage(int _slotIndex)
+    {
+        return weaponDamage[_slotIndex];
+    }
+
+    /// <summary>
+    /// 인벤토리에 있는 아이템의 업그레이드 단계를 전달하기 위한 함수
+    /// </summary>
+    /// <param name="_slotIndex"></param>
+    /// <returns></returns>
+    public int GetWeaponUpgrade(int _slotIndex)
+    {
+        return weaponUpgrade[_slotIndex];
+    }
+
+    /// <summary>
+    /// 인벤토리에 있는 아이템의 업그레이드 단계를 최신화 해주기 위한 함수
+    /// </summary>
+    public void SetWeaponUpgrade(int _slotIndex, int _weaponUpgrade)
+    {
+        weaponUpgrade[_slotIndex] = _weaponUpgrade;
+
+        setSaveItem();
+    }
 }

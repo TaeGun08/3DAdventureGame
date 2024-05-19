@@ -130,7 +130,9 @@ public class InputController : MonoBehaviour
         wearItemCheck();
         checkNotPickUpItem();
 
-        if (informationManager.GetInformationOnOffCheck() == false && inventoryManger.GetInventoryOnOffCheck() == false)
+        if (gameManager.GetPlayerMoveStop() == false && 
+            informationManager.GetInformationOnOffCheck() == false && 
+            inventoryManger.GetInventoryOnOffCheck() == false)
         {
             if (isHit == false)
             {

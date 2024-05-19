@@ -7,33 +7,53 @@ using UnityEngine.UI;
 
 public class UpgradeSlot : MonoBehaviour, IDropHandler
 {
-    private RectTransform rectTrs; //슬롯의 렉트트랜스폼
-
     private InventoryManger inventoryManger;
 
+    private RectTransform rectTrs;
+
+    private ItemUIData itemUIData;
+
     [Header("강화 슬롯 설정")]
-    [SerializeField] private Button upgradeButton;
-    [SerializeField] private TMP_Text percentText;
-    [SerializeField] private TMP_Text upgradeText;
-    [SerializeField] private TMP_Text coinText;
-    [SerializeField] private GameObject failText;
+    [SerializeField, Tooltip("아이템을 강화하기 위한 버튼")] private Button upgradeButton;
+    [SerializeField, Tooltip("강화 확률을 보여줄 텍스트")] private TMP_Text percentText;
+    [SerializeField, Tooltip("업그레이드 단계를 보여줄 텍스트")] private TMP_Text upgradeText;
+    [SerializeField, Tooltip("소모될 코인을 보여줄 텍스트")] private TMP_Text coinText;
+    [SerializeField, Tooltip("강화 시 하락 단계인지 알려주는 텍스트")] private GameObject failText;
 
-    private int itemType;
-    [SerializeField] private int itemIndex;
-    [SerializeField] private float weaponDamage;
-    private float weaponAttackSpeed;
-    [SerializeField] private int weaponUpgrade;
+    private int itemType; //아이템 타입
+    [SerializeField] private float weaponDamage; //무기 공격력
+    [SerializeField] private int weaponUpgrade; //무기의 강화 단계
 
-    private float weaponDamageBefore;
+    private int slotNumber; //슬롯의 번호
+
+    private float weaponDamageBefore; //변형하기 전 공격력을 담을 변수
+
+    private float failweaponDamamge; //실패했을 때 전 공격력으로 돌리기 위한 변수
+
+    private bool textOn; //업데이트문을 통해 텍스트가 지속적으로 입력되는 것을 막기 위한 변수
 
     void IDropHandler.OnDrop(PointerEventData eventData)
     {
         if (eventData.pointerDrag.gameObject.tag == "Item")
         {
-            eventData.pointerDrag.transform.SetParent(transform);
+            itemUIData = eventData.pointerDrag.GetComponent<ItemUIData>();
 
-            RectTransform eventRect = eventData.pointerDrag.GetComponent<RectTransform>();
-            eventRect.position = rectTrs.position;
+            if (itemUIData != null && itemUIData.GetItemType() < 20)
+            {
+                eventData.pointerDrag.transform.SetParent(transform);
+
+                RectTransform eventRect = eventData.pointerDrag.GetComponent<RectTransform>();
+                eventRect.position = rectTrs.position;
+
+                slotNumber = itemUIData.GetSlotNumber();
+                itemType = itemUIData.GetItemType();
+                textOn = true;
+
+                weaponDamage = inventoryManger.GetWeaponDamage(slotNumber);
+                weaponDamageBefore = inventoryManger.GetWeaponDamage(slotNumber);
+                failweaponDamamge = weaponDamageBefore;
+                weaponUpgrade = inventoryManger.GetWeaponUpgrade(slotNumber);
+            }
         }
     }
 
@@ -48,7 +68,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
 
         upgradeButton.onClick.AddListener(() =>
         {
-            if (itemIndex == 0)
+            if (itemType == 0)
             {
                 return;
             }
@@ -59,11 +79,14 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (100f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + (weaponDamageBefore * 0.1f);
+                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.1f);
 
                     percentText.text = $"강화확률 : {100}%";
                     upgradeText.text = $"+{weaponUpgrade}";
                     coinText.text = $"소모 코인 : {300}";
+
+                    inventoryManger.ItemUpgrade(slotNumber, weaponDamage);
+                    inventoryManger.SetWeaponUpgrade(slotNumber, weaponUpgrade);
                 }
 
                 inventoryManger.coinCheck(true, 100);
@@ -74,7 +97,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (100f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + (weaponDamageBefore * 0.2f);
+                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.2f);
 
                     percentText.text = $"강화확률 : {100}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -89,7 +112,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (100f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + (weaponDamageBefore * 0.3f);
+                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.3f);
 
                     percentText.text = $"강화확률 : {100}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -104,7 +127,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (80f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + (weaponDamageBefore * 0.4f);
+                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.4f);
 
                     percentText.text = $"강화확률 : {80}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -119,7 +142,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (70f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + (weaponDamageBefore * 0.5f);
+                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.5f);
 
                     percentText.text = $"강화확률 : {70}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -134,7 +157,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (60f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + (weaponDamageBefore * 0.6f);
+                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.6f);
 
                     percentText.text = $"강화확률 : {50}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -150,7 +173,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (50f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + (weaponDamageBefore * 0.7f);
+                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.7f);
 
                     percentText.text = $"강화확률 : {30}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -160,7 +183,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 else
                 {
                     weaponUpgrade--;
-                    weaponDamage = weaponDamageBefore - (weaponDamageBefore * 0.1f);
+                    weaponDamage = weaponDamage - ((int)weaponDamageBefore * 0.1f);
 
                     percentText.text = $"강화확률 : {60}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -176,7 +199,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (30f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + (weaponDamageBefore * 1.0f);
+                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 1.0f);
 
                     percentText.text = $"강화확률 : {10}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -186,7 +209,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 else
                 {
                     weaponUpgrade--;
-                    weaponDamage = weaponDamageBefore - (weaponDamageBefore * 0.1f);
+                    weaponDamage = weaponDamage - ((int)weaponDamageBefore * 0.1f);
 
                     percentText.text = $"강화확률 : {50}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -202,7 +225,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (10f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + (weaponDamageBefore * 1.5f);
+                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 1.5f);
 
                     percentText.text = $"강화확률 : {5}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -212,7 +235,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 else
                 {
                     weaponUpgrade--;
-                    weaponDamage = weaponDamageBefore - (weaponDamageBefore * 0.3f);
+                    weaponDamage = weaponDamage - ((int)weaponDamageBefore * 0.3f);
 
                     percentText.text = $"강화확률 : {30}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -228,7 +251,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (5f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + (weaponDamageBefore * 2.0f);
+                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 2.0f);
 
                     percentText.text = $"강화확률 : {0}%";
                     upgradeText.text = $"+{0}";
@@ -238,7 +261,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 else
                 {
                     weaponUpgrade--;
-                    weaponDamage = weaponDamageBefore - (weaponDamageBefore * 0.8f);
+                    weaponDamage = weaponDamage - ((int)weaponDamageBefore * 0.8f);
 
                     percentText.text = $"강화확률 : {10}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -248,6 +271,11 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
 
                 inventoryManger.coinCheck(true, 3000);
             }
+
+
+            inventoryManger.ItemUpgrade(slotNumber, weaponDamage);
+            inventoryManger.SetWeaponUpgrade(slotNumber, weaponUpgrade);
+            itemUIData.SetWeaponData(weaponDamage, weaponUpgrade);
         });
     }
 
@@ -258,101 +286,110 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
 
     private void Update()
     {
-        //if (itemIndex != 0)
-        //{
-        //    itemType = 0;
-        //    itemIndex = 0;
-        //    weaponDamage = 0;
-        //    weaponDamageBefore = 0;
-        //    weaponAttackSpeed = 0;
-        //    weaponUpgrade = 0;
-        //    percentText.text = $"강화확률 : {0}%";
-        //    upgradeText.text = $"+{0}";
-        //    coinText.text = $"소모 코인 : {0}";
-        //    failText.gameObject.SetActive(false);
-        //}
-        //else if (upgradeWeaponItem != null)
-        //{
-        //    if (weaponUpgrade == 0)
-        //    {
-        //        percentText.text = $"강화확률 : {100}%";
-        //        upgradeText.text = $"+{weaponUpgrade}";
-        //        coinText.text = $"소모 코인 :  {100}";
-        //        failText.gameObject.SetActive(false);
-        //    }
-        //    else if (weaponUpgrade == 1)
-        //    {
-        //        percentText.text = $"강화확률 : {100}%";
-        //        upgradeText.text = $"+{weaponUpgrade}";
-        //        coinText.text = $"소모 코인 :  {300}";
-        //        failText.gameObject.SetActive(false);
-        //    }
-        //    else if (weaponUpgrade == 2)
-        //    {
-        //        percentText.text = $"강화확률 : {100}%";
-        //        upgradeText.text = $"+{weaponUpgrade}";
-        //        coinText.text = $"소모 코인 :  {500}";
-        //        failText.gameObject.SetActive(false);
-        //    }
-        //    else if (weaponUpgrade == 3)
-        //    {
-        //        percentText.text = $"강화확률 : {80}%";
-        //        upgradeText.text = $"+{weaponUpgrade}";
-        //        coinText.text = $"소모 코인 :  {700}";
-        //        failText.gameObject.SetActive(false);
-        //    }
-        //    else if (weaponUpgrade == 4)
-        //    {
-        //        percentText.text = $"강화확률 : {70}%";
-        //        upgradeText.text = $"+{weaponUpgrade}";
-        //        coinText.text = $"소모 코인 :  {1000}";
-        //        failText.gameObject.SetActive(false);
-        //    }
-        //    else if (weaponUpgrade == 5)
-        //    {
-        //        percentText.text = $"강화확률 : {60}%";
-        //        upgradeText.text = $"+{weaponUpgrade}";
-        //        coinText.text = $"소모 코인 :  {1300}";
-        //        failText.gameObject.SetActive(false);
-        //    }
-        //    else if (   weaponUpgrade == 6)
-        //    {
-        //        percentText.text = $"강화확률 : {50}%";
-        //        upgradeText.text = $"+{weaponUpgrade}";
-        //        coinText.text = $"소모 코인 :  {1600}";
-        //        failText.gameObject.SetActive(false);
-        //    }
-        //    else if (weaponUpgrade == 7)
-        //    {
-        //        percentText.text = $"강화확률 : {30}%";
-        //        upgradeText.text = $"+{weaponUpgrade}";
-        //        coinText.text = $"소모 코인 :  {2000}";
-        //        failText.gameObject.SetActive(false);
-        //    }
-        //    else if (weaponUpgrade == 8)
-        //    {
-        //        percentText.text = $"강화확률 : {10}%";
-        //        upgradeText.text = $"+{weaponUpgrade}";
-        //        coinText.text = $"소모 코인 :  {2500}";
-        //        failText.gameObject.SetActive(false);
-        //    }
-        //    else if (weaponUpgrade == 9)
-        //    {
-        //        percentText.text = $"강화확률 : {5}%";
-        //        upgradeText.text = $"+{weaponUpgrade}";
-        //        coinText.text = $"소모 코인 :  {3000}";
-        //        failText.gameObject.SetActive(false);
-        //    }
-        //}
-    }
+        if (transform.Find("itemImage(Clone)") == null)
+        {
+            if (itemUIData == null)
+            {
+                return;
+            }
 
-    public void weaponData(int _itemType, int _itemIndex, float _weaponDamage, float _weaponAttackSpeed, int _weaponUpgrade)
-    {
-        itemType = _itemType;
-        itemIndex = _itemIndex;
-        weaponDamage = _weaponDamage;
-        weaponDamageBefore = _weaponDamage;
-        weaponAttackSpeed = _weaponAttackSpeed;
-        weaponUpgrade = _weaponUpgrade;
+            itemUIData = null;
+
+            slotNumber = 0;
+
+            itemType = 0;
+        }
+
+        if (itemType != 0 && textOn == true)
+        {
+            if (weaponUpgrade == 0)
+            {
+                percentText.text = $"강화확률 : {100}%";
+                upgradeText.text = $"+{weaponUpgrade}";
+                coinText.text = $"소모 코인 :  {100}";
+                failText.gameObject.SetActive(false);
+            }
+            else if (weaponUpgrade == 1)
+            {
+                percentText.text = $"강화확률 : {100}%";
+                upgradeText.text = $"+{weaponUpgrade}";
+                coinText.text = $"소모 코인 :  {300}";
+                failText.gameObject.SetActive(false);
+            }
+            else if (weaponUpgrade == 2)
+            {
+                percentText.text = $"강화확률 : {100}%";
+                upgradeText.text = $"+{weaponUpgrade}";
+                coinText.text = $"소모 코인 :  {500}";
+                failText.gameObject.SetActive(false);
+            }
+            else if (weaponUpgrade == 3)
+            {
+                percentText.text = $"강화확률 : {80}%";
+                upgradeText.text = $"+{weaponUpgrade}";
+                coinText.text = $"소모 코인 :  {700}";
+                failText.gameObject.SetActive(false);
+            }
+            else if (weaponUpgrade == 4)
+            {
+                percentText.text = $"강화확률 : {70}%";
+                upgradeText.text = $"+{weaponUpgrade}";
+                coinText.text = $"소모 코인 :  {1000}";
+                failText.gameObject.SetActive(false);
+            }
+            else if (weaponUpgrade == 5)
+            {
+                percentText.text = $"강화확률 : {60}%";
+                upgradeText.text = $"+{weaponUpgrade}";
+                coinText.text = $"소모 코인 :  {1300}";
+                failText.gameObject.SetActive(false);
+            }
+            else if (weaponUpgrade == 6)
+            {
+                percentText.text = $"강화확률 : {50}%";
+                upgradeText.text = $"+{weaponUpgrade}";
+                coinText.text = $"소모 코인 :  {1600}";
+                failText.gameObject.SetActive(false);
+            }
+            else if (weaponUpgrade == 7)
+            {
+                percentText.text = $"강화확률 : {30}%";
+                upgradeText.text = $"+{weaponUpgrade}";
+                coinText.text = $"소모 코인 :  {2000}";
+                failText.gameObject.SetActive(false);
+            }
+            else if (weaponUpgrade == 8)
+            {
+                percentText.text = $"강화확률 : {10}%";
+                upgradeText.text = $"+{weaponUpgrade}";
+                coinText.text = $"소모 코인 :  {2500}";
+                failText.gameObject.SetActive(false);
+            }
+            else if (weaponUpgrade == 9)
+            {
+                percentText.text = $"강화확률 : {5}%";
+                upgradeText.text = $"+{weaponUpgrade}";
+                coinText.text = $"소모 코인 :  {3000}";
+                failText.gameObject.SetActive(false);
+            }
+
+            textOn = false;
+        }
+        else if (itemType == 0)
+        {
+            if (weaponDamageBefore == 0)
+            {
+                return;
+            }
+
+            itemType = 0;
+            weaponDamage = 0;
+            weaponDamageBefore = 0;
+            weaponUpgrade = 0;
+            percentText.text = $"강화확률 : {0}%";
+            upgradeText.text = $"+{0}";
+            coinText.text = $"소모 코인 : {0}";
+            failText.gameObject.SetActive(false);
+        }
     }
 }

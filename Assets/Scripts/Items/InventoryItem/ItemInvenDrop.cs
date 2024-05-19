@@ -8,6 +8,8 @@ public class ItemInvenDrop : MonoBehaviour, IDropHandler
     private InventoryManger inventoryManger;
     private WearItemManager wearItemManager;
 
+    private ItemUIData itemUIData;
+
     private RectTransform rectTrs; //½½·ÔÀÇ ·ºÆ®Æ®·£½ºÆû
 
     private int slotNumber; //½½·ÔÀÇ ¹øÈ£
@@ -54,6 +56,23 @@ public class ItemInvenDrop : MonoBehaviour, IDropHandler
         inventoryManger = InventoryManger.Instance;
 
         wearItemManager = WearItemManager.Instance;
+    }
+
+    private void Update()
+    {
+        if (itemUIData == null && transform.Find("itemImage(Clone)") != null)
+        {
+            itemUIData = transform.Find("itemImage(Clone)").GetComponent<ItemUIData>();
+
+            if (itemUIData.GetSlotNumber() != slotNumber)
+            {
+                itemUIData.SetSlotNumber(slotNumber);
+            }
+        }
+        else if (itemUIData != null && transform.Find("itemImage(Clone)") == null)
+        {
+            itemUIData = null;
+        }
     }
 
     /// <summary>

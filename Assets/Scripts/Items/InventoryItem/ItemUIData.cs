@@ -15,10 +15,10 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     [SerializeField, Tooltip("아이템 텍스트")] private TMP_Text quantityText;
     private int itemIndex; //아이템 데이터에 받아올 인덱스
     private int itemType; //아이템 데이터에 받아올 타입
-    private float weaponDamage; //아이템 데이터에 받아올 무기 공격력
+    [SerializeField] private float weaponDamage; //아이템 데이터에 받아올 무기 공격력
     private float weaponAttackSpeed; //아이템 데이터에 받아올 무기 공격속도
-    private int weaponUpgrage; //아이템 데이터에 받아올 무기 강화횟수
-    private int slotNumber; //슬롯의 번호
+    [SerializeField] private int weaponUpgrage; //아이템 데이터에 받아올 무기 강화횟수
+    [SerializeField] private int slotNumber; //슬롯의 번호
 
     private RectTransform itemRectTrs; //아이템의 렉트트랜스폼
     private Transform itemParenTrs; //아이템의 부모위치
@@ -79,6 +79,15 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         quantityText.gameObject.SetActive(true);
     }
 
+    /// <summary>
+    /// 아이템을 먹었을 때 이미지를 생성하기 위한 함수
+    /// </summary>
+    /// <param name="_itemIndex"></param>
+    /// <param name="_itemType"></param>
+    /// <param name="_itemQuantity"></param>
+    /// <param name="_weaponDamage"></param>
+    /// <param name="_weaponAttackSpeed"></param>
+    /// <param name="_weaponUpgrade"></param>
     public void SetItemImage(int _itemIndex, int _itemType, int _itemQuantity, float _weaponDamage, float _weaponAttackSpeed, int _weaponUpgrade)
     {
         itemImage = GetComponent<Image>();
@@ -164,5 +173,33 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     public int GetWeaponUpgrade()
     {
         return weaponUpgrage;
+    }
+
+    /// <summary>
+    /// 슬롯의 번호를 넣어주기 위한 함수
+    /// </summary>
+    public void SetSlotNumber(int _slotNumber)
+    {
+        slotNumber = _slotNumber;
+    }
+
+    /// <summary>
+    /// 슬롯의 번호
+    /// </summary>
+    /// <returns></returns>
+    public int GetSlotNumber()
+    {
+        return slotNumber;
+    }
+
+    /// <summary>
+    /// 무기의 공격력과 강화 단계를 넣어주기 위한 함수
+    /// </summary>
+    /// <param name="_weaponDamage"></param>
+    /// <param name="_weaponUpgrade"></param>
+    public void SetWeaponData(float _weaponDamage, int _weaponUpgrade)
+    {
+        weaponDamage = _weaponDamage;
+        weaponUpgrage = _weaponUpgrade;
     }
 }

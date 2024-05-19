@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
 
     private float playerExp; //플레이어에게 전달할 경험치
 
+    private bool playerStop = false; //플레이어를 멈추게 하는 변수
+
     private void Awake()
     {
         if (Instance == null)
@@ -78,5 +80,23 @@ public class GameManager : MonoBehaviour
     public void SetCameraMoveStop(bool _cameraOnOff)
     {
         cameraObj.SetActive(_cameraOnOff);
+    }
+
+    /// <summary>
+    /// 플레이어의 움직임을 멈추게 bool 값을 넣는 함수
+    /// </summary>
+    /// <param name="_moveStop"></param>
+    public void SetPlayerMoveStop(bool _moveStop)
+    {
+        playerStop = _moveStop;
+    }
+
+    /// <summary>
+    /// 플레이어의 움직임을 멈추게 하는 bool 값을 가져오는 함수
+    /// </summary>
+    /// <returns></returns>
+    public bool GetPlayerMoveStop()
+    {
+        return playerStop;
     }
 }

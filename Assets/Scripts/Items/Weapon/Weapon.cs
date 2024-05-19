@@ -46,7 +46,7 @@ public class Weapon : MonoBehaviour
             string attackSpeedString = $"{randomAttackSpeed.ToString("F2")}";
             float attackSpeed = float.Parse(attackSpeedString);
 
-            weaponDamage = dmamge;
+            weaponDamage = (int)dmamge;
             weaponAttackSpeed = attackSpeed;
         }
         else if (type.ToString() == "Rare")
@@ -61,7 +61,7 @@ public class Weapon : MonoBehaviour
             string attackSpeedString = $"{randomAttackSpeed.ToString("F2")}";
             float attackSpeed = float.Parse(attackSpeedString);
 
-            weaponDamage = dmamge;
+            weaponDamage = (int)dmamge;
             weaponAttackSpeed = attackSpeed;
         }
         else if (type.ToString() == "Epic")
@@ -76,7 +76,7 @@ public class Weapon : MonoBehaviour
             string attackSpeedString = $"{randomAttackSpeed.ToString("F2")}";
             float attackSpeed = float.Parse(attackSpeedString);
 
-            weaponDamage = dmamge;
+            weaponDamage = (int)dmamge;
             weaponAttackSpeed = attackSpeed;
         }
         else if (type.ToString() == "Legendary")
@@ -91,7 +91,7 @@ public class Weapon : MonoBehaviour
             string attackSpeedString = $"{randomAttackSpeed.ToString("F2")}";
             float attackSpeed = float.Parse(attackSpeedString);
 
-            weaponDamage = dmamge;
+            weaponDamage = (int)dmamge;
             weaponAttackSpeed = attackSpeed;
         }
         else if (type.ToString() == "Mythology")
