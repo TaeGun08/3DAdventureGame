@@ -229,15 +229,18 @@ public class InputController : MonoBehaviour
 
         if (pickUpColl.Length != 0)
         {
-            Collider collision = getClosedCollider(pickUpColl);
-
-            if (collision.gameObject.tag == "Item")
+            for (int i = 0; i < pickUpColl.Length; i++)
             {
-                collision.gameObject.transform.position += (transform.position - collision.gameObject.transform.position) * 3f * Time.deltaTime;
-                float checkDistance = Vector3.Distance(collision.gameObject.transform.position, transform.position);
-                if (checkDistance <= 1f)
+                Collider collision = pickUpColl[i];
+
+                if (collision.gameObject.tag == "Item")
                 {
-                    inventoryManger.SetItem(collision.gameObject);
+                    collision.gameObject.transform.position += (transform.position - collision.gameObject.transform.position) * 3f * Time.deltaTime;
+                    float checkDistance = Vector3.Distance(collision.gameObject.transform.position, transform.position);
+                    if (checkDistance <= 1f)
+                    {
+                        inventoryManger.SetItem(collision.gameObject);
+                    }
                 }
             }
         }
