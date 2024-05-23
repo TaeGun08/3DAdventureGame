@@ -703,6 +703,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void wearItemCheck()
     {
+        #region ¹«±â ÀåÂø
         if (wearItemManager.GetWearWeapon() != null && weapon == null)
         {
             GameObject weaponObj = Instantiate(wearItemManager.GetWearWeapon(), playerBackTrs.transform);
@@ -734,6 +735,9 @@ public class InputController : MonoBehaviour
             Destroy(weapon);
             idleChange = 0;
         }
+        #endregion
+
+        
     }
 
     /// <summary>

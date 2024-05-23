@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     private InventoryManger inventoryManger;
 
@@ -19,6 +19,7 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     private float weaponAttackSpeed; //아이템 데이터에 받아올 무기 공격속도
     [SerializeField] private int weaponUpgrage; //아이템 데이터에 받아올 무기 강화횟수
     [SerializeField] private int slotNumber; //슬롯의 번호
+    private int itemQuantity; //아이템 개수
 
     private RectTransform itemRectTrs; //아이템의 렉트트랜스폼
     private Transform itemParenTrs; //아이템의 부모위치
@@ -66,6 +67,19 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         inventoryManger.ItemParentA(null);
     }
 
+    void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.clickCount == 2)
+        {
+            Debug.Log(eventData);
+            inventoryManger.useItemCheck(slotNumber);
+            itemQuantity--;
+            quantityText.text = $"x {itemQuantity}";
+
+            eventData.clickCount = 0;
+        }
+    }
+
     private void Awake()
     {
         itemRectTrs = GetComponent<RectTransform>();
@@ -97,6 +111,7 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         weaponDamage = _weaponDamage;
         weaponAttackSpeed = _weaponAttackSpeed;
         weaponUpgrage = _weaponUpgrade;
+        itemQuantity = _itemQuantity;
 
         switch (_itemIndex)
         {
@@ -115,12 +130,33 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
             case 104:
                 itemImage.sprite = itemSprite[4];
                 break;
-            case 200:
+            case 111:
                 itemImage.sprite = itemSprite[5];
+                break;
+            case 112:
+                itemImage.sprite = itemSprite[6];
+                break;
+            case 113:
+                itemImage.sprite = itemSprite[7];
+                break;
+            case 114:
+                itemImage.sprite = itemSprite[8];
+                break;
+            case 121:
+                itemImage.sprite = itemSprite[9];
+                break;
+            case 122:
+                itemImage.sprite = itemSprite[10];
+                break;
+            case 131:
+                itemImage.sprite = itemSprite[11];
+                break;
+            case 200:
+                itemImage.sprite = itemSprite[12];
                 break;
         }
 
-        if (_itemType != 10)
+        if (_itemType >= 20)
         {
             quantityText.text = $"x {_itemQuantity}";
         }

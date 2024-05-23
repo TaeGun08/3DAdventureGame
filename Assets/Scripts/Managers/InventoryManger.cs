@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class InventoryManger : MonoBehaviour
 {
@@ -28,7 +29,7 @@ public class InventoryManger : MonoBehaviour
     [SerializeField, Tooltip("캔버스")] private Canvas canvas;
     [SerializeField, Tooltip("슬롯")] private GameObject slotPrefab;
     [SerializeField, Tooltip("아이템")] private GameObject itemPrefab;
-    private List<GameObject> itemList = new List<GameObject>(); //아이템 리스트
+    [SerializeField] private List<GameObject> itemList = new List<GameObject>(); //아이템 리스트
     [SerializeField, Tooltip("슬롯을 생성할 위치")] private Transform contentTrs;
     private List<Transform> slotTrs = new List<Transform>(); //아이템이 생성될 때 넣어 줄 위치
     [Space]
@@ -45,13 +46,13 @@ public class InventoryManger : MonoBehaviour
     private int slotIndex = 12; //슬롯을 생성할 인덱스
 
     [SerializeField] private int coin; //인벤토리에 있는 코인의 개수
-    private List<int> itemSlotIndex = new List<int>(); // 아이템이 존재하는 위치
-    private List<int> itemIndex = new List<int>(); //아이템 인덱스
-    private List<int> itemType = new List<int>(); //아이템 타입
-    private List<int> itemQuantity = new List<int>(); //아이템 개수
-    [SerializeField] private List<float> weaponDamage = new List<float>(); //무기 공격력
+    [SerializeField] private List<int> itemSlotIndex = new List<int>(); // 아이템이 존재하는 위치
+    [SerializeField] private List<int> itemIndex = new List<int>(); //아이템 인덱스
+    [SerializeField] private List<int> itemType = new List<int>(); //아이템 타입
+    [SerializeField] private List<int> itemQuantity = new List<int>(); //아이템 개수
+    private List<float> weaponDamage = new List<float>(); //무기 공격력
     private List<float> weaponAttackSpeed = new List<float>(); //무기 공격속도
-    [SerializeField] private List<int> weaponUpgrade = new List<int>(); //무기 강화횟수
+    private List<int> weaponUpgrade = new List<int>(); //무기 강화횟수
 
     private List<int> swapItem = new List<int>(); //아이템을 스왑할 슬롯의 번호를 받아올 변수
 
@@ -557,6 +558,16 @@ public class InventoryManger : MonoBehaviour
         setSaveItem();
     }
 
+    /// <summary>
+    /// 아이템을 생성하는 함수
+    /// </summary>
+    /// <param name="_slotNumber"></param>
+    /// <param name="_itemParent"></param>
+    /// <param name="_itemType"></param>
+    /// <param name="_itemIndex"></param>
+    /// <param name="_weaponDamage"></param>
+    /// <param name="_weaponAttackSpeed"></param>
+    /// <param name="_weaponUpgrade"></param>
     public void ItemInstantaite(int _slotNumber, GameObject _itemParent, int _itemType, int _itemIndex,
         float _weaponDamage, float _weaponAttackSpeed, int _weaponUpgrade)
     {
@@ -654,6 +665,149 @@ public class InventoryManger : MonoBehaviour
     public void SetWeaponUpgrade(int _slotIndex, int _weaponUpgrade)
     {
         weaponUpgrade[_slotIndex] = _weaponUpgrade;
+
+        setSaveItem();
+    }
+
+    /// <summary>
+    /// 아이템을 샀을 때 인벤토리에 생성하게 해주는 함수
+    /// </summary>
+    public void buyItem(int _itemType)
+    {
+        #region
+        if (_itemType >= 20) //장비가 아니라면 99개까지 아이템이 합쳐짐
+        {
+            int count = itemSlotIndex.Count;
+
+            for (int i = 0; i < count; i++)
+            {
+                if (itemType[i] == 0)
+                {
+                    itemSlotIndex[i] = 1;
+                    itemIndex[i] = 200;
+                    itemType[i] = 20;
+                    itemQuantity[i] = 1;
+
+                    GameObject itemObj = Instantiate(itemPrefab, slotTrs[i]);
+                    ItemUIData itemUISc = itemObj.GetComponent<ItemUIData>();
+                    itemUISc.SetItemImage(itemIndex[i], itemType[i], itemQuantity[i], weaponDamage[i], weaponAttackSpeed[i], weaponUpgrade[i]);
+                    itemList[i] = itemObj;
+
+                    setSaveItem();
+
+                    return;
+                }
+                else if (itemType[i] == _itemType && itemQuantity[i] < 99)
+                {
+                    itemQuantity[i]++;
+
+                    ItemUIData itemUISc = itemList[i].GetComponent<ItemUIData>();
+                    itemUISc.SetItemImage(itemIndex[i], itemType[i], itemQuantity[i], weaponDamage[i], weaponAttackSpeed[i], weaponUpgrade[i]);
+
+                    setSaveItem();
+
+                    return;
+                }
+            }
+        }
+        #endregion
+
+        for (int i = 0; i < slotIndex; i++)
+        {
+            if (itemType[i] == 0)
+            {
+                if (_itemType == 11)
+                {
+                    itemIndex[i] = 111;
+                    itemType[i] = 11;
+                    itemQuantity[i] = 1;
+
+                    GameObject itemObj = Instantiate(itemPrefab, slotTrs[i]);
+                    itemList[i] = itemObj;
+                    ItemUIData itemUISc = itemObj.GetComponent<ItemUIData>();
+                    itemUISc.SetItemImage(itemIndex[i], itemType[i], 1, weaponDamage[i], weaponAttackSpeed[i], weaponUpgrade[i]);
+
+                    itemSlotIndex[i] = 1;
+
+                    setSaveItem();
+
+                    return;
+                }
+                else if (_itemType == 12)
+                {
+                    itemIndex[i] = 112;
+                    itemType[i] = 12;
+                    itemQuantity[i] = 1;
+
+                    GameObject itemObj = Instantiate(itemPrefab, slotTrs[i]);
+                    itemList[i] = itemObj;
+                    ItemUIData itemUISc = itemObj.GetComponent<ItemUIData>();
+                    itemUISc.SetItemImage(itemIndex[i], itemType[i], 1, weaponDamage[i], weaponAttackSpeed[i], weaponUpgrade[i]);
+
+                    itemSlotIndex[i] = 1;
+
+                    setSaveItem();
+
+                    return;
+                }
+                else if (_itemType == 13)
+                {
+                    itemIndex[i] = 113;
+                    itemType[i] = 13;
+                    itemQuantity[i] = 1;
+
+                    GameObject itemObj = Instantiate(itemPrefab, slotTrs[i]);
+                    itemList[i] = itemObj;
+                    ItemUIData itemUISc = itemObj.GetComponent<ItemUIData>();
+                    itemUISc.SetItemImage(itemIndex[i], itemType[i], 1, weaponDamage[i], weaponAttackSpeed[i], weaponUpgrade[i]);
+
+                    itemSlotIndex[i] = 1;
+
+                    setSaveItem();
+
+                    return;
+                }
+                else if (_itemType == 14)
+                {
+                    itemIndex[i] = 114;
+                    itemType[i] = 14;
+                    itemQuantity[i] = 1;
+
+                    GameObject itemObj = Instantiate(itemPrefab, slotTrs[i]);
+                    itemList[i] = itemObj;
+                    ItemUIData itemUISc = itemObj.GetComponent<ItemUIData>();
+                    itemUISc.SetItemImage(itemIndex[i], itemType[i], 1, weaponDamage[i], weaponAttackSpeed[i], weaponUpgrade[i]);
+
+                    itemSlotIndex[i] = 1;
+
+                    setSaveItem();
+
+                    return;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 아이템을 사용할 수 있게 하는 함수
+    /// </summary>
+    /// <param name="_slotNumber"></param>
+    public void useItemCheck(int _slotNumber)
+    {
+        itemQuantity[_slotNumber] -= 1;
+
+        if (itemQuantity[_slotNumber] < 1)
+        {
+            itemSlotIndex[_slotNumber] = 0;
+            itemIndex[_slotNumber] = 0;
+            itemType[_slotNumber] = 0;
+            itemQuantity[_slotNumber] = 0;
+            weaponDamage[_slotNumber] = 0;
+            weaponAttackSpeed[_slotNumber] = 0;
+            weaponUpgrade[_slotNumber] = 0;
+            Destroy(itemList[_slotNumber]);
+            itemList[_slotNumber] = null;
+        }
 
         setSaveItem();
     }

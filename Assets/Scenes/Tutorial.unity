@@ -944,7 +944,7 @@ GameObject:
   - component: {fileID: 74005535}
   - component: {fileID: 74005534}
   m_Layer: 0
-  m_Name: Button
+  m_Name: ConsultationBuy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9856,6 +9856,7 @@ Transform:
   - {fileID: 1831749020}
   - {fileID: 843763646}
   - {fileID: 192830553}
+  - {fileID: 1844196660}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -13706,7 +13707,7 @@ GameObject:
   - component: {fileID: 1481095462}
   - component: {fileID: 1481095461}
   m_Layer: 0
-  m_Name: Button
+  m_Name: HeadBuy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13919,7 +13920,7 @@ GameObject:
   - component: {fileID: 1509073656}
   - component: {fileID: 1509073655}
   m_Layer: 0
-  m_Name: Button
+  m_Name: ShoesBuy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14488,7 +14489,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -400, y: 350}
+  m_AnchoredPosition: {x: 400, y: 350}
   m_SizeDelta: {x: 400, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1546918890
@@ -16964,13 +16965,66 @@ MonoBehaviour:
   canvas: {fileID: 1318848046}
   slotPrefab: {fileID: 8238612564341846360, guid: 0f2fa36f8f64f954d9c2040c87bb0e50, type: 3}
   itemPrefab: {fileID: 2544544534314717746, guid: deda5bb7a831eeb4d97bf469e2b48eb0, type: 3}
+  itemList: []
   contentTrs: {fileID: 139284306}
   closeButton: {fileID: 1290512477}
   InventoryObj: {fileID: 1655989547}
   coinText: {fileID: 1621540606}
   coin: 0
-  weaponDamage: []
-  weaponUpgrade: 
+  itemSlotIndex: 
+  itemIndex: 
+  itemType: 
+  itemQuantity: 
+--- !u!1 &1844196659
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1844196660}
+  - component: {fileID: 1844196661}
+  m_Layer: 0
+  m_Name: StoreManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1844196660
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1844196659}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1049534859}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1844196661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1844196659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca202881ac2cda448a8c7850c73c4061, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buyButton:
+  - {fileID: 1876523876}
+  - {fileID: 1481095461}
+  - {fileID: 74005534}
+  - {fileID: 2119758096}
+  - {fileID: 1509073655}
 --- !u!4 &1845077794 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6017873497511764133, guid: 9068a7dff67bef744b5b1afb1194a5c3, type: 3}
@@ -17050,7 +17104,7 @@ GameObject:
   - component: {fileID: 1876523877}
   - component: {fileID: 1876523876}
   m_Layer: 0
-  m_Name: Button
+  m_Name: PotionBuy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19105,7 +19159,7 @@ GameObject:
   - component: {fileID: 2119758097}
   - component: {fileID: 2119758096}
   m_Layer: 0
-  m_Name: Button
+  m_Name: BottomBuy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
