@@ -78,7 +78,14 @@ public class WearItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         weaponAttackSpeed = _weaponAttackSpeed;
         weaponUpgrade = _weaponUpgrade;
 
-        wearItemManager.SetWearItem(_itemType, _itemIndex, _weaponDamage, _weaponAttackSpeed, _weaponUpgrade);
+        if (_itemType == 10)
+        {
+            wearItemManager.SetWearItem(_itemType, _itemIndex, _weaponDamage, _weaponAttackSpeed, _weaponUpgrade);
+        }
+        else
+        {
+            wearItemManager.SetWearItem(_itemType, _itemIndex, 0, 0, 0);
+        }
 
         switch (_itemIndex)
         {
@@ -96,6 +103,27 @@ public class WearItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
                 break;
             case 104:
                 itemImage.sprite = itemSprite[4];
+                break;
+            case 111:
+                itemImage.sprite = itemSprite[5];
+                break;
+            case 112:
+                itemImage.sprite = itemSprite[6];
+                break;
+            case 113:
+                itemImage.sprite = itemSprite[7];
+                break;
+            case 114:
+                itemImage.sprite = itemSprite[8];
+                break;
+            case 121:
+                itemImage.sprite = itemSprite[9];
+                break;
+            case 122:
+                itemImage.sprite = itemSprite[10];
+                break;
+            case 131:
+                itemImage.sprite = itemSprite[11];
                 break;
         }
     }

@@ -10359,7 +10359,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1204302545
 Transform:
   m_ObjectHideFlags: 0
@@ -16965,16 +16965,11 @@ MonoBehaviour:
   canvas: {fileID: 1318848046}
   slotPrefab: {fileID: 8238612564341846360, guid: 0f2fa36f8f64f954d9c2040c87bb0e50, type: 3}
   itemPrefab: {fileID: 2544544534314717746, guid: deda5bb7a831eeb4d97bf469e2b48eb0, type: 3}
-  itemList: []
   contentTrs: {fileID: 139284306}
   closeButton: {fileID: 1290512477}
   InventoryObj: {fileID: 1655989547}
   coinText: {fileID: 1621540606}
   coin: 0
-  itemSlotIndex: 
-  itemIndex: 
-  itemType: 
-  itemQuantity: 
 --- !u!1 &1844196659
 GameObject:
   m_ObjectHideFlags: 0

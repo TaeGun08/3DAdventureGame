@@ -21,14 +21,11 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
     [SerializeField, Tooltip("강화 시 하락 단계인지 알려주는 텍스트")] private GameObject failText;
 
     private int itemType; //아이템 타입
+    private int itemIndex; //아이템 인덱스
     [SerializeField] private float weaponDamage; //무기 공격력
     [SerializeField] private int weaponUpgrade; //무기의 강화 단계
 
     private int slotNumber; //슬롯의 번호
-
-    private float weaponDamageBefore; //변형하기 전 공격력을 담을 변수
-
-    private float failweaponDamamge; //실패했을 때 전 공격력으로 돌리기 위한 변수
 
     private bool textOn; //업데이트문을 통해 텍스트가 지속적으로 입력되는 것을 막기 위한 변수
 
@@ -47,11 +44,10 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
 
                 slotNumber = itemUIData.GetSlotNumber();
                 itemType = itemUIData.GetItemType();
+                itemIndex = itemUIData.GetItemIndex();
                 textOn = true;
 
                 weaponDamage = inventoryManger.GetWeaponDamage(slotNumber);
-                weaponDamageBefore = inventoryManger.GetWeaponDamage(slotNumber);
-                failweaponDamamge = weaponDamageBefore;
                 weaponUpgrade = inventoryManger.GetWeaponUpgrade(slotNumber);
             }
         }
@@ -66,6 +62,24 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
         coinText.text = $"소모 코인 : {0}";
         failText.SetActive(false);
 
+        tryUpgrade();
+    }
+
+    private void Start()
+    {
+        inventoryManger = InventoryManger.Instance;
+    }
+
+    private void Update()
+    {
+        gearCheck();
+    }
+
+    /// <summary>
+    /// 강화를 하는 함수
+    /// </summary>
+    private void tryUpgrade()
+    {
         upgradeButton.onClick.AddListener(() =>
         {
             if (itemType == 0)
@@ -79,7 +93,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (100f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.1f);
+                    weaponDamage += upgradeSuccessAndFailCheck(true, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {100}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -97,7 +111,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (100f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.2f);
+                    weaponDamage += upgradeSuccessAndFailCheck(true, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {100}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -112,7 +126,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (100f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.3f);
+                    weaponDamage += upgradeSuccessAndFailCheck(true, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {100}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -127,7 +141,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (80f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.4f);
+                    weaponDamage += upgradeSuccessAndFailCheck(true, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {80}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -142,7 +156,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (70f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.5f);
+                    weaponDamage += upgradeSuccessAndFailCheck(true, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {70}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -157,7 +171,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (60f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.6f);
+                    weaponDamage += upgradeSuccessAndFailCheck(true, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {50}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -173,7 +187,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (50f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 0.7f);
+                    weaponDamage += upgradeSuccessAndFailCheck(true, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {30}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -183,7 +197,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 else
                 {
                     weaponUpgrade--;
-                    weaponDamage = weaponDamage - ((int)weaponDamageBefore * 0.1f);
+                    weaponDamage += upgradeSuccessAndFailCheck(true, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {60}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -199,7 +213,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (30f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 1.0f);
+                    weaponDamage += upgradeSuccessAndFailCheck(true, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {10}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -209,7 +223,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 else
                 {
                     weaponUpgrade--;
-                    weaponDamage = weaponDamage - ((int)weaponDamageBefore * 0.1f);
+                    weaponDamage += upgradeSuccessAndFailCheck(false, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {50}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -225,7 +239,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (10f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 1.5f);
+                    weaponDamage += upgradeSuccessAndFailCheck(true, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {5}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -235,7 +249,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 else
                 {
                     weaponUpgrade--;
-                    weaponDamage = weaponDamage - ((int)weaponDamageBefore * 0.3f);
+                    weaponDamage += upgradeSuccessAndFailCheck(false, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {30}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -251,7 +265,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 if (5f >= upgradePer)
                 {
                     weaponUpgrade++;
-                    weaponDamage = weaponDamageBefore + ((int)weaponDamageBefore * 2.0f);
+                    weaponDamage += upgradeSuccessAndFailCheck(true, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {0}%";
                     upgradeText.text = $"+{0}";
@@ -261,7 +275,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
                 else
                 {
                     weaponUpgrade--;
-                    weaponDamage = weaponDamage - ((int)weaponDamageBefore * 0.8f);
+                    weaponDamage += upgradeSuccessAndFailCheck(false, itemIndex, weaponUpgrade);
 
                     percentText.text = $"강화확률 : {10}%";
                     upgradeText.text = $"+{weaponUpgrade}";
@@ -279,12 +293,77 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
         });
     }
 
-    private void Start()
+    /// <summary>
+    /// 강화를 성공했는지 실패했는지 체크한 후 값을 반환하는 함수
+    /// </summary>
+    /// <param name="_success"></param>
+    /// <param name="_itemIndex"></param>
+    /// <param name="_upgrade"></param>
+    /// <returns></returns>
+    private int upgradeSuccessAndFailCheck(bool _success, int _itemIndex, int _upgrade)
     {
-        inventoryManger = InventoryManger.Instance;
+        if (_success)
+        {
+            if (itemIndex == 100)
+            {
+                return 1;
+            }
+            else if (itemIndex == 101)
+            {
+                return 3;
+            }
+            else if (itemIndex == 102)
+            {
+                return 5;
+            }
+            else if (itemIndex == 103)
+            {
+                return 7;
+            }
+            else if (itemIndex == 104)
+            {
+                return 10;
+            }
+            else if (itemIndex == 105)
+            {
+                return 20;
+            }
+        }
+        else
+        {
+            if (itemIndex == 100)
+            {
+                return -1;
+            }
+            else if (itemIndex == 101)
+            {
+                return -3;
+            }
+            else if (itemIndex == 102)
+            {
+                return -5;
+            }
+            else if (itemIndex == 103)
+            {
+                return -7;
+            }
+            else if (itemIndex == 104)
+            {
+                return -10;
+            }
+            else if (itemIndex == 105)
+            {
+                return -20;
+            }
+        }
+
+        return 0;
     }
 
-    private void Update()
+    /// <summary>
+    /// 장비가 강화슬롯에 있는지 없는지 체크하기 위한 함수
+    /// </summary>
+    private void gearCheck()
     {
         if (transform.Find("itemImage(Clone)") == null)
         {
@@ -377,19 +456,46 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
         }
         else if (itemType == 0)
         {
-            if (weaponDamageBefore == 0)
+            if (weaponDamage == 0)
             {
                 return;
             }
 
             itemType = 0;
             weaponDamage = 0;
-            weaponDamageBefore = 0;
             weaponUpgrade = 0;
             percentText.text = $"강화확률 : {0}%";
             upgradeText.text = $"+{0}";
             coinText.text = $"소모 코인 : {0}";
             failText.gameObject.SetActive(false);
         }
+    }
+
+    /// <summary>
+    /// 슬롯의 번호를 반환하는 함수
+    /// </summary>
+    /// <returns></returns>
+    public int SlotNumber()
+    {
+        return slotNumber;
+    }
+
+    /// <summary>
+    /// 아이템UI데이터 스크립트를 가진 오브젝트의 트랜스폼을 반환하는 함수
+    /// </summary>
+    /// <returns></returns>
+    public Transform iItemUIDataTrs()
+    {
+        return itemUIData.transform;
+    }
+
+    /// <summary>
+    /// 아이템UI데이터 스크립트를 가진 오브젝트의 트랜스폼을 변경하는 함수
+    /// </summary>
+    /// <returns></returns>
+    public void iItemUIDataTrsChange(Transform _trs)
+    {
+         itemUIData.transform.SetParent(_trs);
+        itemUIData.transform.position = _trs.position;
     }
 }

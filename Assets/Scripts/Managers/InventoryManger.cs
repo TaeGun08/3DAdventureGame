@@ -29,7 +29,7 @@ public class InventoryManger : MonoBehaviour
     [SerializeField, Tooltip("캔버스")] private Canvas canvas;
     [SerializeField, Tooltip("슬롯")] private GameObject slotPrefab;
     [SerializeField, Tooltip("아이템")] private GameObject itemPrefab;
-    [SerializeField] private List<GameObject> itemList = new List<GameObject>(); //아이템 리스트
+    private List<GameObject> itemList = new List<GameObject>(); //아이템 리스트
     [SerializeField, Tooltip("슬롯을 생성할 위치")] private Transform contentTrs;
     private List<Transform> slotTrs = new List<Transform>(); //아이템이 생성될 때 넣어 줄 위치
     [Space]
@@ -46,10 +46,10 @@ public class InventoryManger : MonoBehaviour
     private int slotIndex = 12; //슬롯을 생성할 인덱스
 
     [SerializeField] private int coin; //인벤토리에 있는 코인의 개수
-    [SerializeField] private List<int> itemSlotIndex = new List<int>(); // 아이템이 존재하는 위치
-    [SerializeField] private List<int> itemIndex = new List<int>(); //아이템 인덱스
-    [SerializeField] private List<int> itemType = new List<int>(); //아이템 타입
-    [SerializeField] private List<int> itemQuantity = new List<int>(); //아이템 개수
+    private List<int> itemSlotIndex = new List<int>(); // 아이템이 존재하는 위치
+    private List<int> itemIndex = new List<int>(); //아이템 인덱스
+    private List<int> itemType = new List<int>(); //아이템 타입
+    private List<int> itemQuantity = new List<int>(); //아이템 개수
     private List<float> weaponDamage = new List<float>(); //무기 공격력
     private List<float> weaponAttackSpeed = new List<float>(); //무기 공격속도
     private List<int> weaponUpgrade = new List<int>(); //무기 강화횟수
@@ -810,5 +810,15 @@ public class InventoryManger : MonoBehaviour
         }
 
         setSaveItem();
+    }
+
+    /// <summary>
+    /// 슬롯의 위치를 넘겨주기 위한 함수
+    /// </summary>
+    /// <param name="_slotNumber"></param>
+    /// <returns></returns>
+    public Transform SlotTrs(int _slotNumber)
+    {
+        return slotTrs[_slotNumber];
     }
 }

@@ -14,6 +14,9 @@ public class WearItemManager : MonoBehaviour
         public float wearWeaponDamage;
         public float wearWeaponAttackSpeed;
         public int wearWeaponUpgrade;
+
+        public List<int> wearGearType = new List<int>();
+        public List<int> wearGearIndex = new List<int>();
     }
 
     private WearItem wearItem = new WearItem();
@@ -27,6 +30,9 @@ public class WearItemManager : MonoBehaviour
     [SerializeField] private float weaponAttackSpeed; //아이템 데이터에 받아올 공격속도
     private int wearWeaponUpgrade; //아이템 테이터에 받아올 강화횟수
 
+    private List<int> wearGearType = new List<int>();
+    private List<int> wearGearIndex = new List<int>();
+
     private void Awake()
     {
         if (Instance == null)
@@ -36,6 +42,12 @@ public class WearItemManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+
+        for (int i = 0; i < 7; i++)
+        {
+            wearGearType.Add(0);
+            wearGearIndex.Add(0);
         }
 
         if (PlayerPrefs.GetString("wearItemSaveKey") != string.Empty)
@@ -51,6 +63,12 @@ public class WearItemManager : MonoBehaviour
             wearItem.wearWeaponDamage = 0;
             wearItem.wearWeaponAttackSpeed = 0;
             wearItem.wearWeaponUpgrade = 0;
+
+            for (int i = 0; i < 7; i++)
+            {
+                wearItem.wearGearType.Add(0);
+                wearItem.wearGearIndex.Add(0);
+            }
         }
     }
 
@@ -65,24 +83,68 @@ public class WearItemManager : MonoBehaviour
         weaponDamage = _wearItem.wearWeaponDamage;
         weaponAttackSpeed = _wearItem.wearWeaponAttackSpeed;
         wearWeaponUpgrade = _wearItem.wearWeaponUpgrade;
+
+        for (int i = 0; i < 7; i++)
+        {
+            wearGearType[i] = _wearItem.wearGearType[i];
+            wearGearIndex[i] = _wearItem.wearGearIndex[i];
+        }
     }
 
-    public void SetWearItem(int _weaponType, int _weaponIndex, float _weaponDamage, float _weaponAttackSpeed, int _weaponUpgrade)
+    public void SetWearItem(int _itemType, int _itemIndex, float _weaponDamage, float _weaponAttackSpeed, int _weaponUpgrade)
     {
-        weaponType = _weaponType;
-        wearItem.wearWeaponType = _weaponType;
+        if (_itemType == 10)
+        {
+            weaponType = _itemType;
+            wearItem.wearWeaponType = _itemType;
 
-        weaponIndex = _weaponIndex;
-        wearItem.wearWeaponIndex = _weaponIndex;
+            weaponIndex = _itemIndex;
+            wearItem.wearWeaponIndex = _itemIndex;
 
-        weaponDamage = _weaponDamage;
-        wearItem.wearWeaponDamage = _weaponDamage;
+            weaponDamage = _weaponDamage;
+            wearItem.wearWeaponDamage = _weaponDamage;
 
-        weaponAttackSpeed = _weaponAttackSpeed;
-        wearItem.wearWeaponAttackSpeed = _weaponAttackSpeed;
+            weaponAttackSpeed = _weaponAttackSpeed;
+            wearItem.wearWeaponAttackSpeed = _weaponAttackSpeed;
 
-        wearWeaponUpgrade = _weaponUpgrade;
-        wearItem.wearWeaponUpgrade = _weaponUpgrade;
+            wearWeaponUpgrade = _weaponUpgrade;
+            wearItem.wearWeaponUpgrade = _weaponUpgrade;
+        }
+        else if (_itemType > 10)
+        {
+            if (_itemType == 11)
+            {
+                wearGearType[0] = _itemType;
+                wearGearIndex[0] = _itemIndex;
+
+                wearItem.wearGearType[0] = _itemType;
+                wearItem.wearGearIndex[0] = _itemIndex;
+            }
+            else if (_itemType == 12)
+            {
+                wearGearType[1] = _itemType;
+                wearGearIndex[1] = _itemIndex;
+
+                wearItem.wearGearType[1] = _itemType;
+                wearItem.wearGearIndex[1] = _itemIndex;
+            }
+            else if (_itemType == 13)
+            {
+                wearGearType[2] = _itemType;
+                wearGearIndex[2] = _itemIndex;
+
+                wearItem.wearGearType[2] = _itemType;
+                wearItem.wearGearIndex[2] = _itemIndex;
+            }
+            else if (_itemType == 14)
+            {
+                wearGearType[3] = _itemType;
+                wearGearIndex[3] = _itemIndex;
+
+                wearItem.wearGearType[3] = _itemType;
+                wearItem.wearGearIndex[3] = _itemIndex;
+            }
+        }
 
         string setWearItem = JsonConvert.SerializeObject(wearItem);
         PlayerPrefs.SetString("wearItemSaveKey", setWearItem);
@@ -156,6 +218,27 @@ public class WearItemManager : MonoBehaviour
         return wearWeaponUpgrade;
     }
 
+    /// <summary>
+    /// 무기의 타입
+    /// </summary>
+    /// <returns></returns>
+    public int GetItemType(int _type)
+    {
+        return wearGearType[_type];
+    }
+
+    /// <summary>
+    /// 무기의 인덱스를 반환하는 함수
+    /// </summary>
+    /// <returns></returns>
+    public int GetItemIndex(int _index)
+    {
+        return wearGearIndex[_index];
+    }
+
+    /// <summary>
+    /// 장착한 아이템을 인벤토리에 놓았을 때 저장된 값을 변경해주기 위한 함수
+    /// </summary>
     public void WearWeaponDisarm()
     {
         weaponType = 0;
@@ -172,6 +255,15 @@ public class WearItemManager : MonoBehaviour
 
         wearWeaponUpgrade = 0;
         wearItem.wearWeaponUpgrade = 0;
+
+        for (int i = 0; i < 7; i++)
+        {
+            wearGearType[i] = 0;
+            wearGearIndex[i] = 0;
+
+            wearItem.wearGearType[i] = 0;
+            wearItem.wearGearIndex[i] = 0;
+        }
 
         string setWearItem = JsonConvert.SerializeObject(wearItem);
         PlayerPrefs.SetString("wearItemSaveKey", setWearItem);
