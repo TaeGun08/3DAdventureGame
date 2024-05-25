@@ -14,6 +14,8 @@ public class PlayerStateManager : MonoBehaviour
     [SerializeField, Tooltip("화면에 출력할 스테미너바")] private Image playerStaminaBar;
     [SerializeField, Tooltip("화면에 출력할 경험치바")] private Image playerExpBar;
 
+    private float curHp = 1f; //현재 체력
+
     private void Awake()
     {
         if (Instance == null)
@@ -23,6 +25,18 @@ public class PlayerStateManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void Update()
+    {
+        if ((curHp + 0.001) < playerHpBar.fillAmount)
+        {
+            playerHpBar.fillAmount -= Time.deltaTime;
+        }
+        else if ((curHp - 0.001) > playerHpBar.fillAmount)
+        {
+            playerHpBar.fillAmount += Time.deltaTime;
         }
     }
 
@@ -36,13 +50,13 @@ public class PlayerStateManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 플레이어의 현재 스테미너 최대 스테미너를 나눠 이미지로 표현할 수 있게 해주는 함수
+    /// 플레이어의 현재 체력 최대 체력을 나눠 이미지로 표현할 수 있게 해주는 함수
     /// </summary>
     /// <param name="_curStamina"></param>
     /// <param name="_maxStamina"></param>
     public void SetPlayerHpBar(float _curHp, float _maxHp)
     {
-        playerHpBar.fillAmount = _curHp / _maxHp;
+        curHp = _curHp / _maxHp;
     }
 
     /// <summary>

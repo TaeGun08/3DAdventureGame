@@ -121,6 +121,7 @@ public class InputController : MonoBehaviour
         else
         {
             gameManager.SetGamePause(false);
+            gameManager.MousePonterLockCheck();
         }
 
         playerTimers();
@@ -129,10 +130,13 @@ public class InputController : MonoBehaviour
         playerBarCheck();
         wearItemCheck();
         checkNotPickUpItem();
+        playerHealCheck();
 
         if (gameManager.GetPlayerMoveStop() == false && 
-            informationManager.GetInformationOnOffCheck() == false && 
-            inventoryManger.GetInventoryOnOffCheck() == false)
+            gameManager.SetUIOpenCheck(1) == false && 
+            gameManager.SetUIOpenCheck(2) == false &&
+            gameManager.SetUIOpenCheck(3) == false && 
+            gameManager.SetUIOpenCheck(4) == false)
         {
             if (isHit == false)
             {
@@ -158,11 +162,6 @@ public class InputController : MonoBehaviour
             anim.SetFloat("VeticalMove", 0f);
             anim.SetFloat("HorizontalMove", 0f);
             gameManager.SetCameraMoveStop(false);
-        }
-
-        if (informationManager.GetStatUpCheck() == true)
-        {
-            playerStatusCheck();
         }
     }
 
@@ -410,11 +409,13 @@ public class InputController : MonoBehaviour
         {
             if (idleChange == 0)
             {
-                characterController.Move(Quaternion.Euler(diveVec) * new Vector3(0f, 0f, (moveSpeed + 1) * 1.5f) * Time.deltaTime);
+                //characterController.Move(transform.rotation * moveVec * 1.6f * Time.deltaTime);
+                characterController.Move(transform.forward * moveSpeed * 1.6f * Time.deltaTime);
             }
             else
             {
-                characterController.Move(Quaternion.Euler(diveVec) * new Vector3(0f, 0f, (moveSpeed + 1) * 1.2f) * Time.deltaTime);
+                //characterController.Move(transform.rotation * moveVec * 1.3f * Time.deltaTime);
+                characterController.Move(transform.forward * moveSpeed * 1.3f * Time.deltaTime);
             }
             return;
         }
@@ -499,7 +500,9 @@ public class InputController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && useDieveRoll == false && curStamina > 20f)
         {
             anim.Play("Unarmed-DiveRoll-Forward1");
-            diveVec = new Vector3(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+
+            transform.rotation = Quaternion.Euler(0, 
+                transform.rotation.eulerAngles.y + Mathf.Atan2(inputHorizontal(), inputVertical()) * Mathf.Rad2Deg, 0);
             curStamina -= 20;
             diveNoHit = true;
             useDieveRoll = true;
@@ -738,6 +741,21 @@ public class InputController : MonoBehaviour
         #endregion
 
         
+    }
+
+    /// <summary>
+    /// 플레이어가 체력을 회복하였는지 체크하기 위한 함수
+    /// </summary>
+    private void playerHealCheck()
+    {
+        if (informationManager.GetHealCheck() == true)
+        {
+            playerMaxCurHp.y = informationManager.GetCurHp();
+            playerStateManager.SetPlayerHpBar(playerMaxCurHp.y, playerMaxCurHp.x);
+            informationManager.SetCurHp(playerMaxCurHp.y);
+
+            informationManager.SetHealCheck(false);
+        }
     }
 
     /// <summary>

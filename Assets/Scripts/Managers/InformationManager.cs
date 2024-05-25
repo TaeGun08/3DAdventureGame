@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static InformationManager;
 
 public class InformationManager : MonoBehaviour
 {
@@ -67,8 +68,10 @@ public class InformationManager : MonoBehaviour
     [Space]
     [SerializeField, Tooltip("스텟 정보 텍스트")] private List<TMP_Text> statInformationTexts;
 
-    private float weaponDamage;
-    private float weaponAttackSpeed;
+    private float weaponDamage; //무기의 공격력
+    private float weaponAttackSpeed; //무기의 공격속도
+
+    private bool useHeal = false; //플레이어가 회복을 하였는지 체크하기 위한 변수 
 
     private void Awake()
     {
@@ -90,7 +93,7 @@ public class InformationManager : MonoBehaviour
         }
 
         //공격력을 상승시키는 버튼
-        statUpButtons[0].onClick.AddListener(() => 
+        statUpButtons[0].onClick.AddListener(() =>
         {
             if (statPoint == 0 || statIndex[0] >= 100)
             {
@@ -175,7 +178,7 @@ public class InformationManager : MonoBehaviour
             statPoint--;
         });
 
-        statWindowButton.onClick.AddListener(() => 
+        statWindowButton.onClick.AddListener(() =>
         {
             statWindowOpen = statWindow == statWindow.activeSelf ? false : true;
             statWindow.SetActive(statWindowOpen);
@@ -187,7 +190,7 @@ public class InformationManager : MonoBehaviour
 
             informationOnOffCheck = false;
 
-            Cursor.lockState = CursorLockMode.Locked;
+            gameManager.SetUIOpenCheck(1, false);
         });
 
         if (PlayerPrefs.GetString("saveStatData") != string.Empty)
@@ -289,14 +292,7 @@ public class InformationManager : MonoBehaviour
             informationObj.SetActive(informationOnOffCheck);
             informationObj.transform.SetAsLastSibling();
 
-            if (informationOnOffCheck == true)
-            {
-                Cursor.lockState = CursorLockMode.None;
-            }
-            else
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-            }
+            gameManager.SetUIOpenCheck(1, informationOnOffCheck);
         }
     }
 
@@ -374,7 +370,7 @@ public class InformationManager : MonoBehaviour
     /// <param name="_statusData"></param>
     private void getSaveStatus(StatData _statusData)
     {
-        level =_statusData.level;
+        level = _statusData.level;
         maxExp = _statusData.maxExp;
         curExp = _statusData.curExp;
         damage = _statusData.damage;
@@ -419,15 +415,6 @@ public class InformationManager : MonoBehaviour
     public float GetCurExp()
     {
         return curExp;
-    }
-
-    /// <summary>
-    /// 스테이터스 온 오프를 체크하는 변수를 반환하는 함수
-    /// </summary>
-    /// <returns></returns>
-    public bool GetInformationOnOffCheck()
-    {
-        return informationOnOffCheck;
     }
 
     /// <summary>
@@ -538,5 +525,49 @@ public class InformationManager : MonoBehaviour
     public float GetCurHp()
     {
         return curHp;
+    }
+
+    /// <summary>
+    /// 플레이어의 체력을 채워주는 함수
+    /// 1번 레벨업 회복, 2번 특정조건 회복
+    /// </summary>
+    /// <returns></returns>
+    public void SetHeal(bool _heal, int _number, int _recovery)
+    {
+        if (_heal == true)
+        {
+            if (_number == 1)
+            {
+                curHp = hp;
+                statData.curHp = hp;
+                setSaveStatus();
+            }
+            else if (_number == 2)
+            {
+                curHp += _recovery;
+                statData.curHp = _recovery;
+                setSaveStatus();
+            }
+
+            useHeal = _heal;
+        }
+    }
+
+    /// <summary>
+    /// useHeal을 반환하는 함수
+    /// </summary>
+    /// <returns></returns>
+    public bool GetHealCheck()
+    {
+        return useHeal;
+    }
+
+    /// <summary>
+    /// useHeal에 bool형 값을 넣우주기 위한 함수
+    /// </summary>
+    /// <param name="_useHeal"></param>
+    public void SetHealCheck(bool _useHeal)
+    {
+        useHeal = _useHeal;
     }
 }

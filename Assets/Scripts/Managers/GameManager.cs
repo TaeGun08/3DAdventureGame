@@ -16,6 +16,12 @@ public class GameManager : MonoBehaviour
 
     private bool playerStop = false; //플레이어를 멈추게 하는 변수
 
+    //UI창을 열었을 때 마우스가의 잠김이 풀리도록 만들어주기 위한 변수들
+    private bool inforCheck = false;
+    private bool invenCheck = false;
+    private bool storeCheck = false;
+    private bool upgradeCheck = false;
+
     private void Awake()
     {
         if (Instance == null)
@@ -98,5 +104,88 @@ public class GameManager : MonoBehaviour
     public bool GetPlayerMoveStop()
     {
         return playerStop;
+    }
+
+    /// <summary>
+    /// UI가 열려있으면 마우스의 잠금을 풀어주는 함수
+    /// </summary>
+    /// <param name="_number">1번 상태창, 2번 인벤창, 3번 상점창, 4번 강화창, 5번 제작창</param>
+    public void SetUIOpenCheck(int _number, bool _check)
+    {
+        if (_number == 1)
+        {
+            inforCheck = _check;
+        }
+        else if (_number == 2) 
+        {
+            invenCheck = _check;
+        }
+        else if (_number == 3)
+        {
+            storeCheck = _check;
+        }
+        else if (_number == 4)
+        {
+            upgradeCheck = _check;
+        }
+        else if (_number == 5)
+        {
+            return;
+        }
+    }
+
+    /// <summary>
+    /// UI가 열렸는지 닫혔는지 체크하는 변수를 반환하는 함수
+    /// </summary>
+    /// <param name="_number">1번 상태창, 2번 인벤창, 3번 상점창, 4번 강화창, 5번 제작창</param>
+    public bool SetUIOpenCheck(int _number)
+    {
+        if (_number == 1)
+        {
+            return inforCheck;
+        }
+        else if (_number == 2)
+        {
+            return invenCheck;
+        }
+        else if (_number == 3)
+        {
+            return storeCheck;
+        }
+        else if (_number == 4)
+        {
+            return upgradeCheck;
+        }
+        else if (_number == 5)
+        {
+
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 마우스 포인터의 잠금을 체크하는 함수
+    /// </summary>
+    public void MousePonterLockCheck()
+    {
+        if (inforCheck == false && invenCheck == false && storeCheck == false && upgradeCheck == false)
+        {
+            if (Cursor.lockState == CursorLockMode.Locked)
+            {
+                return;
+            }
+
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        else
+        {
+            if (Cursor.lockState == CursorLockMode.None)
+            {
+                return;
+            }
+
+            Cursor.lockState = CursorLockMode.None;
+        }
     }
 }

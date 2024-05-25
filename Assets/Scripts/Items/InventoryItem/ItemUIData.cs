@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     private InventoryManger inventoryManger;
+    private InformationManager informationManager;
 
     [Header("아이템 설정")]
     [SerializeField, Tooltip("아이템 이미지")] private List<Sprite> itemSprite;
@@ -69,12 +70,12 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.clickCount == 2)
+        if (eventData.clickCount == 2 && eventData.button == PointerEventData.InputButton.Left)
         {
-            Debug.Log(eventData);
             inventoryManger.useItemCheck(slotNumber);
             itemQuantity--;
             quantityText.text = $"x {itemQuantity}";
+            informationManager.SetHeal(true, 2, 20);
 
             eventData.clickCount = 0;
         }
@@ -89,6 +90,8 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     private void Start()
     {
         inventoryManger = InventoryManger.Instance;
+
+        informationManager = InformationManager.Instance;
 
         quantityText.gameObject.SetActive(true);
     }

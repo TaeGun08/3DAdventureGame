@@ -5623,6 +5623,7 @@ GameObject:
   - component: {fileID: 3329417257476049644}
   - component: {fileID: 1973112333810124931}
   - component: {fileID: 936179955172613713}
+  - component: {fileID: 7630455733154350850}
   m_Layer: 11
   m_Name: StoreNpc
   m_TagString: Untagged
@@ -5647,7 +5648,7 @@ Transform:
   - {fileID: 6667113233360354057}
   - {fileID: 5007527157447857940}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &3329417257476049644
 Animator:
@@ -5718,6 +5719,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 122
   m_CollisionDetection: 0
+--- !u!114 &7630455733154350850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7474228352102008978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8f8a27aa32f99f4bb7a3b049ee06d82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7766129570244029438
 GameObject:
   m_ObjectHideFlags: 0

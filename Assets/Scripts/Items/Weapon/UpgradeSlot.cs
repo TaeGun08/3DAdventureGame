@@ -484,9 +484,14 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
     /// 아이템UI데이터 스크립트를 가진 오브젝트의 트랜스폼을 반환하는 함수
     /// </summary>
     /// <returns></returns>
-    public Transform iItemUIDataTrs()
+    public ItemUIData iItemUIData()
     {
-        return itemUIData.transform;
+        if (itemUIData == null)
+        {
+            return null;
+        }
+
+        return itemUIData;
     }
 
     /// <summary>

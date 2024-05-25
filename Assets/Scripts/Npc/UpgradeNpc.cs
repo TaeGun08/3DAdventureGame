@@ -12,12 +12,14 @@ public class UpgradeNpc : MonoBehaviour
     private UpgradeSlot upgradeSlot;
 
     [Header("강화 Npc 설정")]
-    private GameObject upgradeUI;
-    private Button closedButton;
+    private GameObject upgradeUI; //UI오브젝트
+    private Button closedButton; //UI닫는 버튼
 
     private int curSlotNumber; //현재 슬롯 번호
 
-    [SerializeField] private bool playerIn = false;
+    private bool playerIn = false; //플레이어 콜아이더 안으로 들어왔는지 체크해주는 변수
+
+    [SerializeField] private GameObject obj;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -55,8 +57,9 @@ public class UpgradeNpc : MonoBehaviour
         {
             upgradeUI.SetActive(false);
             gameManager.SetPlayerMoveStop(false);
+            gameManager.SetUIOpenCheck(4, false);
 
-            if (upgradeSlot.iItemUIDataTrs() != null)
+            if (upgradeSlot.iItemUIData() != null)
             {
                 upgradeSlot.iItemUIDataTrsChange(inventoryManger.SlotTrs(upgradeSlot.SlotNumber()));
             }
@@ -77,9 +80,13 @@ public class UpgradeNpc : MonoBehaviour
 
             gameManager.SetPlayerMoveStop(openUpgradeWindow);
 
+            gameManager.SetUIOpenCheck(4, openUpgradeWindow);
+
+            upgradeUI.transform.SetAsLastSibling();
+
             if (upgradeUI.activeSelf == false)
             {
-                if (upgradeSlot.iItemUIDataTrs() != null)
+                if (upgradeSlot.iItemUIData() != null)
                 {
                     upgradeSlot.iItemUIDataTrsChange(inventoryManger.SlotTrs(upgradeSlot.SlotNumber()));
                 }
@@ -89,6 +96,7 @@ public class UpgradeNpc : MonoBehaviour
         {
             upgradeUI.SetActive(false);
             gameManager.SetPlayerMoveStop(false);
+            gameManager.SetUIOpenCheck(4, false);
         }
     }
 }

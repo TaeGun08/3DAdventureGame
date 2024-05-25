@@ -5,7 +5,7 @@ using UnityEngine;
 public class TreasureBox : MonoBehaviour
 {
     [Header("보물상자 설정")]
-    [SerializeField, Tooltip("보물상자에 들어있는 랜덤 무기")] private List<GameObject> weapons;
+    [SerializeField, Tooltip("보물상자에 들어있는 랜덤 무기")] private List<GameObject> items;
     private bool playerIn = false;
 
     private void OnTriggerEnter(Collider collider)
@@ -37,26 +37,31 @@ public class TreasureBox : MonoBehaviour
         if (playerIn == true && Input.GetKeyDown(KeyCode.F))
         {
             float itemRandom = Random.Range(0.0f, 100.0f);
-
+         
             if (itemRandom <= 40.0f)
             {
-                Instantiate(weapons[0], transform.position, Quaternion.identity);
+                Instantiate(items[0], transform.position, Quaternion.identity);
             }
             else if (itemRandom > 40.0f && itemRandom <= 70.0f)
             {
-                Instantiate(weapons[1], transform.position, Quaternion.identity);
+                Instantiate(items[1], transform.position, Quaternion.identity);
             }
             else if (itemRandom > 70.0f && itemRandom <= 85.0f)
             {
-                Instantiate(weapons[2], transform.position, Quaternion.identity);
+                Instantiate(items[2], transform.position, Quaternion.identity);
             }
             else if (itemRandom > 85.0f && itemRandom <= 95.0f)
             {
-                Instantiate(weapons[3], transform.position, Quaternion.identity);
+                Instantiate(items[3], transform.position, Quaternion.identity);
             }
             else if (itemRandom > 95.0f && itemRandom <= 100.0f)
             {
-                Instantiate(weapons[4], transform.position, Quaternion.identity);
+                Instantiate(items[4], transform.position, Quaternion.identity);
+            }
+
+            for (int i = 0; i < 2; i++)
+            {
+                Instantiate(items[5], transform.position, Quaternion.identity);
             }
 
             Destroy(gameObject);

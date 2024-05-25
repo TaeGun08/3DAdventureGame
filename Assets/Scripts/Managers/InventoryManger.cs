@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 public class InventoryManger : MonoBehaviour
 {
@@ -24,6 +23,8 @@ public class InventoryManger : MonoBehaviour
     }
 
     private InventoryData inventoryData = new InventoryData();
+
+    private GameManager gameManager;
 
     [Header("인벤토리 설정")]
     [SerializeField, Tooltip("캔버스")] private Canvas canvas;
@@ -73,7 +74,7 @@ public class InventoryManger : MonoBehaviour
         {
             InventoryObj.SetActive(false);
             inventoryOnOffCheck = false;
-            Cursor.lockState = CursorLockMode.Locked;
+            gameManager.SetUIOpenCheck(2, false);
         });
 
         for (int i = 0; i < 2; i++)
@@ -87,6 +88,8 @@ public class InventoryManger : MonoBehaviour
 
     private void Start()
     {
+        gameManager = GameManager.Instance;
+
         if (PlayerPrefs.GetString("saveInventoryData") != string.Empty)
         {
             string getSlot = PlayerPrefs.GetString("saveInventoryData");
@@ -159,14 +162,7 @@ public class InventoryManger : MonoBehaviour
             InventoryObj.SetActive(inventoryOnOffCheck);
             InventoryObj.transform.SetAsLastSibling();
 
-            if (inventoryOnOffCheck == true)
-            {
-                Cursor.lockState = CursorLockMode.None;
-            }
-            else
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-            }
+            gameManager.SetUIOpenCheck(2, inventoryOnOffCheck);
         }
     }
 
@@ -392,15 +388,6 @@ public class InventoryManger : MonoBehaviour
     public Canvas GetCanvas()
     {
         return canvas;
-    }
-
-    /// <summary>
-    /// 인벤토리가 켜져있는지 꺼져있는지 체크하기 위한 함수
-    /// </summary>
-    /// <returns></returns>
-    public bool GetInventoryOnOffCheck()
-    {
-        return inventoryOnOffCheck;
     }
 
     /// <summary>
