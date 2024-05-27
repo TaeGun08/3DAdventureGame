@@ -21,6 +21,8 @@ public class WearItemManager : MonoBehaviour
 
     private WearItem wearItem = new WearItem();
 
+    private TutorialManager tutorialManager;
+
     [Header("장착 가능한 무기")]
     [SerializeField] private List<GameObject> weapons;
 
@@ -70,6 +72,11 @@ public class WearItemManager : MonoBehaviour
                 wearItem.wearGearIndex.Add(0);
             }
         }
+    }
+
+    private void Start()
+    {
+        tutorialManager = TutorialManager.Instance;
     }
 
     /// <summary>
@@ -144,6 +151,11 @@ public class WearItemManager : MonoBehaviour
                 wearItem.wearGearType[3] = _itemType;
                 wearItem.wearGearIndex[3] = _itemIndex;
             }
+        }
+
+        if (tutorialManager != null && tutorialManager.TutorialTrue() == true)
+        {
+            return;
         }
 
         string setWearItem = JsonConvert.SerializeObject(wearItem);
@@ -263,6 +275,11 @@ public class WearItemManager : MonoBehaviour
 
             wearItem.wearGearType[i] = 0;
             wearItem.wearGearIndex[i] = 0;
+        }
+
+        if (tutorialManager != null && tutorialManager.TutorialTrue() == true)
+        {
+            return;
         }
 
         string setWearItem = JsonConvert.SerializeObject(wearItem);

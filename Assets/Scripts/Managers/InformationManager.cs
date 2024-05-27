@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static InformationManager;
 
 public class InformationManager : MonoBehaviour
 {
@@ -32,6 +31,7 @@ public class InformationManager : MonoBehaviour
 
     private GameManager gameManager;
     private PlayerStateManager playerStateManager;
+    private TutorialManager tutorialManager;
 
     [Header("스테이터스 설정")]
     [SerializeField, Tooltip("플레이어 레벨")] private int level;
@@ -92,6 +92,63 @@ public class InformationManager : MonoBehaviour
             statIndex.Add(0);
         }
 
+        statUpButton();
+
+        if (PlayerPrefs.GetString("saveStatData") != string.Empty)
+        {
+            string getSaveStat = PlayerPrefs.GetString("saveStatData");
+            statData = JsonConvert.DeserializeObject<StatData>(getSaveStat);
+            getSaveStatus(statData);
+        }
+        else
+        {
+            statData.level = 1;
+            statData.maxExp = 5;
+            statData.curExp = 0;
+            statData.damage = 1f;
+            statData.attackSpeed = 1f;
+            statData.speed = 4f;
+            statData.hp = 100f;
+            statData.curHp = 100f;
+            statData.armor = 0f;
+            statData.critical = 0f;
+            statData.criticalDamage = 0.5f;
+            statData.stamina = 100f;
+            statData.statPoint = 3;
+            for (int i = 0; i < count; i++)
+            {
+                statData.statIndex.Add(0);
+            }
+        }
+
+        informationObj.SetActive(false);
+        statWindow.SetActive(false);
+    }
+
+    private void Start()
+    {
+        gameManager = GameManager.Instance;
+
+        playerStateManager = PlayerStateManager.Instance;
+
+        tutorialManager = TutorialManager.Instance;
+
+        statUpCheck = true;
+    }
+
+    private void Update()
+    {
+        levelUpCheck();
+        statusOnOff();
+        statusStatUI();
+        statInformation();
+    }
+
+    /// <summary>
+    /// 스텟을 올려주는 버튼
+    /// </summary>
+    private void statUpButton()
+    {
         //공격력을 상승시키는 버튼
         statUpButtons[0].onClick.AddListener(() =>
         {
@@ -192,53 +249,6 @@ public class InformationManager : MonoBehaviour
 
             gameManager.SetUIOpenCheck(1, false);
         });
-
-        if (PlayerPrefs.GetString("saveStatData") != string.Empty)
-        {
-            string getSaveStat = PlayerPrefs.GetString("saveStatData");
-            statData = JsonConvert.DeserializeObject<StatData>(getSaveStat);
-            getSaveStatus(statData);
-        }
-        else
-        {
-            statData.level = 1;
-            statData.maxExp = 5;
-            statData.curExp = 0;
-            statData.damage = 1f;
-            statData.attackSpeed = 1f;
-            statData.speed = 4f;
-            statData.hp = 100f;
-            statData.curHp = 100f;
-            statData.armor = 0f;
-            statData.critical = 0f;
-            statData.criticalDamage = 0.5f;
-            statData.stamina = 100f;
-            statData.statPoint = 3;
-            for (int i = 0; i < count; i++)
-            {
-                statData.statIndex.Add(0);
-            }
-        }
-
-        informationObj.SetActive(false);
-        statWindow.SetActive(false);
-    }
-
-    private void Start()
-    {
-        gameManager = GameManager.Instance;
-
-        playerStateManager = PlayerStateManager.Instance;
-
-        statUpCheck = true;
-    }
-
-    private void Update()
-    {
-        levelUpCheck();
-        statusOnOff();
-        statusStatUI();
-        statInformation();
     }
 
     /// <summary>
@@ -332,7 +342,7 @@ public class InformationManager : MonoBehaviour
             statInformationTexts[5].text = $"치명타확률 : {critical.ToString("F2")}%";
             statInformationTexts[6].text = $"치명타공격력 : {criticalDamage.ToString("P2")}";
             statInformationTexts[7].text = $"이동속도 : {(speed - 3).ToString("P2")}";
-            statInformationTexts[8].text = $"전투력 : {((damage * 10f) + (hp * 0.1f) + (armor * 5f) + (attackSpeed * 10f) + (critical * 10f) + (criticalDamage * 100f) + (speed * 10f)).ToString("F0")}";
+            statInformationTexts[8].text = $"전투력 : {(((damage + weaponDamage) * 10f) + (hp * 0.1f) + (armor * 5f) + (attackSpeed * 10f) + (critical * 10f) + (criticalDamage * 100f) + (speed * 10f)).ToString("F0")}";
         }
     }
 
@@ -358,6 +368,11 @@ public class InformationManager : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             statData.statIndex[i] = statIndex[i];
+        }
+
+        if (tutorialManager != null && tutorialManager.TutorialTrue() == true)
+        {
+            return;
         }
 
         string setSaveStat = JsonConvert.SerializeObject(statData);

@@ -25,6 +25,7 @@ public class InventoryManger : MonoBehaviour
     private InventoryData inventoryData = new InventoryData();
 
     private GameManager gameManager;
+    private TutorialManager tutorialManager;
 
     [Header("인벤토리 설정")]
     [SerializeField, Tooltip("캔버스")] private Canvas canvas;
@@ -90,6 +91,8 @@ public class InventoryManger : MonoBehaviour
     {
         gameManager = GameManager.Instance;
 
+        tutorialManager = TutorialManager.Instance;
+
         if (PlayerPrefs.GetString("saveInventoryData") != string.Empty)
         {
             string getSlot = PlayerPrefs.GetString("saveInventoryData");
@@ -129,9 +132,6 @@ public class InventoryManger : MonoBehaviour
                 inventoryData.weaponAttackSpeed.Add(0);
                 inventoryData.weaponUpgrade.Add(0);
             }
-
-            string setSlot = JsonConvert.SerializeObject(inventoryData);
-            PlayerPrefs.SetString("saveInventoryData", setSlot);
         }
     }
 
@@ -208,6 +208,11 @@ public class InventoryManger : MonoBehaviour
             }
         }
 
+        if (tutorialManager != null && tutorialManager.TutorialTrue() == true)
+        {
+            return;
+        }
+
         string setSlot = JsonConvert.SerializeObject(inventoryData);
         PlayerPrefs.SetString("saveInventoryData", setSlot);
     }
@@ -231,6 +236,11 @@ public class InventoryManger : MonoBehaviour
             inventoryData.weaponDamage[i] = weaponDamage[i];
             inventoryData.weaponAttackSpeed[i] = weaponAttackSpeed[i];
             inventoryData.weaponUpgrade[i] = weaponUpgrade[i];
+        }
+
+        if (tutorialManager != null && tutorialManager.TutorialTrue() == true)
+        {
+            return;
         }
 
         string setSlot = JsonConvert.SerializeObject(inventoryData);
