@@ -10,12 +10,16 @@ public class TutorialController : MonoBehaviour
 
     private DropTransform dropTransform;
 
+    private GameManager gameManager;
+
     [Header("튜토리얼 설정")]
     [SerializeField, Tooltip("튜토리얼 전용 몬스터")] private List<GameObject> tutorialMonsters;
     [SerializeField, Tooltip("몬스터를 생성할 위치")] private List<Transform> createMonsterTrs;
     [SerializeField, Tooltip("몬스터가 죽었는지 체크하는 콜라이더")] private BoxCollider dieMonsterCheckColl;
     [Space]
     [SerializeField, Tooltip("튜토리얼 전용 박스")] private GameObject tutorialBox;
+    [Space]
+    [SerializeField] private GameObject nextScene;
 
     private List<GameObject> tutorialObj = new List<GameObject>();
 
@@ -31,6 +35,8 @@ public class TutorialController : MonoBehaviour
 
         dropTransform = DropTransform.Instance;
 
+        gameManager = GameManager.Instance;
+
         for (int i = 0; i < 15; i++)
         {
             tutorialObj.Add(canvasManager.GetCanvas().transform.Find($"Tutorials/Tutorial{i + 1}").gameObject);
@@ -41,6 +47,11 @@ public class TutorialController : MonoBehaviour
 
     private void Update()
     {
+        if (gameManager.GetGamePause() == true)
+        {
+            return;
+        }
+
         turorial1Check();
         turorial2Check();
         turorial3Check();
@@ -349,7 +360,7 @@ public class TutorialController : MonoBehaviour
     {
         if (tutorialManager.TutorialCheck(11) == 0 && tutorialObj[11].activeSelf == true)
         {
-            if (Input.GetKeyDown(KeyCode.Mouse0))
+            if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Mouse1))
             {
                 tutorialCheck = true;
             }
@@ -415,6 +426,7 @@ public class TutorialController : MonoBehaviour
                 nextTutorialTimer = 3f;
                 tutorialObj[13].SetActive(false);
                 tutorialObj[14].SetActive(true);
+                nextScene.SetActive(true);
                 tutorialManager.TutorialClear(13);
                 tutorialCheck = false;
             }

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +13,10 @@ public class GameManager : MonoBehaviour
 
     [Header("버츄얼 카메라")]
     [SerializeField] private GameObject cameraObj;
+
+    [Header("옵션")]
+    [SerializeField] private GameObject optionWindow;
+    [SerializeField] private List<Button> buttons;
 
     private float playerExp; //플레이어에게 전달할 경험치
 
@@ -31,6 +37,46 @@ public class GameManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+
+        buttons[0].onClick.AddListener(() => 
+        {
+            SceneManager.LoadSceneAsync("Main");
+        });
+
+        buttons[1].onClick.AddListener(() =>
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        });
+
+        buttons[2].onClick.AddListener(() => 
+        {
+            optionWindow.SetActive(false);
+            Cursor.lockState = CursorLockMode.Locked;
+            gamePause = false;
+        });
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            bool optionOn = optionWindow == optionWindow.activeSelf ? false : true;
+            optionWindow.SetActive(optionOn);
+            gamePause = optionOn;
+
+            if (optionOn == false)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.None;
+            }
         }
     }
 
@@ -169,7 +215,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void MousePonterLockCheck()
     {
-        if (inforCheck == false && invenCheck == false && storeCheck == false && upgradeCheck == false)
+        if (!Input.GetKey(KeyCode.LeftAlt))
         {
             if (Cursor.lockState == CursorLockMode.Locked)
             {
