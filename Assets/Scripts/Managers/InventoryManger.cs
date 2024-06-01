@@ -20,7 +20,22 @@ public class InventoryManger : MonoBehaviour
         public List<float> weaponDamage = new List<float>(); //무기 공격력
         public List<float> weaponAttackSpeed = new List<float>(); //무기 공격속도
         public List<int> weaponUpgrade = new List<int>(); //무기 강화횟수
+
+        //public List<item> item = new List<item>(); //다음 포폴에 이런식으로 응용
     }
+
+    //다음 포폴에 이런식으로 응용
+    //[System.Serializable]
+    //public class item
+    //{
+    //    public int itemSlotIndex;
+    //    public int itemIndex;
+    //    public int itemType;
+    //    public int itemQuantity;
+    //    public float weaponDamage;
+    //    public float weaponAttackSpeed;
+    //    public int weaponUpgrade;
+    //}
 
     private InventoryData inventoryData = new InventoryData();
 

@@ -137,6 +137,7 @@ public class Monster : MonoBehaviour
         else
         {   
             Vector3 vec = player.transform.position - transform.position;
+            vec.Normalize();
             float targetAngle = Quaternion.FromToRotation(Vector3.forward, vec).eulerAngles.y;
 
             float smoothDamp = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle,
@@ -145,6 +146,11 @@ public class Monster : MonoBehaviour
             transform.rotation = Quaternion.Euler(0.0f, smoothDamp, 0.0f);
 
             moveVec = transform.forward * moveSpeed;
+        }
+
+        if (moveStop == true)
+        {
+            return;
         }
 
         moveVec.y = rigid.velocity.y;
@@ -182,7 +188,15 @@ public class Monster : MonoBehaviour
     /// </summary>
     protected virtual void monsterAnim()
     {
-        anim.SetFloat("isWalk", moveVec.z);
+        if (moveVec.z != 0 && moveStop == false)
+        {
+            anim.SetBool("isWalk", true);
+        }
+        else
+        {
+            anim.SetBool("isWalk", false);
+        }
+
     }
 
     /// <summary>
