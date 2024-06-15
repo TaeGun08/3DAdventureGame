@@ -46,6 +46,8 @@ public class InputController : MonoBehaviour
     private float playerAttackDamage; //계속 변경되어서 들어갈 데미지 변수
     private bool playerCriticalAttack = false; //플에이어가 공격 시 크리티컬이 발동되었는지
     private bool monsterAttack = false; //몬스터를 공격하기 위한 변수
+    [SerializeField, Tooltip("오른쪽 손")] private GameObject rightHand;
+    [SerializeField, Tooltip("왼쪽쪽 손")] private GameObject leftHand;
 
     //공격 모션을 위한 변수들
     private bool isAttack = false; //공격을 했는지 여부를 확인하기 위한 변수
@@ -781,19 +783,49 @@ public class InputController : MonoBehaviour
     }
 
     /// <summary>
-    /// 오른쪽 손으로 
+    /// 오른손 공격 콜라이더를 켜줌
     /// </summary>
-    public void RightHandAttack()
+    public void RightHandAttackTrue()
     {
 
     }
 
-    public void LeftHandAttack()
+    /// <summary>
+    /// 오른손 공격 콜라이더를 꺼줌
+    /// </summary>
+    public void RightHandAttackFalse()
     {
 
     }
 
-    public void WeaponAttack()
+    /// <summary>
+    /// 왼손 공격 콜라이더를 켜줌
+    /// </summary>
+    public void LeftHandAttackTrue()
+    {
+
+    }
+
+    /// <summary>
+    /// 왼손 공격 콜라이더를 꺼줌
+    /// </summary>
+    public void LeftHandAttackFalse()
+    {
+
+    }
+
+    /// <summary>
+    /// 무기 공격 콜라이더를 켜줌
+    /// </summary>
+    public void WeaponAttackTrue()
+    {
+
+    }
+
+    /// <summary>
+    /// 무기 공격 콜라이더를 꺼줌
+    /// </summary>
+    public void WeaponAttackFalse()
     {
 
     }
