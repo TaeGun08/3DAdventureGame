@@ -17,6 +17,9 @@ public class Bull : Monster
     [SerializeField, Tooltip("왼손 무기")] private GameObject leftWeapon;
     [SerializeField, Tooltip("오른손 무기")] private GameObject rightWeapon;
 
+
+    private Vector3 beforePos;
+
     protected override void Awake()
     {
         base.Awake();
@@ -30,6 +33,7 @@ public class Bull : Monster
     protected override void Update()
     {
         base.Update();
+        bullAnimatoin();
         if (base.noHit == false)
         {
             playerHitCheck();
@@ -50,7 +54,6 @@ public class Bull : Monster
             {
                 MonsterAttackCheck leftAttackSc = leftWeapon.GetComponent<MonsterAttackCheck>();
                 MonsterAttackCheck rightAttackSc = rightWeapon.GetComponent<MonsterAttackCheck>();
-
 
                 if (phase == 0)
                 {
@@ -89,25 +92,63 @@ public class Bull : Monster
     /// </summary>
     private void playerHitCheck()
     {
-        Collider[] hitCheck = Physics.OverlapBox(hitCollider.bounds.center, hitCollider.bounds.size * 0.5f, Quaternion.identity,
-            LayerMask.GetMask("Player"));
-
-        int hitCheckCount = hitCheck.Length;
-
-        if (hitCheckCount > 0)
+        if (Vector3.Distance(transform.position, player.transform.position) < chasePlayerRadius)
         {
-            for (int i = 0; i < hitCheckCount; i++)
+            if (attackOn == true)
             {
-                hitTrigger(hitCheck[i]);
+                MonsterAttackCheck leftAttackSc = leftWeapon.GetComponent<MonsterAttackCheck>();
+                MonsterAttackCheck rightAttackSc = rightWeapon.GetComponent<MonsterAttackCheck>();
+
+                if (phase == 0)
+                {
+                    base.anim.Play("1Phasecombo1");
+
+                    delayTimer = attackDelay;
+
+                    rightAttackSc.SetAttackDamage(base.damage);
+                }
+                else if (phase == 1)
+                {
+                    base.anim.Play("2Phasecombo1");
+
+                    delayTimer = attackDelay + 1;
+
+                    leftAttackSc.SetAttackDamage(base.damage + (base.damage * 0.3f));
+                    rightAttackSc.SetAttackDamage(base.damage + (base.damage * 0.3f));
+                }
+                else
+                {
+                    base.anim.Play("3Phasecombo1");
+
+                    delayTimer = attackDelay + 2;
+
+                    leftAttackSc.SetAttackDamage(base.damage + (base.damage * 0.5f));
+                    rightAttackSc.SetAttackDamage(base.damage + (base.damage * 0.5f));
+                }
+
+                attackOn = false;
             }
         }
-        else
-        {
-            if (base.moveStop != false)
-            {
-                base.moveStop = false;
-            }
-        }
+
+        //Collider[] hitCheck = Physics.OverlapBox(hitCollider.bounds.center, hitCollider.bounds.size * 0.5f, Quaternion.identity,
+        //    LayerMask.GetMask("Player"));
+
+        //int hitCheckCount = hitCheck.Length;
+
+        //if (hitCheckCount > 0)
+        //{
+        //    for (int i = 0; i < hitCheckCount; i++)
+        //    {
+        //        hitTrigger(hitCheck[i]);
+        //    }
+        //}
+        //else
+        //{
+        //    if (base.moveStop != false)
+        //    {
+        //        base.moveStop = false;
+        //    }
+        //}
     }
 
     /// <summary>
@@ -127,11 +168,35 @@ public class Bull : Monster
     }
 
     /// <summary>
+    /// bull만의 애니메이션을 넣어주기 위한 함수
+    /// </summary>
+    private void bullAnimatoin()
+    {
+        base.anim.SetFloat("Phase", phase);
+    }
+
+    /// <summary>
     /// 애니메이션에 맞춰 이동을 재생시키기 위한 함수
     /// </summary>
     public void MoveOn()
     {
         base.moveStop = false;
+    }
+
+    /// <summary>
+    /// 회전을 멈추게 해주는 함수
+    /// </summary>
+    public void RotateStopTrue()
+    {
+        base.rotateStop = true;
+    }
+
+    /// <summary>
+    /// 회전을 다시 가능하게 해주는 함수
+    /// </summary>
+    public void RotateStopFalse()
+    {
+        base.rotateStop = false;
     }
 
     /// <summary>
@@ -143,7 +208,7 @@ public class Bull : Monster
     }
 
     /// <summary>
-    /// 왼손 무기의 콜라이더를 켜줌
+    /// 왼손 무기의 콜라이더를 꺼줌
     /// </summary>
     public void LeftAttackSetActiveFalse()
     {
@@ -159,7 +224,7 @@ public class Bull : Monster
     }
 
     /// <summary>
-    /// 오른손 무기의 콜라이더를 켜줌
+    /// 오른손 무기의 콜라이더를 꺼줌
     /// </summary>
     public void RightAttackSetActiveFalse()
     {

@@ -14,6 +14,7 @@ public class Monster : MonoBehaviour
     [Header("몬스터 기본 설정")]
     [SerializeField, Tooltip("몬스터의 이동속도")] protected float moveSpeed;
     [SerializeField, Tooltip("몬스터의 이동을 멈춤")] protected bool moveStop;
+    protected bool rotateStop; //회전을 멈추게 하는 변수
     [Space]
     [SerializeField, Tooltip("몬스터의 랜덤 회전 시간 최소, 최대")] protected Vector2 rotateTime;
     [SerializeField, Tooltip("몬스터의 랜덤 회전 Y 값 최소, 최대")] protected Vector2 rotateY;
@@ -28,18 +29,35 @@ public class Monster : MonoBehaviour
     [SerializeField, Tooltip("몬스터의 방어력")] protected float armor;
     [SerializeField, Tooltip("플레이어 확인영역")] protected BoxCollider checkColl;
     [Space]
-    [SerializeField, Tooltip("입은 데미지를 표시할 프리팹")] private GameObject hitDamagePrefab;
-    [SerializeField, Tooltip("머리위에 생성되는 높이")] private float heightValue;
+    [SerializeField, Tooltip("입은 데미지를 표시할 프리팹")] protected GameObject hitDamagePrefab;
+    [SerializeField, Tooltip("머리위에 생성되는 높이")] protected float heightValue;
     [Space]
-    [SerializeField, Tooltip("플레이어에게 전달한 경험치")] private float setExp;
+    [SerializeField, Tooltip("플레이어에게 전달한 경험치")] protected float setExp;
 
     [Header("죽었을 때 떨어트리는 코인 설정")]
-    [SerializeField, Tooltip("떨어트릴 코인 프리팹")] private GameObject coinPrefab;
-    [SerializeField, Tooltip("떨어트릴 개수")] private int dropCoin;
+    [SerializeField, Tooltip("떨어트릴 코인 프리팹")] protected GameObject coinPrefab;
+    [SerializeField, Tooltip("떨어트릴 개수")] protected int dropCoin;
 
     protected bool noHit; //죽는 애니메이션이 실행될 때 히트판정을 막기 위한 변수
 
-    private InputController player;
+    protected bool boss; //보스 몬스터인지 확인을 위한 변수
+    protected bool bossDie; //보스 몬스터가 죽었는지 확인을 위한 변수
+
+    protected InputController player;
+
+    [SerializeField] protected bool showChasePlayerRadius = false;
+    [SerializeField] protected float chasePlayerRadius = 1;
+    [SerializeField] protected Color colorChasePlayer;
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (showChasePlayerRadius)
+        {
+            UnityEditor.Handles.color = colorChasePlayer;
+            UnityEditor.Handles.DrawWireDisc(transform.position, Vector3.up, chasePlayerRadius, 0.5f);
+        }
+    }
+#endif
 
     protected virtual void OnTrigger(Collider collider)
     {
@@ -126,15 +144,19 @@ public class Monster : MonoBehaviour
     /// </summary>
     protected virtual void monsterMove()
     {
-        if (player == null)
+        if (player == null && rotateStop == false)
         {
             float smoothDamp = Mathf.SmoothDampAngle(transform.eulerAngles.y, randomRotateY, ref curVelocity, 0.3f, smoothMaxSpeed);
-            
+
             transform.rotation = Quaternion.Euler(0.0f, smoothDamp, 0.0f);
 
             moveVec = transform.forward * moveSpeed;
+            moveVec.y = rigid.velocity.y;
+            transform.position += moveVec * Time.deltaTime;
+
+            smoothMaxSpeed = 50f;
         }
-        else
+        else if (player != null && rotateStop == false)
         {   
             Vector3 vec = player.transform.position - transform.position;
             vec.Normalize();
@@ -145,16 +167,22 @@ public class Monster : MonoBehaviour
 
             transform.rotation = Quaternion.Euler(0.0f, smoothDamp, 0.0f);
 
-            moveVec = transform.forward * moveSpeed;
+            if (Vector3.Distance(transform.position, player.transform.position) > chasePlayerRadius)
+            {
+                smoothMaxSpeed = 70f;
+                moveVec = transform.forward * moveSpeed;
+                moveVec.y = rigid.velocity.y;
+                transform.position += moveVec * Time.deltaTime;
+            }
+            else if (Vector3.Distance(-transform.forward, player.transform.forward) > 1.5)
+            {
+                smoothMaxSpeed = 100f;
+            }
+            else if (Vector3.Distance(-transform.forward, player.transform.forward) < 1.5)
+            {
+                smoothMaxSpeed = 40f;
+            }
         }
-
-        if (moveStop == true)
-        {
-            return;
-        }
-
-        moveVec.y = rigid.velocity.y;
-        rigid.velocity = moveVec;
     }
 
     /// <summary>
@@ -162,7 +190,7 @@ public class Monster : MonoBehaviour
     /// </summary>
     protected virtual void monsterDead()
     {
-        if (hp <= 0.0f)
+        if (hp <= 0.0f && boss == false)
         {
             noHit = true;
             gameManager.SetExp(setExp);
@@ -175,6 +203,25 @@ public class Monster : MonoBehaviour
                 for (int i = 0; i < dropCoin; i++)
                 {
                     Instantiate(coinPrefab, new Vector3(transform.position.x + randomTrsPosX, transform.position.y + 1f, 
+                        transform.position.z + randomTrsPosZ), Quaternion.identity, dropTransform.transform);
+                }
+            }
+
+            Destroy(gameObject, 2f);
+        }
+        else if (hp <= 0.0f && boss == true && bossDie == true)
+        {
+            noHit = true;
+            gameManager.SetExp(setExp);
+            anim.Play("Die");
+
+            if (dropCoin > 0)
+            {
+                float randomTrsPosX = Random.Range(-1.5f, 1.5f);
+                float randomTrsPosZ = Random.Range(-1.5f, 1.5f);
+                for (int i = 0; i < dropCoin; i++)
+                {
+                    Instantiate(coinPrefab, new Vector3(transform.position.x + randomTrsPosX, transform.position.y + 1f,
                         transform.position.z + randomTrsPosZ), Quaternion.identity, dropTransform.transform);
                 }
             }

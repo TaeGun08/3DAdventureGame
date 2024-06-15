@@ -781,6 +781,24 @@ public class InputController : MonoBehaviour
     }
 
     /// <summary>
+    /// 오른쪽 손으로 
+    /// </summary>
+    public void RightHandAttack()
+    {
+
+    }
+
+    public void LeftHandAttack()
+    {
+
+    }
+
+    public void WeaponAttack()
+    {
+
+    }
+
+    /// <summary>
     /// 플레이어가 몬스터에게 맞았는지 체크하는 함수
     /// </summary>
     public void PlayerHitCheck(float _hitDamage)
