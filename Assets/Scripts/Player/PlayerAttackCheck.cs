@@ -5,21 +5,21 @@ using UnityEngine;
 public class PlayerAttackCheck : MonoBehaviour
 {
     private float dmage;
+    private Color color;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Monster") ||
             other.gameObject.layer == LayerMask.NameToLayer("Boss"))
         {
-            InputController playerSc = other.GetComponent<InputController>();
-            playerSc.PlayerHitCheck(dmage);
-
-            gameObject.SetActive(false);
+            Monster monsterSc = other.GetComponent<Monster>();
+            monsterSc.monsterHit(dmage, color);
         }
     }
 
-    public void SetAttackDamage(float _damage)
+    public void SetAttackDamage(float _damage, Color _color)
     {
         dmage = _damage;
+        color = _color;
     }
 }

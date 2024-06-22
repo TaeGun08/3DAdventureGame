@@ -585,4 +585,41 @@ public class InformationManager : MonoBehaviour
     {
         useHeal = _useHeal;
     }
+
+    /// <summary>
+    /// 치트 사용 시 레벨과 경험치를 올려주기 위한 함수
+    /// </summary>
+    public void CheatCheck()
+    {
+        level = 99;
+        maxExp = 9999999;
+        curExp = 0;
+        damage = 999;
+        attackSpeed = 1.3f;
+        speed += 1;
+        hp = 9999;
+        curHp = hp;
+        armor = 999;
+        critical = 100f;
+        criticalDamage = 10f;
+        stamina = 9999;
+        statPoint = 999;
+
+        int count = statIndex.Count;
+
+        for (int iNum = 0; iNum < count; iNum++)
+        {
+            statIndex[iNum] = 999;
+        }
+
+        statText[0].text = $": {statIndex[0]}";
+        statText[1].text = $": {statIndex[1]}";
+        statText[2].text = $": {statIndex[2]}";
+        statText[3].text = $": {statIndex[3]}";
+        statText[4].text = $": {statIndex[4]}";
+        statText[5].text = $": {statIndex[5]}";
+
+        playerStateManager.SetPlayerLevelText(level);
+        setSaveStatus();
+    }
 }

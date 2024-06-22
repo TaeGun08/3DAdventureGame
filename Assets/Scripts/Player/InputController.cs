@@ -38,14 +38,11 @@ public class InputController : MonoBehaviour
     private bool diveNoHit = false; //구르기 시 잠시 무적을 위한 변수
 
     [Header("플레이어 공격 설정")]
-    [SerializeField] private List<Collider> hitArea;
     [SerializeField] private float playerDamage;
     [SerializeField] private float playerAttackSpeed;
     [SerializeField, Range(0.0f, 100.0f)] private float playerCritical;
     [SerializeField, Range(0.0f, 10.0f)] private float playerCriticalDamage;
     private float playerAttackDamage; //계속 변경되어서 들어갈 데미지 변수
-    private bool playerCriticalAttack = false; //플에이어가 공격 시 크리티컬이 발동되었는지
-    private bool monsterAttack = false; //몬스터를 공격하기 위한 변수
     [SerializeField, Tooltip("오른쪽 손")] private GameObject rightHand;
     [SerializeField, Tooltip("왼쪽쪽 손")] private GameObject leftHand;
 
@@ -78,6 +75,8 @@ public class InputController : MonoBehaviour
     private int weaponLevel; //무기 레벨을 받아 올 변수
     private float weaponDamage;
     private float weaponAttackSpeed;
+    private GameObject weaponAttackCollider;
+    private PlayerAttackCheck weaponAttackCheck;
 
     [Header("아이템을 줍기 위한 콜라이더")]
     [SerializeField] private BoxCollider pickUpArea;
@@ -109,8 +108,6 @@ public class InputController : MonoBehaviour
         curStamina = maxStamina;
 
         playerMaxCurHp.y = playerMaxCurHp.x;
-
-        playerStatusCheck();
     }
 
     private void Update()
@@ -133,6 +130,7 @@ public class InputController : MonoBehaviour
         wearItemCheck();
         checkNotPickUpItem();
         playerHealCheck();
+        playerStatusCheck();
 
         if (gameManager.GetPlayerMoveStop() == false && 
             gameManager.SetUIOpenCheck(1) == false && 
@@ -143,7 +141,6 @@ public class InputController : MonoBehaviour
             if (isHit == false)
             {
                 checkPickUpItem();
-                monsterCollCheck();
                 playerLookAtScreen();
                 playerMove();
                 playerDiveRoll();
@@ -185,6 +182,11 @@ public class InputController : MonoBehaviour
     //    }
     //#endif
 
+    /// <summary>
+    /// 아이템끼리의 거리를 계산하여 더 가까운 아이템을 먼저 먹게하는 함수
+    /// </summary>
+    /// <param name="_arr"></param>
+    /// <returns></returns>
     private Collider getClosedCollider(Collider[] _arr)
     {
         int count = _arr.Length;
@@ -204,6 +206,9 @@ public class InputController : MonoBehaviour
         return returnValue;
     }
 
+    /// <summary>
+    /// 플레이어가 직접 주울 수 있다면 E키를 눌러 아이템을 획득할 수 있게 하는 함수
+    /// </summary>
     private void checkPickUpItem()
     {
         if (Input.GetKeyDown(KeyCode.E))
@@ -223,6 +228,9 @@ public class InputController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 플레이어가 직접 줍지 못하는 아이템을 체크하는 함수
+    /// </summary>
     private void checkNotPickUpItem()
     {
         Collider[] pickUpColl = Physics.OverlapBox(pickUpArea.bounds.center, pickUpArea.bounds.size * 0.8f, Quaternion.identity,
@@ -243,67 +251,6 @@ public class InputController : MonoBehaviour
                         inventoryManger.SetItem(collision.gameObject);
                     }
                 }
-            }
-        }
-    }
-
-    private void attackTrigger(Collider collision)
-    {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Monster") && monsterAttack == true)
-        {
-            Monster monsterSc = collision.GetComponent<Monster>();
-
-            if (playerCriticalAttack == true)
-            {
-                monsterSc.monsterHit(playerAttackDamage + (playerAttackDamage * playerCriticalDamage),
-                    Color.red);
-                playerCriticalAttack = false;
-            }
-            else
-            {
-                monsterSc.monsterHit(playerAttackDamage, Color.white);
-                playerCriticalAttack = false;
-            }
-        }
-    }
-
-    /// <summary>
-    /// 아이템을 줍기 위한 함수
-    /// </summary>
-    private void monsterCollCheck()
-    {
-        if (idleChange == 0)
-        {
-            Collider[] attackColl = Physics.OverlapBox(hitArea[0].bounds.center, hitArea[0].bounds.size * 0.5f, Quaternion.identity,
-                LayerMask.GetMask("Monster"));
-
-            int attackCount = attackColl.Length;
-
-            if (attackCount > 0)
-            {
-                for (int i = 0; i < attackCount; i++)
-                {
-                    attackTrigger(attackColl[i]);
-                }
-
-                monsterAttack = false;
-            }
-        }
-        else
-        {
-            Collider[] attackColl = Physics.OverlapBox(hitArea[1].bounds.center, hitArea[1].bounds.size * 0.5f, Quaternion.identity,
-                LayerMask.GetMask("Monster"));
-
-            int attackCount = attackColl.Length;
-
-            if (attackCount > 0)
-            {
-                for (int i = 0; i < attackCount; i++)
-                {
-                    attackTrigger(attackColl[i]);
-                }
-
-                monsterAttack = false;
             }
         }
     }
@@ -333,8 +280,6 @@ public class InputController : MonoBehaviour
                 {
                     attackCombo = true;
                 }
-
-                monsterAttack = false;
 
                 attackTimer = 0f;
                 isAttack = false;
@@ -576,31 +521,48 @@ public class InputController : MonoBehaviour
                     attackCombo = false;
                 }
 
-                if (attackCount == 0)
-                {
-                    playerAttackDamage = playerDamage;
-                }
-                else
-                {
-                    playerAttackDamage = playerDamage + (playerDamage * 0.5f);
-                }
-
                 float critical = Random.Range(0.0f, 100.0f);
 
-                if (critical <= playerCritical)
+                if (attackCount == 0)
                 {
-                    playerCriticalAttack = true;
+                    PlayerAttackCheck left =  leftHand.GetComponent<PlayerAttackCheck>();
+
+                    if (critical <= playerCritical)
+                    {
+                        playerAttackDamage = playerDamage + (playerDamage * playerCriticalDamage);
+
+                        left.SetAttackDamage(playerAttackDamage, Color.red);
+                    }
+                    else
+                    {
+                        playerAttackDamage = playerDamage;
+
+                        left.SetAttackDamage(playerAttackDamage, Color.white);
+                    }
                 }
                 else
                 {
-                    playerCriticalAttack = false;
+                    PlayerAttackCheck right = rightHand.GetComponent<PlayerAttackCheck>();
+
+                    if (critical <= playerCritical)
+                    {
+                        playerAttackDamage = playerDamage + (playerDamage * 0.5f) + ((playerDamage + (playerDamage * 0.5f)) * playerCriticalDamage);
+
+                        right.SetAttackDamage(playerAttackDamage, Color.red);
+                    }
+                    else
+                    {
+                        playerAttackDamage = playerDamage + (playerDamage * 0.5f);
+
+                        right.SetAttackDamage(playerAttackDamage, Color.white);
+                    }
                 }
 
                 anim.Play("Attack Tree");
                 attackDelay = 1f - (1f * (playerAttackSpeed - 1));
                 isAttack = true;
             }
-            else
+            else if (idleChange == 1 && weapon != null)
             {
                 changeStaminaAttack = 0;
 
@@ -611,24 +573,37 @@ public class InputController : MonoBehaviour
                     attackCombo = false;
                 }
 
-                if (attackCount == 0)
-                {
-                    playerAttackDamage = playerDamage + (playerDamage * 0.3f);
-                }
-                else
-                {
-                    playerAttackDamage = playerDamage + (playerDamage * 0.5f);
-                }
-
                 float critical = Random.Range(0.0f, 100.0f);
 
-                if (critical <= playerCritical)
+                if (attackCount == 0)
                 {
-                    playerCriticalAttack = true;
+                    if (critical <= playerCritical)
+                    {
+                        playerAttackDamage = playerDamage + (playerDamage * 0.3f) + ((playerDamage + (playerDamage * 0.3f)) * playerCriticalDamage);
+
+                        weaponAttackCheck.SetAttackDamage(playerAttackDamage, Color.red);
+                    }
+                    else
+                    {
+                        playerAttackDamage = playerDamage + (playerDamage * 0.3f);
+
+                        weaponAttackCheck.SetAttackDamage(playerAttackDamage, Color.white);
+                    }
                 }
                 else
                 {
-                    playerCriticalAttack = false;
+                    if (critical <= playerCritical)
+                    {
+                        playerAttackDamage = playerDamage + (playerDamage * 0.5f) + ((playerDamage + (playerDamage * 0.5f)) * playerCriticalDamage);
+
+                        weaponAttackCheck.SetAttackDamage(playerAttackDamage, Color.red);
+                    }
+                    else
+                    {
+                        playerAttackDamage = playerDamage + (playerDamage * 0.5f);
+
+                        weaponAttackCheck.SetAttackDamage(playerAttackDamage, Color.white);
+                    }
                 }
 
                 anim.Play("Attack Tree");
@@ -637,7 +612,7 @@ public class InputController : MonoBehaviour
             }
         }
         else if (Input.GetKeyDown(KeyCode.Mouse1) && isAttack == false
-            && idleChange == 1 && curStamina > 30f)
+            && idleChange == 1 && curStamina > 30f && weapon != null)
         {
             changeStaminaAttack = 1;
 
@@ -648,24 +623,37 @@ public class InputController : MonoBehaviour
                 attackCombo = false;
             }
 
-            if (attackCount == 0)
-            {
-                playerAttackDamage = playerDamage + (playerDamage * 0.7f);
-            }
-            else
-            {
-                playerAttackDamage = playerDamage + (playerDamage * 0.9f);
-            }
-
             float critical = Random.Range(0.0f, 100.0f);
 
-            if (critical <= playerCritical)
+            if (attackCount == 0)
             {
-                playerCriticalAttack = true;
+                if (critical <= playerCritical)
+                {
+                    playerAttackDamage = playerDamage + (playerDamage * 0.7f) + ((playerDamage + (playerDamage * 0.7f)) * playerCriticalDamage);
+
+                    weaponAttackCheck.SetAttackDamage(playerAttackDamage, Color.red);
+                }
+                else
+                {
+                    playerAttackDamage = playerDamage + (playerDamage * 0.7f);
+
+                    weaponAttackCheck.SetAttackDamage(playerAttackDamage, Color.white);
+                }
             }
             else
             {
-                playerCriticalAttack = false;
+                if (critical <= playerCritical)
+                {
+                    playerAttackDamage = playerDamage + (playerDamage * 0.9f) + ((playerDamage + (playerDamage * 0.9f)) * playerCriticalDamage);
+
+                    weaponAttackCheck.SetAttackDamage(playerAttackDamage, Color.red);
+                }
+                else
+                {
+                    playerAttackDamage = playerDamage + (playerDamage * 0.9f);
+
+                    weaponAttackCheck.SetAttackDamage(playerAttackDamage, Color.white);
+                }
             }
 
             anim.Play("Attack Tree");
@@ -692,15 +680,21 @@ public class InputController : MonoBehaviour
     /// </summary>
     private void playerStatusCheck()
     {
-        playerDamage = informationManager.GetPlayerStatDamage();
-        playerAttackSpeed = informationManager.GetPlayerStatAttackSpeedAnim();
-        moveSpeed = informationManager.GetPlayerStatSpeed();
-        playerMaxCurHp = new Vector2(informationManager.GetPlayerStatHp(), informationManager.GetCurHp());
-        playerStateManager.SetPlayerHpBar(playerMaxCurHp.y, playerMaxCurHp.x);
-        playerArmor = informationManager.GetPlayerStatArmor();
-        playerCritical = informationManager.GetPlayerStatCritical();
-        playerCriticalDamage = informationManager.GetPlayerStatCriticalDamage();
-        maxStamina = informationManager.GetPlayerStatStamina();
+        if (gameManager.Cheat == false)
+        {
+            playerDamage = informationManager.GetPlayerStatDamage();
+            playerAttackSpeed = informationManager.GetPlayerStatAttackSpeedAnim();
+            moveSpeed = informationManager.GetPlayerStatSpeed();
+            playerMaxCurHp = new Vector2(informationManager.GetPlayerStatHp(), informationManager.GetCurHp());
+            playerStateManager.SetPlayerHpBar(playerMaxCurHp.y, playerMaxCurHp.x);
+            playerArmor = informationManager.GetPlayerStatArmor();
+            playerCritical = informationManager.GetPlayerStatCritical();
+            playerCriticalDamage = informationManager.GetPlayerStatCriticalDamage();
+            maxStamina = informationManager.GetPlayerStatStamina();
+            curStamina = maxStamina;
+
+            gameManager.Cheat = true;
+        }
     }
 
     /// <summary>
@@ -730,6 +724,8 @@ public class InputController : MonoBehaviour
                 weapon.transform.SetParent(playerBackTrs.transform);
                 weapon.transform.localPosition = new Vector3(0f, 0f, 0f);
                 weapon.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                weaponAttackCollider = weapon.transform.Find("WeaponMeshColider").gameObject;
+                weaponAttackCheck = weaponAttackCollider.GetComponent<PlayerAttackCheck>();
             }
         }
         else if (wearItemManager.GetWearWeapon() == null && weapon != null)
@@ -739,6 +735,8 @@ public class InputController : MonoBehaviour
             informationManager.SetStatUpCheck(0, 0);
             Destroy(weapon);
             idleChange = 0;
+            weaponAttackCollider = null;
+            weaponAttackCheck = null;
         }
         #endregion
 
@@ -775,19 +773,11 @@ public class InputController : MonoBehaviour
     }
 
     /// <summary>
-    /// 애니메이션에 맞춰 몬스터를 공격하기 위한 함수
-    /// </summary>
-    public void AttackHit()
-    {
-        monsterAttack = true;
-    }
-
-    /// <summary>
     /// 오른손 공격 콜라이더를 켜줌
     /// </summary>
     public void RightHandAttackTrue()
     {
-
+        rightHand.SetActive(true);
     }
 
     /// <summary>
@@ -795,7 +785,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     public void RightHandAttackFalse()
     {
-
+        rightHand.SetActive(false);
     }
 
     /// <summary>
@@ -803,7 +793,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     public void LeftHandAttackTrue()
     {
-
+        leftHand.SetActive(true);
     }
 
     /// <summary>
@@ -811,7 +801,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     public void LeftHandAttackFalse()
     {
-
+        leftHand.SetActive(false);
     }
 
     /// <summary>
@@ -819,7 +809,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     public void WeaponAttackTrue()
     {
-
+        weaponAttackCollider.SetActive(true);
     }
 
     /// <summary>
@@ -827,7 +817,7 @@ public class InputController : MonoBehaviour
     /// </summary>
     public void WeaponAttackFalse()
     {
-
+        weaponAttackCollider.SetActive(false);
     }
 
     /// <summary>

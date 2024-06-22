@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -7,6 +8,9 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+
+    private InventoryManger inventoryManger;
+    private InformationManager informationManager;
 
     [Header("게임 정지")]
     [SerializeField] private bool gamePause;
@@ -17,7 +21,19 @@ public class GameManager : MonoBehaviour
     [Header("옵션")]
     [SerializeField] private GameObject optionWindow;
     [SerializeField] private List<Button> buttons;
-
+    private bool cheat = false;
+    public bool Cheat
+    {
+        get
+        {
+            return cheat;
+        }
+        set
+        {
+            cheat = value;
+        }
+    }
+ 
     private float playerExp; //플레이어에게 전달할 경험치
 
     private bool playerStop = false; //플레이어를 멈추게 하는 변수
@@ -59,6 +75,19 @@ public class GameManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
             gamePause = false;
         });
+
+        buttons[3].onClick.AddListener(() =>
+        {
+            inventoryManger.SetCoin();
+            informationManager.CheatCheck();
+            cheat = false;
+        });
+    }
+
+    private void Start()
+    {
+        inventoryManger = InventoryManger.Instance;
+        informationManager = InformationManager.Instance;
     }
 
     private void Update()
@@ -68,6 +97,8 @@ public class GameManager : MonoBehaviour
             bool optionOn = optionWindow == optionWindow.activeSelf ? false : true;
             optionWindow.SetActive(optionOn);
             gamePause = optionOn;
+
+            optionWindow.transform.SetAsLastSibling();
 
             if (optionOn == false)
             {

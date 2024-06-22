@@ -14,6 +14,9 @@ public class Monster : MonoBehaviour
     [Header("몬스터 기본 설정")]
     [SerializeField, Tooltip("몬스터의 이동속도")] protected float moveSpeed;
     [SerializeField, Tooltip("몬스터의 이동을 멈춤")] protected bool moveStop;
+    [SerializeField, Tooltip("보스인지 아닌지 체크")] protected bool bossMonster;
+    [SerializeField, Tooltip("죽는 애니메이션이 나오는 시간")] protected float deadTime;
+    protected bool behaviorCheck; //몬스터의 작동을 멈추게 하기 위한 변수
     protected bool rotateStop; //회전을 멈추게 하는 변수
     [Space]
     [SerializeField, Tooltip("몬스터의 랜덤 회전 시간 최소, 최대")] protected Vector2 rotateTime;
@@ -40,7 +43,6 @@ public class Monster : MonoBehaviour
 
     protected bool noHit; //죽는 애니메이션이 실행될 때 히트판정을 막기 위한 변수
 
-    protected bool boss; //보스 몬스터인지 확인을 위한 변수
     protected bool bossDie; //보스 몬스터가 죽었는지 확인을 위한 변수
 
     protected InputController player;
@@ -85,7 +87,7 @@ public class Monster : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (noHit == true)
+        if (noHit == true || behaviorCheck == true)
         {
             return;
         }
@@ -190,7 +192,7 @@ public class Monster : MonoBehaviour
     /// </summary>
     protected virtual void monsterDead()
     {
-        if (hp <= 0.0f && boss == false)
+        if (hp <= 0.0f && bossMonster == false)
         {
             noHit = true;
             gameManager.SetExp(setExp);
@@ -209,9 +211,10 @@ public class Monster : MonoBehaviour
 
             Destroy(gameObject, 2f);
         }
-        else if (hp <= 0.0f && boss == true && bossDie == true)
+        else if (hp <= 0.0f && bossMonster == true && bossDie == true)
         {
             noHit = true;
+            behaviorCheck = true;
             gameManager.SetExp(setExp);
             anim.Play("Die");
 
@@ -226,7 +229,7 @@ public class Monster : MonoBehaviour
                 }
             }
 
-            Destroy(gameObject, 2f);
+            Destroy(gameObject, deadTime);
         }
     }
 

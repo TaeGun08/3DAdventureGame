@@ -642,6 +642,17 @@ public class InventoryManger : MonoBehaviour
     }
 
     /// <summary>
+    /// 코인을 넣어주기 위한 함수
+    /// </summary>
+    /// <returns></returns>
+    public void SetCoin()
+    {
+        coin = 9999999;
+        coinText.text = $"코인 : {coin}";
+        setSaveItem();
+    }
+
+    /// <summary>
     /// 인벤토리에 있는 아이템을 업그레이드 시키는 함수
     /// </summary>
     public void ItemUpgrade(int _slotIndex, float _weaponDamage)

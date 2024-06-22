@@ -37,7 +37,14 @@ public class ItemInvenDrop : MonoBehaviour, IDropHandler
                 inventoryManger.ItemInstantaite(slotNumber, gameObject, wearItemDataSc.GetItemType(), 
                     wearItemDataSc.GetItemIndex(), wearItemDataSc.GetWeaponDamage(), wearItemDataSc.GetWeaponAttackSpeed(), wearItemDataSc.GetWeaponUpgrade());
 
-                wearItemManager.WearWeaponDisarm();
+                if (wearItemDataSc.GetItemType() == 10)
+                {
+                    wearItemManager.WearWeaponDisarm();
+                }
+                else
+                {
+                    wearItemManager.WearArmorDisarm(wearItemDataSc.GetItemType());
+                }
 
                 Destroy(eventData.pointerDrag.gameObject);
 

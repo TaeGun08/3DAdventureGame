@@ -38,6 +38,7 @@ public class Bull : Monster
         {
             playerHitCheck();
             monstertimer();
+            phaseCheck();
         }
     }
 
@@ -94,6 +95,11 @@ public class Bull : Monster
     {
         if (Vector3.Distance(transform.position, player.transform.position) < chasePlayerRadius)
         {
+            if (base.moveStop != true)
+            {
+                base.moveStop = true;
+            }
+
             if (attackOn == true)
             {
                 MonsterAttackCheck leftAttackSc = leftWeapon.GetComponent<MonsterAttackCheck>();
@@ -158,12 +164,44 @@ public class Bull : Monster
     {
         if (attackOn == false)
         {
+            if (base.moveStop == true)
+            {
+                base.moveStop = false;
+            }
+
             delayTimer -= Time.deltaTime;
 
-            if (delayTimer <= 0)
+            if (delayTimer <= 0.8f && delayTimer > 0)
+            {
+                base.smoothMaxSpeed = 5000;
+            }
+            else if (delayTimer <= 0)
             {
                 attackOn = true;
             }
+        }
+    }
+
+    /// <summary>
+    /// 보스 페이즈에 따른 설정을 해주는 함수
+    /// </summary>
+    private void phaseCheck()
+    {
+        if (phase == 0 && base.hp <=0)
+        {
+            base.hp = 1000;
+            base.armor = 10;
+            phase++;
+        }
+        else if (phase == 1 && base.hp <= 0)
+        {
+            base .hp = 1500;
+            base.armor = 15;
+            phase++;
+        }
+        else if (phase == 2 && base.hp <= 0)
+        {
+            bossDie = true;
         }
     }
 

@@ -26,14 +26,14 @@ public class WearItemManager : MonoBehaviour
     [Header("장착 가능한 무기")]
     [SerializeField] private List<GameObject> weapons;
 
-    private int weaponType; //아이템 타입을 받아올 변수
-    private int weaponIndex; //아이템 데이터에 받아올 인덱스
+    [SerializeField] private int weaponType; //아이템 타입을 받아올 변수
+    [SerializeField] private int weaponIndex; //아이템 데이터에 받아올 인덱스
     [SerializeField] private float weaponDamage; //아이템 데이터에 받아올 공격력
     [SerializeField] private float weaponAttackSpeed; //아이템 데이터에 받아올 공격속도
     private int wearWeaponUpgrade; //아이템 테이터에 받아올 강화횟수
 
-    private List<int> wearGearType = new List<int>();
-    private List<int> wearGearIndex = new List<int>();
+    [SerializeField] private List<int> wearGearType = new List<int>();
+    [SerializeField] private List<int> wearGearIndex = new List<int>();
 
     private void Awake()
     {
@@ -268,13 +268,49 @@ public class WearItemManager : MonoBehaviour
         wearWeaponUpgrade = 0;
         wearItem.wearWeaponUpgrade = 0;
 
-        for (int i = 0; i < 7; i++)
+        if (tutorialManager != null && tutorialManager.TutorialTrue() == true)
         {
-            wearGearType[i] = 0;
-            wearGearIndex[i] = 0;
+            return;
+        }
 
-            wearItem.wearGearType[i] = 0;
-            wearItem.wearGearIndex[i] = 0;
+        string setWearItem = JsonConvert.SerializeObject(wearItem);
+        PlayerPrefs.SetString("wearItemSaveKey", setWearItem);
+    }
+
+    public void WearArmorDisarm(int _check)
+    {
+        if (_check == 11)
+        {
+            wearGearType[0] = 0;
+            wearGearIndex[0] = 0;
+
+            wearItem.wearGearType[0] = 0;
+            wearItem.wearGearIndex[0] = 0;
+        }
+        else if (_check == 12)
+        {
+            wearGearType[1] = 0;
+            wearGearIndex[1] = 0;
+
+            wearItem.wearGearType[1] = 0;
+            wearItem.wearGearIndex[1] = 0;
+        }
+        else if (_check == 13)
+        {
+            wearGearType[2] = 0;
+            wearGearIndex[2] = 0;
+
+            wearItem.wearGearType[2] = 0;
+            wearItem.wearGearIndex[2] = 0;
+        }
+        else if (_check == 14)
+        {
+            wearGearType[3] = 0;
+            wearGearIndex[3] = 0;
+
+            wearItem.wearGearType[3] = 0;
+            wearItem.wearGearIndex[3] = 0;
+
         }
 
         if (tutorialManager != null && tutorialManager.TutorialTrue() == true)
