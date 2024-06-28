@@ -246,7 +246,6 @@ public class Monster : MonoBehaviour
         {
             anim.SetBool("isWalk", false);
         }
-
     }
 
     /// <summary>
@@ -286,6 +285,9 @@ public class Monster : MonoBehaviour
             hp -= donwDamage;
         }
 
+        if (bossMonster == false)
+        {
         anim.Play("Hit");
+        }
     }
 }

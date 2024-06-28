@@ -12,13 +12,9 @@ public class Bull : Monster
     [SerializeField] private float delayTimer; //딜레이 타이머
     [SerializeField] private bool attackOn = false; //공격 가능여부를 체크하는 변수
     [SerializeField] private float phase; //보스의 페이즈
-    private int comboAttack; //보스 연속 공격
     [Space]
     [SerializeField, Tooltip("왼손 무기")] private GameObject leftWeapon;
     [SerializeField, Tooltip("오른손 무기")] private GameObject rightWeapon;
-
-
-    private Vector3 beforePos;
 
     protected override void Awake()
     {
@@ -42,52 +38,6 @@ public class Bull : Monster
         }
     }
 
-    private void hitTrigger(Collider _hitCollider)
-    {
-        if (_hitCollider.gameObject.layer == LayerMask.NameToLayer("Player"))
-        {
-            if (base.moveStop != true)
-            {
-                base.moveStop = true;
-            }
-
-            if (attackOn == true)
-            {
-                MonsterAttackCheck leftAttackSc = leftWeapon.GetComponent<MonsterAttackCheck>();
-                MonsterAttackCheck rightAttackSc = rightWeapon.GetComponent<MonsterAttackCheck>();
-
-                if (phase == 0)
-                {
-                    base.anim.Play("1Phasecombo1");
-
-                    delayTimer = attackDelay;
-
-                    rightAttackSc.SetAttackDamage(base.damage);
-                }
-                else if (phase == 1)
-                {
-                    base.anim.Play("2Phasecombo1");
-
-                    delayTimer = attackDelay + 1;
-
-                    leftAttackSc.SetAttackDamage(base.damage + (base.damage * 0.3f));
-                    rightAttackSc.SetAttackDamage(base.damage + (base.damage * 0.3f));
-                }
-                else
-                {
-                    base.anim.Play("3Phasecombo1");
-
-                    delayTimer = attackDelay + 2;
-
-                    leftAttackSc.SetAttackDamage(base.damage + (base.damage * 0.5f));
-                    rightAttackSc.SetAttackDamage(base.damage + (base.damage * 0.5f));
-                }
-
-                attackOn = false;
-            }
-        }
-    }
-
     /// <summary>
     /// 플레이어를 공격하기 위한 콜라이더
     /// </summary>
@@ -105,6 +55,8 @@ public class Bull : Monster
                 base.moveStop = true;
             }
 
+            anim.SetBool("isWalk", false);
+
             if (attackOn == true)
             {
                 MonsterAttackCheck leftAttackSc = leftWeapon.GetComponent<MonsterAttackCheck>();
@@ -140,26 +92,6 @@ public class Bull : Monster
                 attackOn = false;
             }
         }
-
-        //Collider[] hitCheck = Physics.OverlapBox(hitCollider.bounds.center, hitCollider.bounds.size * 0.5f, Quaternion.identity,
-        //    LayerMask.GetMask("Player"));
-
-        //int hitCheckCount = hitCheck.Length;
-
-        //if (hitCheckCount > 0)
-        //{
-        //    for (int i = 0; i < hitCheckCount; i++)
-        //    {
-        //        hitTrigger(hitCheck[i]);
-        //    }
-        //}
-        //else
-        //{
-        //    if (base.moveStop != false)
-        //    {
-        //        base.moveStop = false;
-        //    }
-        //}
     }
 
     /// <summary>

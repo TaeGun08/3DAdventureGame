@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MonsterField.unity
     guid: 614274cdfb40c1a4a8f71c96cb84d3e7
+  - enabled: 1
+    path: Assets/Scenes/BossField.unity
+    guid: 24605065d29f3b64b86b771a5c9ca977
   m_configObjects: {}

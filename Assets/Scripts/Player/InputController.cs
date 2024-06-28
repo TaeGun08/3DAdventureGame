@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class InputController : MonoBehaviour
 {
@@ -131,6 +132,7 @@ public class InputController : MonoBehaviour
         checkNotPickUpItem();
         playerHealCheck();
         playerStatusCheck();
+        playerDead();
 
         if (gameManager.GetPlayerMoveStop() == false && 
             gameManager.SetUIOpenCheck(1) == false && 
@@ -755,6 +757,20 @@ public class InputController : MonoBehaviour
             informationManager.SetCurHp(playerMaxCurHp.y);
 
             informationManager.SetHealCheck(false);
+        }
+    }
+
+    /// <summary>
+    /// 플레이어가 죽었을 때 작동하는 함수
+    /// </summary>
+    private void playerDead()
+    {
+        if (playerMaxCurHp.y <= 0)
+        {
+            playerMaxCurHp.y = playerMaxCurHp.x;
+            playerStateManager.SetPlayerHpBar(playerMaxCurHp.x, playerMaxCurHp.x);
+            informationManager.SetCurHp(playerMaxCurHp.x);
+            SceneManager.LoadSceneAsync("MainField");
         }
     }
 
