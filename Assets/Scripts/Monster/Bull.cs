@@ -93,6 +93,11 @@ public class Bull : Monster
     /// </summary>
     private void playerHitCheck()
     {
+        if (player == null)
+        {
+            return;
+        }
+
         if (Vector3.Distance(transform.position, player.transform.position) < chasePlayerRadius)
         {
             if (base.moveStop != true)
