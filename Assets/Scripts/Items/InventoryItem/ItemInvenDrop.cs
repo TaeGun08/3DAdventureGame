@@ -44,6 +44,23 @@ public class ItemInvenDrop : MonoBehaviour, IDropHandler
                 else
                 {
                     wearItemManager.WearArmorDisarm(wearItemDataSc.GetItemType());
+
+                    if (wearItemDataSc.GetItemType() == 11)
+                    {
+                        InformationManager.Instance.SetWearArmorCheck(11, false);
+                    }
+                    else if (wearItemDataSc.GetItemType() == 12)
+                    {
+                        InformationManager.Instance.SetWearArmorCheck(12, false);
+                    }
+                    else if (wearItemDataSc.GetItemType() == 13)
+                    {
+                        InformationManager.Instance.SetWearArmorCheck(13, false);
+                    }
+                    else if (wearItemDataSc.GetItemType() == 14)
+                    {
+                        InformationManager.Instance.SetWearArmorCheck(14, false);
+                    }
                 }
 
                 Destroy(eventData.pointerDrag.gameObject);

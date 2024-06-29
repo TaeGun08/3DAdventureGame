@@ -36,6 +36,23 @@ public class WearDropItem : MonoBehaviour, IDropHandler
                         itemUIData.GetWeaponDamage(), itemUIData.GetWeaponAttackSpeed(), itemUIData.GetWeaponUpgrade());
                     itemIndex = itemUIData.GetItemIndex();
 
+                    if (wearItemTypeCheck == 11)
+                    {
+                        InformationManager.Instance.SetWearArmorCheck(11, true);
+                    }
+                    else if (wearItemTypeCheck == 12)
+                    {
+                        InformationManager.Instance.SetWearArmorCheck(12, true);
+                    }
+                    else if (wearItemTypeCheck == 13)
+                    {
+                        InformationManager.Instance.SetWearArmorCheck(13, true);
+                    }
+                    else if (wearItemTypeCheck == 14)
+                    {
+                        InformationManager.Instance.SetWearArmorCheck(14, true);
+                    }
+
                     inventoryManger.WearItemDropCheck();
 
                     Destroy(eventData.pointerDrag.gameObject);
@@ -104,6 +121,6 @@ public class WearDropItem : MonoBehaviour, IDropHandler
         if (wearItemManager.GetWeaponType() == 0 && itemIndex != 0)
         {
             itemIndex = 0;
-        }
+        } 
     }
 }

@@ -622,4 +622,62 @@ public class InformationManager : MonoBehaviour
         playerStateManager.SetPlayerLevelText(level);
         setSaveStatus();
     }
+    
+    /// <summary>
+    /// 장비를 장착했을 때 값을 넣어주기 위한 함수
+    /// </summary>
+    /// <param name="_check"></param>
+    /// <param name="_true"></param>
+    public void SetWearArmorCheck(int _check, bool _true)
+    {
+        if (_check == 11)
+        {
+            if (_true == true)
+            {
+                hp += 30;
+            }
+            else
+            {
+                hp -= 30;
+            }
+        }
+        else if (_check == 12)
+        {
+            if (_true == true)
+            {
+                hp += 30;
+                armor += 10;
+            }
+            else
+            {
+                hp -= 30;
+                armor -= 10;
+            }
+        }
+        else if (_check == 13)
+        {
+            if (_true == true)
+            {
+                armor += 10;
+            }
+            else
+            {
+                armor -= 10;
+            }
+        }
+        else if (_check == 14)
+        {
+            if (_true == true)
+            {
+                speed += 0.3f;
+            }
+            else
+            {
+                speed -= 0.3f;
+            }
+        }
+
+        playerStateManager.SetPlayerLevelText(level);
+        setSaveStatus();
+    }
 }

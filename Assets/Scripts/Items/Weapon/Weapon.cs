@@ -20,6 +20,7 @@ public class Weapon : MonoBehaviour
     [SerializeField, Tooltip("무기의 공격력")] private float weaponDamage;
     [SerializeField, Tooltip("무기의 공격속도")] private float weaponAttackSpeed;
     [SerializeField, Tooltip("무기 강화 횟수")] private int weaponUpgrade;
+    
     private float upgradePercent;
 
     private bool initWeapon = false; 
@@ -42,7 +43,7 @@ public class Weapon : MonoBehaviour
             string dmamgeString = $"{randomDamage.ToString("F1")}";
             float dmamge = float.Parse(dmamgeString);
 
-            float randomAttackSpeed = Random.Range(0f, 0.02f);
+            float randomAttackSpeed = Random.Range(0f, 0.03f);
             string attackSpeedString = $"{randomAttackSpeed.ToString("F2")}";
             float attackSpeed = float.Parse(attackSpeedString);
 
@@ -57,7 +58,7 @@ public class Weapon : MonoBehaviour
             string dmamgeString = $"{randomDamage.ToString("F1")}";
             float dmamge = float.Parse(dmamgeString);
 
-            float randomAttackSpeed = Random.Range(0.03f, 0.06f);
+            float randomAttackSpeed = Random.Range(0.04f, 0.06f);
             string attackSpeedString = $"{randomAttackSpeed.ToString("F2")}";
             float attackSpeed = float.Parse(attackSpeedString);
 

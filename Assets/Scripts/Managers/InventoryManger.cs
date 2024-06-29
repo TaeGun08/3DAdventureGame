@@ -739,7 +739,27 @@ public class InventoryManger : MonoBehaviour
         {
             if (itemType[i] == 0)
             {
-                if (_itemType == 11)
+                if (_itemType == 10)
+                {
+                    itemIndex[i] = 100;
+                    itemType[i] = 10;
+                    itemQuantity[i] = 1;
+                    weaponDamage[i] = 2;
+                    weaponAttackSpeed[i] = 0.01f;
+                    weaponUpgrade[i] = 0;
+
+                    GameObject itemObj = Instantiate(itemPrefab, slotTrs[i]);
+                    itemList[i] = itemObj;
+                    ItemUIData itemUISc = itemObj.GetComponent<ItemUIData>();
+                    itemUISc.SetItemImage(itemIndex[i], itemType[i], 1, weaponDamage[i], weaponAttackSpeed[i], weaponUpgrade[i]);
+
+                    itemSlotIndex[i] = 1;
+
+                    setSaveItem();
+
+                    return;
+                }
+                else if (_itemType == 11)
                 {
                     itemIndex[i] = 111;
                     itemType[i] = 11;

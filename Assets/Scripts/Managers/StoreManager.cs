@@ -86,5 +86,15 @@ public class StoreManager : MonoBehaviour
                 inventoryManger.buyItem(14);
             }
         });
+
+        buyButton[5].onClick.AddListener(() =>
+        {
+            if (inventoryManger.GetCoin() >= 1000)
+            {
+                inventoryManger.coinCheck(true, 1000);
+
+                inventoryManger.buyItem(10);
+            }
+        });
     }
 }

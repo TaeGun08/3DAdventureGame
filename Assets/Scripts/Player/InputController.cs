@@ -719,6 +719,7 @@ public class InputController : MonoBehaviour
                 weaponRigid.isKinematic = true;
                 weaponColl.isTrigger = true;
                 weapon = weaponSc.gameObject;
+                weaponColl.enabled = false;
                 weaponSc.SetWeaponData(wearItemManager.GetWeaponDamage(), wearItemManager.GetWeaponAttackSpeed());
                 informationManager.SetStatUpCheck(wearItemManager.GetWeaponDamage(), wearItemManager.GetWeaponAttackSpeed());
                 weaponDamage = wearItemManager.GetWeaponDamage();

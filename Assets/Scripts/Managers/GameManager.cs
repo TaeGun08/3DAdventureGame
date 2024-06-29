@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -57,7 +58,12 @@ public class GameManager : MonoBehaviour
 
         buttons[0].onClick.AddListener(() => 
         {
-            SceneManager.LoadSceneAsync("Main");
+            FunctionFade.Instance.SetActive(false, () =>
+            {
+                SceneManager.LoadSceneAsync("Main");
+
+                FunctionFade.Instance.SetActive(true);
+            });
         });
 
         buttons[1].onClick.AddListener(() =>
@@ -88,11 +94,15 @@ public class GameManager : MonoBehaviour
     {
         inventoryManger = InventoryManger.Instance;
         informationManager = InformationManager.Instance;
+
+        StartCoroutine(FunctionFade.Instance.functionFade());
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && 
+            (FunctionFade.Instance.DontEsc() == 1f 
+            || FunctionFade.Instance.DontEsc() == 0f))
         {
             bool optionOn = optionWindow == optionWindow.activeSelf ? false : true;
             optionWindow.SetActive(optionOn);

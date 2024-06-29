@@ -23,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BossField.unity
     guid: 24605065d29f3b64b86b771a5c9ca977
+  - enabled: 1
+    path: Assets/Scenes/Loading.unity
+    guid: 830e63024e4e3314597c23f48edef2ea
   m_configObjects: {}

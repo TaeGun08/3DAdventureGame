@@ -49,17 +49,17 @@ public class MainManager : MonoBehaviour
     [Space]
     [SerializeField, Tooltip("배경음악")] private Slider bgm;
     [SerializeField, Tooltip("효과음")] private Slider fxs;
-    [Space]
-    [SerializeField, Tooltip("페이드인아웃")] private Image fadeInOut;
-    private bool fadeOn = false;
-    private float fadeTimer;
 
-    private string saveSettingValue = "saveSettingValue"; //스크린 사이즈 키 값을 만들 변수
+    private string saveSetingValue = "saveSettingValue"; //스크린 사이즈 키 값을 만들 변수
 
     private string saveSceneName = "saveSceneName"; //씬을 저장하기 위한 변수
 
     private void Awake()
     {
+        Time.timeScale = 1.0f;
+
+        Cursor.lockState = CursorLockMode.None;
+
         if (exitChoiceButton != null)
         {
             exitChoiceButton.SetActive(false);
@@ -70,7 +70,7 @@ public class MainManager : MonoBehaviour
             setting.gameObject.SetActive(false);
         }
 
-        if (PlayerPrefs.GetString(saveSettingValue) == string.Empty)
+        if (PlayerPrefs.GetString(saveSetingValue) == string.Empty)
         {
             Screen.SetResolution(1920, 1080, true);
             dropdown.value = 4;
@@ -79,11 +79,11 @@ public class MainManager : MonoBehaviour
             fxs.value = 75 / 100f;
 
             string getScreenSize = JsonConvert.SerializeObject(saveSetting);
-            PlayerPrefs.SetString(saveSettingValue, getScreenSize);
+            PlayerPrefs.SetString(saveSetingValue, getScreenSize);
         }
         else
         {
-            string saveScreenData = PlayerPrefs.GetString(saveSettingValue);
+            string saveScreenData = PlayerPrefs.GetString(saveSetingValue);
             saveSetting = JsonConvert.DeserializeObject<SaveSetting>(saveScreenData);
             setSaveSettingData(saveSetting);
         }
@@ -92,29 +92,57 @@ public class MainManager : MonoBehaviour
         {
             if (PlayerPrefs.GetString(saveSceneName) == string.Empty)
             {
-                string setScene = JsonConvert.SerializeObject(saveScene);
-                PlayerPrefs.SetString(saveSceneName, setScene);
+                FunctionFade.Instance.SetActive(false, () =>
+                {
+                    string setLoding = JsonConvert.SerializeObject("Tutorial");
+                    PlayerPrefs.SetString(saveSceneName, setLoding);
+                    SceneManager.LoadSceneAsync("Loading");
 
-                fadeInOut.gameObject.SetActive(true);
-
-                fadeOn = true;
+                    FunctionFade.Instance.SetActive(true);
+                });
             }
             else
             {
-                resetChoiceButton.SetActive(true);
+                string get = PlayerPrefs.GetString(saveSceneName);
+                string getScene = JsonConvert.DeserializeObject<string>(get);
+
+                if (getScene == "Tutorial")
+                {
+                    FunctionFade.Instance.SetActive(false, () =>
+                    {
+                        string setLoding = JsonConvert.SerializeObject("Tutorial");
+                        PlayerPrefs.SetString(saveSceneName, setLoding);
+                        SceneManager.LoadSceneAsync("Loading");
+
+                        FunctionFade.Instance.SetActive(true);
+                    });
+                }
+                else
+                {
+                    resetChoiceButton.SetActive(true);
+                }
             }
         });
 
         loadButton.onClick.AddListener(() =>
         {
-            string loadSceneData = PlayerPrefs.GetString(saveSceneName);
-            saveScene = JsonConvert.DeserializeObject<SaveScene>(loadSceneData);
-
-            if (saveScene != null)
+            if (PlayerPrefs.GetString(saveSceneName) != string.Empty)
             {
-                fadeInOut.gameObject.SetActive(true);
+                string get = PlayerPrefs.GetString(saveSceneName);
+                string getScene = JsonConvert.DeserializeObject<string>(get);
 
-                fadeOn = true;
+
+                if (getScene != "Tutorial")
+                {
+                    FunctionFade.Instance.SetActive(false, () =>
+                    {
+                        string setLoding = JsonConvert.SerializeObject(getScene);
+                        PlayerPrefs.SetString(saveSceneName, setLoding);
+                        SceneManager.LoadSceneAsync("Loading");
+
+                        FunctionFade.Instance.SetActive(true);
+                    });
+                }
             }
         });
 
@@ -164,9 +192,9 @@ public class MainManager : MonoBehaviour
             saveSetting.fxsValue = fxs.value;
 
             string getScreenSize = JsonConvert.SerializeObject(saveSetting);
-            PlayerPrefs.SetString(saveSettingValue, getScreenSize);
+            PlayerPrefs.SetString(saveSetingValue, getScreenSize);
 
-            string saveScreenData = PlayerPrefs.GetString(saveSettingValue);
+            string saveScreenData = PlayerPrefs.GetString(saveSetingValue);
             saveSetting = JsonConvert.DeserializeObject<SaveSetting>(saveScreenData);
             setSaveSettingData(saveSetting);
         });
@@ -175,40 +203,6 @@ public class MainManager : MonoBehaviour
         {
             setting.gameObject.SetActive(false);
         });
-    }
-
-    private void Update()
-    {
-        if (fadeOn == true)
-        {
-            fadeTimer += Time.deltaTime / 2;
-            Color fadeColor = fadeInOut.color;
-            fadeColor.a = fadeTimer;
-            fadeInOut.color = fadeColor;
-
-            if (fadeColor.a > 1.0f)
-            {
-                fadeColor.a = 1.0f;
-            }
-
-            if (fadeColor.a >= 1.0f)
-            {
-                string loadSceneData = PlayerPrefs.GetString(saveSceneName);
-                saveScene = JsonConvert.DeserializeObject<SaveScene>(loadSceneData);
-
-
-                if (PlayerPrefs.GetString(saveSceneName) == string.Empty)
-                {
-                    SceneManager.LoadSceneAsync("Tutorial");
-                }
-                else
-                {
-                    SceneManager.LoadSceneAsync(saveScene.sceneName);
-                }
-
-                fadeOn = false;
-            }
-        }
     }
 
     /// <summary>
