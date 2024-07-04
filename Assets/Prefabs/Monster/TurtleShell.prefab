@@ -1316,6 +1316,8 @@ MonoBehaviour:
   setExp: 5
   coinPrefab: {fileID: 2873682419571155528, guid: 63a1414d468f602438f31241cb2a055c, type: 3}
   dropCoin: 1
+  box: {fileID: 2677218698816984505, guid: 69b04c124c26be04d954f53ee4e88c95, type: 3}
+  portal: {fileID: 2677218698816984505, guid: 69b04c124c26be04d954f53ee4e88c95, type: 3}
   showChasePlayerRadius: 1
   chasePlayerRadius: 3
   colorChasePlayer: {r: 1, g: 0, b: 0, a: 1}

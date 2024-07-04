@@ -52,7 +52,7 @@ public class StoreNpc : MonoBehaviour
 
     private void Update()
     {
-        if (playerIn == true && Input.GetKeyDown(KeyCode.F))
+        if (playerIn == true && Input.GetKeyDown(KeyCode.F) && gameManager.GetOptionUI().activeSelf == false)
         {
             bool openStoreWindow = storeUI == storeUI.activeSelf ? false : true;
             storeUI.SetActive(openStoreWindow);

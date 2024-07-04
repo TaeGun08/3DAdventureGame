@@ -160,7 +160,7 @@ public class InventoryManger : MonoBehaviour
     /// </summary>
     private void inventoyOnOff()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (Input.GetKeyDown(KeyCode.I) && gameManager.GetOptionUI().activeSelf == false)
         {
             screenWidth = Screen.width;
             screenHeight = Screen.height;

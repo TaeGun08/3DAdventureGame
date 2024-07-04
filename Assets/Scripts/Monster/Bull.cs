@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Bull : Monster
 {
@@ -12,6 +14,8 @@ public class Bull : Monster
     [SerializeField] private float delayTimer; //딜레이 타이머
     [SerializeField] private bool attackOn = false; //공격 가능여부를 체크하는 변수
     [SerializeField] private float phase; //보스의 페이즈
+    private float phaseChangerTimer;
+    private bool timerOn = false;
     [Space]
     [SerializeField, Tooltip("왼손 무기")] private GameObject leftWeapon;
     [SerializeField, Tooltip("오른손 무기")] private GameObject rightWeapon;
@@ -30,11 +34,25 @@ public class Bull : Monster
     {
         base.Update();
         bullAnimatoin();
+        phaseCheck();
+
+        if (timerOn == true)
+        {
+            phaseChangerTimer += Time.deltaTime;
+
+            if (phaseChangerTimer >= 2f)
+            {
+                base.noHit = false;
+                base.moveStop = false;
+                phaseChangerTimer = 0f;
+                timerOn = false;
+            }
+        }
+
         if (base.noHit == false)
         {
             playerHitCheck();
             monstertimer();
-            phaseCheck();
         }
     }
 
@@ -126,14 +144,22 @@ public class Bull : Monster
     {
         if (phase == 0 && base.hp <=0)
         {
-            base.hp = 1000;
+            base.anim.Play("jump");
+            base.hp = 250;
             base.armor = 10;
+            base.noHit = true;
+            base.moveStop = true;
+            timerOn = true;
             phase++;
         }
         else if (phase == 1 && base.hp <= 0)
         {
-            base .hp = 1500;
+            base.anim.Play("jump");
+            base .hp = 300;
             base.armor = 15;
+            base.noHit = true;
+            base.moveStop = true;
+            timerOn = true;
             phase++;
         }
         else if (phase == 2 && base.hp <= 0)

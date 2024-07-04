@@ -10,6 +10,15 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    public class PositionCheck
+    {
+        public float posX;
+        public float posY;
+        public float posZ;
+    }
+
+    private PositionCheck positionCheck = new PositionCheck();
+
     private InventoryManger inventoryManger;
     private InformationManager informationManager;
 
@@ -23,6 +32,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject optionWindow;
     [SerializeField] private List<Button> buttons;
     private bool cheat = false;
+
+    [SerializeField] private GameObject position;
+
     public bool Cheat
     {
         get
@@ -88,6 +100,18 @@ public class GameManager : MonoBehaviour
             informationManager.CheatCheck();
             cheat = false;
         });
+
+        if (PlayerPrefs.GetString("PositionData") != string.Empty)
+        {
+            string getPos = PlayerPrefs.GetString("PositionData");
+            positionCheck = JsonConvert.DeserializeObject<PositionCheck>(getPos);
+        }
+        else
+        {
+            positionCheck.posX = 0;
+            positionCheck.posY = 0;
+            positionCheck.posZ = 0;
+        }
     }
 
     private void Start()
@@ -118,6 +142,29 @@ public class GameManager : MonoBehaviour
             {
                 Cursor.lockState = CursorLockMode.None;
             }
+        }
+
+        if (optionWindow.activeSelf == false)
+        {
+            mousePonterLockCheck();
+        }
+    }
+
+    /// <summary>
+    /// 마우스 포인터의 잠금을 체크하는 함수
+    /// </summary>
+    private void mousePonterLockCheck()
+    {
+        if (inforCheck == false &&
+            invenCheck == false &&
+            storeCheck == false &&
+            upgradeCheck == false)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
         }
     }
 
@@ -243,36 +290,27 @@ public class GameManager : MonoBehaviour
         {
             return upgradeCheck;
         }
-        else if (_number == 5)
-        {
-
-        }
 
         return false;
     }
 
-    /// <summary>
-    /// 마우스 포인터의 잠금을 체크하는 함수
-    /// </summary>
-    public void MousePonterLockCheck()
+    public GameObject GetOptionUI()
     {
-        if (!Input.GetKey(KeyCode.LeftAlt))
-        {
-            if (Cursor.lockState == CursorLockMode.Locked)
-            {
-                return;
-            }
+        return optionWindow;
+    }
 
-            Cursor.lockState = CursorLockMode.Locked;
-        }
-        else
-        {
-            if (Cursor.lockState == CursorLockMode.None)
-            {
-                return;
-            }
+    public void SetPosition(Vector3 _trs)
+    {
+        positionCheck.posX = _trs.x;
+        positionCheck.posY = _trs.y;
+        positionCheck.posZ = _trs.z;
 
-            Cursor.lockState = CursorLockMode.None;
-        }
+        string getPos = JsonConvert.SerializeObject(positionCheck);
+        PlayerPrefs.SetString("PositionData", getPos);
+    }
+
+    public Vector3 GetPosition()
+    {
+        return new Vector3(positionCheck.posX, positionCheck.posY, positionCheck.posZ);
     }
 }

@@ -158,7 +158,7 @@ public class MainManager : MonoBehaviour
 
         resetButton.onClick.AddListener(() =>
         {
-            PlayerPrefs.SetString(saveSceneName, string.Empty);
+            PlayerPrefs.DeleteAll();
             resetChoiceButton.SetActive(false);
         });
 

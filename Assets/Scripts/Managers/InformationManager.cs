@@ -285,7 +285,7 @@ public class InformationManager : MonoBehaviour
     /// </summary>
     private void statusOnOff()
     {
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P) && gameManager.GetOptionUI().activeSelf == false)
         {
             screenWidth = Screen.width;
             screenHeight = Screen.height;
@@ -596,7 +596,7 @@ public class InformationManager : MonoBehaviour
         curExp = 0;
         damage = 999;
         attackSpeed = 1.3f;
-        speed += 1;
+        speed += 3;
         hp = 9999;
         curHp = hp;
         armor = 999;

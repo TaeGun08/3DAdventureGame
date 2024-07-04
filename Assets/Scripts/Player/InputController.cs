@@ -109,6 +109,8 @@ public class InputController : MonoBehaviour
         curStamina = maxStamina;
 
         playerMaxCurHp.y = playerMaxCurHp.x;
+
+        transform.position = gameManager.GetPosition();
     }
 
     private void Update()
@@ -121,7 +123,6 @@ public class InputController : MonoBehaviour
         else
         {
             gameManager.SetGamePause(false);
-            gameManager.MousePonterLockCheck();
         }
 
         playerTimers();

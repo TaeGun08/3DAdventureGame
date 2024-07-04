@@ -19,8 +19,6 @@ public class UpgradeNpc : MonoBehaviour
 
     private bool playerIn = false; //플레이어 콜아이더 안으로 들어왔는지 체크해주는 변수
 
-    [SerializeField] private GameObject obj;
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
@@ -73,7 +71,7 @@ public class UpgradeNpc : MonoBehaviour
             curSlotNumber = upgradeSlot.SlotNumber();
         }
 
-        if (playerIn == true && Input.GetKeyDown(KeyCode.F))
+        if (playerIn == true && Input.GetKeyDown(KeyCode.F) && gameManager.GetOptionUI().activeSelf == false)
         {
             bool openUpgradeWindow = upgradeUI == upgradeUI.activeSelf ? false : true;
             upgradeUI.SetActive(openUpgradeWindow);

@@ -557,7 +557,7 @@ Transform:
   - {fileID: 2289949013305775457}
   - {fileID: 1769271741677360137}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &3989943124332294765
 Animator:
@@ -656,6 +656,8 @@ MonoBehaviour:
   setExp: 2
   coinPrefab: {fileID: 2677218698816984505, guid: 69b04c124c26be04d954f53ee4e88c95, type: 3}
   dropCoin: 1
+  box: {fileID: 2677218698816984505, guid: 69b04c124c26be04d954f53ee4e88c95, type: 3}
+  portal: {fileID: 2677218698816984505, guid: 69b04c124c26be04d954f53ee4e88c95, type: 3}
   showChasePlayerRadius: 1
   chasePlayerRadius: 2
   colorChasePlayer: {r: 1, g: 0, b: 0, a: 1}

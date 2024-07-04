@@ -8,11 +8,14 @@ public class FunctionPortal : MonoBehaviour
 {
     [Header("현재 이동할 씬")]
     [SerializeField] private string sceneName;
+    [SerializeField] private Vector3 trs;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
+            GameManager.Instance.SetPosition(trs);
+
             FunctionFade.Instance.SetActive(false, () =>
             {
                 string setLoding = JsonConvert.SerializeObject(sceneName);

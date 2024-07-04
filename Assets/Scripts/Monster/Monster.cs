@@ -7,9 +7,9 @@ public class Monster : MonoBehaviour
     protected Vector3 moveVec;
     protected Animator anim;
 
-    private GameManager gameManager;
+    protected GameManager gameManager;
 
-    private DropTransform dropTransform;
+    protected DropTransform dropTransform;
 
     [Header("몬스터 기본 설정")]
     [SerializeField, Tooltip("몬스터의 이동속도")] protected float moveSpeed;
@@ -36,10 +36,13 @@ public class Monster : MonoBehaviour
     [SerializeField, Tooltip("머리위에 생성되는 높이")] protected float heightValue;
     [Space]
     [SerializeField, Tooltip("플레이어에게 전달한 경험치")] protected float setExp;
-
+    [Space]
     [Header("죽었을 때 떨어트리는 코인 설정")]
     [SerializeField, Tooltip("떨어트릴 코인 프리팹")] protected GameObject coinPrefab;
     [SerializeField, Tooltip("떨어트릴 개수")] protected int dropCoin;
+    [Space]
+    [SerializeField, Tooltip("떨어트릴 상자")] protected GameObject box;
+    [SerializeField, Tooltip("포탈")] protected GameObject portal;
 
     protected bool noHit; //죽는 애니메이션이 실행될 때 히트판정을 막기 위한 변수
 
@@ -83,6 +86,8 @@ public class Monster : MonoBehaviour
         gameManager = GameManager.Instance;
 
         dropTransform = DropTransform.Instance;
+
+        portal.SetActive(false);
     }
 
     protected virtual void Update()
@@ -217,6 +222,11 @@ public class Monster : MonoBehaviour
             behaviorCheck = true;
             gameManager.SetExp(setExp);
             anim.Play("Die");
+
+            Instantiate(box, new Vector3(transform.position.x, transform.position.y + 1f,
+                         transform.position.z), Quaternion.identity, dropTransform.transform);
+
+            portal.SetActive(true);
 
             if (dropCoin > 0)
             {
