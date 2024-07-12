@@ -640,6 +640,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40d23801cda9f2049b0a8731e29d5c59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  monsterNumber: 0
   moveSpeed: 1
   moveStop: 0
   bossMonster: 0
@@ -648,6 +649,7 @@ MonoBehaviour:
   rotateY: {x: 0, y: 359}
   smoothMaxSpeed: 100
   damage: 2
+  returnHp: 10
   hp: 10
   armor: 0
   checkColl: {fileID: 1952403051244215314}

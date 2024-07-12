@@ -1300,6 +1300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71a0a34cd5d03ba4e87ed44e62b7997c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  monsterNumber: 1
   moveSpeed: 1
   moveStop: 0
   bossMonster: 0
@@ -1308,6 +1309,7 @@ MonoBehaviour:
   rotateY: {x: 0, y: 359}
   smoothMaxSpeed: 100
   damage: 5
+  returnHp: 20
   hp: 20
   armor: 2
   checkColl: {fileID: 4686013965328395936}

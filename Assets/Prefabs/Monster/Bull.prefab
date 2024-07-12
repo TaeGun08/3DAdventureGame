@@ -1469,6 +1469,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d0a982ba4e4e1e4cbaf0189339479d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  monsterNumber: 11
   moveSpeed: 2
   moveStop: 0
   bossMonster: 1
@@ -1477,6 +1478,7 @@ MonoBehaviour:
   rotateY: {x: 0, y: 359}
   smoothMaxSpeed: 50
   damage: 10
+  returnHp: 0
   hp: 500
   armor: 5
   checkColl: {fileID: 302764159980735962}
@@ -1485,6 +1487,8 @@ MonoBehaviour:
   setExp: 2000
   coinPrefab: {fileID: 459374318886921637, guid: 6c3c586314aa6ed4ab6d1e3594b90c2a, type: 3}
   dropCoin: 50
+  box: {fileID: 0}
+  portal: {fileID: 0}
   showChasePlayerRadius: 1
   chasePlayerRadius: 8.67
   colorChasePlayer: {r: 1, g: 0, b: 0, a: 1}

@@ -12,12 +12,15 @@ public class Monster : MonoBehaviour
     protected DropTransform dropTransform;
 
     [Header("몬스터 기본 설정")]
+    [SerializeField, Tooltip("몬스터의 번호")] protected int monsterNumber;
     [SerializeField, Tooltip("몬스터의 이동속도")] protected float moveSpeed;
     [SerializeField, Tooltip("몬스터의 이동을 멈춤")] protected bool moveStop;
     [SerializeField, Tooltip("보스인지 아닌지 체크")] protected bool bossMonster;
     [SerializeField, Tooltip("죽는 애니메이션이 나오는 시간")] protected float deadTime;
     protected bool behaviorCheck; //몬스터의 작동을 멈추게 하기 위한 변수
     protected bool rotateStop; //회전을 멈추게 하는 변수
+    protected float dieTimer;
+    protected bool dieCheck;
     [Space]
     [SerializeField, Tooltip("몬스터의 랜덤 회전 시간 최소, 최대")] protected Vector2 rotateTime;
     [SerializeField, Tooltip("몬스터의 랜덤 회전 Y 값 최소, 최대")] protected Vector2 rotateY;
@@ -28,6 +31,7 @@ public class Monster : MonoBehaviour
     protected float curVelocity;
     [Space]
     [SerializeField, Tooltip("몬스터의 공격력")] protected float damage;
+    [SerializeField, Tooltip("몬스터가 죽었을 때 되돌릴 체력")] protected float returnHp;
     [SerializeField, Tooltip("몬스터의 체력")] protected float hp;
     [SerializeField, Tooltip("몬스터의 방어력")] protected float armor;
     [SerializeField, Tooltip("플레이어 확인영역")] protected BoxCollider checkColl;
@@ -94,6 +98,18 @@ public class Monster : MonoBehaviour
     {
         if (noHit == true || behaviorCheck == true)
         {
+            if (dieCheck == true)
+            {
+                dieTimer += Time.deltaTime;
+
+                if (dieTimer >= 2f)
+                {
+                    gameObject.SetActive(false);
+                    dieTimer = 0f;
+                    noHit = false;
+                    dieCheck = false;
+                }
+            }
             return;
         }
 
@@ -202,6 +218,7 @@ public class Monster : MonoBehaviour
             noHit = true;
             gameManager.SetExp(setExp);
             anim.Play("Die");
+            hp = returnHp;
 
             if (dropCoin > 0)
             {
@@ -214,7 +231,7 @@ public class Monster : MonoBehaviour
                 }
             }
 
-            Destroy(gameObject, 2f);
+            dieCheck = true;
         }
         else if (hp <= 0.0f && bossMonster == true && bossDie == true)
         {
@@ -299,5 +316,10 @@ public class Monster : MonoBehaviour
         {
         anim.Play("Hit");
         }
+    }
+
+    public int GetMonsterNumber()
+    {
+        return monsterNumber;
     }
 }
