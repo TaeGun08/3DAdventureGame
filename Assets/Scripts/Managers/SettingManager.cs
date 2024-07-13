@@ -5,6 +5,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor.Experimental.GraphView;
+using Newtonsoft.Json;
+using static MainManager;
 //#if UNITY_EDITOR
 //using UnityEditor;
 //#endif
@@ -12,6 +14,19 @@ using UnityEditor.Experimental.GraphView;
 public class SettingManager : MonoBehaviour
 {
     public static SettingManager Instance;
+
+    public class SaveSetting
+    {
+        public int widthSize = 1920;
+        public int heightSize = 1080;
+        public bool windowOn = true;
+        public int dropdownValue = 4;
+        public float bgmValue = 50f;
+        public float fxsValue = 50f;
+        public float mouseSensitivity = 250f;
+    }
+
+    private SaveSetting saveSetting = new SaveSetting();
 
     [Header("설정")]
     [SerializeField, Tooltip("게임 셋팅창")] private GameObject setting;
@@ -73,11 +88,46 @@ public class SettingManager : MonoBehaviour
         buttonCheck();
     }
 
+    private void Start()
+    {
+        string saveScreenData = PlayerPrefs.GetString("saveSettingValue");
+        saveSetting = JsonConvert.DeserializeObject<SaveSetting>(saveScreenData);
+
+        Screen.SetResolution(saveSetting.widthSize, saveSetting.heightSize, saveSetting.windowOn);
+        dropdown.value = saveSetting.dropdownValue;
+        toggle.isOn = saveSetting.windowOn;
+        bgm.value = saveSetting.bgmValue;
+        fxs.value = saveSetting.fxsValue;
+        mouseSensitivity.value = saveSetting.mouseSensitivity;
+    }
+
     private void buttonCheck()
     {
         settingSaveButton.onClick.AddListener(() => 
         {
-            virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = mouseSensitivity.value / 500;
+            if (mouseSensitivity.value <= 0.1f)
+            {
+                mouseSensitivity.value = 0.1f;
+            }
+
+            virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_HorizontalAxis.m_MaxSpeed = mouseSensitivity.value * 500;
+            virtualCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.m_MaxSpeed = mouseSensitivity.value * 500;
+
+
+            Screen.SetResolution(saveSetting.widthSize, saveSetting.heightSize, saveSetting.windowOn);
+            saveSetting.dropdownValue = dropdown.value;
+            saveSetting.windowOn = toggle.isOn;
+            saveSetting.bgmValue = bgm.value;
+            saveSetting.fxsValue = fxs.value;
+            saveSetting.mouseSensitivity = mouseSensitivity.value;
+
+            string settingSave = JsonConvert.SerializeObject(saveSetting);
+            PlayerPrefs.SetString("saveSettingValue", settingSave);
+        });
+
+        settingWindowClosedButton.onClick.AddListener(() => 
+        {
+            setting.SetActive(false);
         });
     }
 }

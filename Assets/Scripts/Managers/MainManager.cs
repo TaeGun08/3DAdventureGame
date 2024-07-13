@@ -16,16 +16,10 @@ public class MainManager : MonoBehaviour
         public int dropdownValue = 4;
         public float bgmValue = 50f;
         public float fxsValue = 50f;
-    }
-
-    public class SaveScene
-    {
-        public string sceneName = "Tutorial";
+        public float mouseSensitivity = 250f;
     }
 
     private SaveSetting saveSetting = new SaveSetting();
-
-    private SaveScene saveScene = new SaveScene();
 
     [Header("작동하는 버튼")]
     [SerializeField, Tooltip("게임 시작 버튼")] private Button startButton;
@@ -76,7 +70,7 @@ public class MainManager : MonoBehaviour
             dropdown.value = 4;
             toggle.isOn = true;
             bgm.value = 75f / 100f;
-            fxs.value = 75 / 100f;
+            fxs.value = 75f / 100f;
 
             string getScreenSize = JsonConvert.SerializeObject(saveSetting);
             PlayerPrefs.SetString(saveSetingValue, getScreenSize);
