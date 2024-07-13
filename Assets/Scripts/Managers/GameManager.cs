@@ -30,10 +30,9 @@ public class GameManager : MonoBehaviour
 
     [Header("¿É¼Ç")]
     [SerializeField] private GameObject optionWindow;
+    [SerializeField] private GameObject settingWindow;
     [SerializeField] private List<Button> buttons;
     private bool cheat = false;
-
-    [SerializeField] private GameObject position;
 
     public bool Cheat
     {
@@ -99,6 +98,11 @@ public class GameManager : MonoBehaviour
             inventoryManger.SetCoin();
             informationManager.CheatCheck();
             cheat = false;
+        });
+
+        buttons[4].onClick.AddListener(() =>
+        {
+            settingWindow.SetActive(true);
         });
 
         if (PlayerPrefs.GetString("PositionData") != string.Empty)
