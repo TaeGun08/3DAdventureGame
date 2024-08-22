@@ -48,6 +48,8 @@ public class MainManager : MonoBehaviour
 
     private string saveSceneName = "saveSceneName"; //씬을 저장하기 위한 변수
 
+    [SerializeField, Tooltip("게임 진짜 초기화 버튼")] private Button resetTestButton;
+
     private void Awake()
     {
         Time.timeScale = 1.0f;
@@ -151,6 +153,12 @@ public class MainManager : MonoBehaviour
         });
 
         resetButton.onClick.AddListener(() =>
+        {
+            PlayerPrefs.DeleteAll();
+            resetChoiceButton.SetActive(false);
+        });
+
+        resetTestButton.onClick.AddListener(() =>
         {
             PlayerPrefs.DeleteAll();
             resetChoiceButton.SetActive(false);
