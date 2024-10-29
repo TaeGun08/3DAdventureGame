@@ -82,7 +82,7 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.clickCount == 2 && eventData.button == PointerEventData.InputButton.Left)
+        if (eventData.clickCount == 2 && eventData.button == PointerEventData.InputButton.Left && itemType == 20)
         {
             inventoryManger.useItemCheck(slotNumber);
             itemQuantity--;

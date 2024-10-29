@@ -181,8 +181,7 @@ public class Monster : MonoBehaviour
         }
         else if (player != null && rotateStop == false)
         {   
-            Vector3 vec = player.transform.position - transform.position;
-            vec.Normalize();
+            Vector3 vec = (player.transform.position - transform.position).normalized;
             float targetAngle = Quaternion.FromToRotation(Vector3.forward, vec).eulerAngles.y;
 
             float smoothDamp = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle,
