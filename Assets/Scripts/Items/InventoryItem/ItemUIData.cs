@@ -21,6 +21,18 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     [SerializeField] private int weaponUpgrage; //아이템 데이터에 받아올 무기 강화횟수
     [SerializeField] private int slotNumber; //슬롯의 번호
     private int itemQuantity; //아이템 개수
+    [SerializeField] private bool upgradeCheck = false; 
+    public bool UpgradeCheck
+    {
+        get
+        {
+            return upgradeCheck;
+        }
+        set
+        {
+            upgradeCheck = value;
+        }
+    }
 
     private RectTransform itemRectTrs; //아이템의 렉트트랜스폼
     private Transform itemParenTrs; //아이템의 부모위치
@@ -94,6 +106,14 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         informationManager = InformationManager.Instance;
 
         quantityText.gameObject.SetActive(true);
+    }
+
+    private void Update()
+    {
+        if (upgradeCheck == false && transform.parent.name == "UpgradeSlot")
+        {
+            upgradeCheck = true;
+        }
     }
 
     /// <summary>

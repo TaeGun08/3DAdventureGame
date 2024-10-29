@@ -31,7 +31,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
 
     void IDropHandler.OnDrop(PointerEventData eventData)
     {
-        if (eventData.pointerDrag.gameObject.tag == "Item")
+        if (eventData.pointerDrag.gameObject.tag == "Item" && itemUIData == null)
         {
             itemUIData = eventData.pointerDrag.GetComponent<ItemUIData>();
 

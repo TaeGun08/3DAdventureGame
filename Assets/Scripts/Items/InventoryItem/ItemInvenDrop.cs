@@ -8,22 +8,40 @@ public class ItemInvenDrop : MonoBehaviour, IDropHandler
     private InventoryManger inventoryManger;
     private WearItemManager wearItemManager;
 
-    private ItemUIData itemUIData;
+    [SerializeField] private ItemUIData itemUIData;
 
     private RectTransform rectTrs; //½½·ÔÀÇ ·ºÆ®Æ®·£½ºÆû
 
     private int slotNumber; //½½·ÔÀÇ ¹øÈ£
 
+    private bool upgradeCheck = false;
+
     void IDropHandler.OnDrop(PointerEventData eventData)
     {
         if (eventData.pointerDrag.gameObject.tag == "Item")
         {
+            upgradeCheck = false;
+
+            ItemUIData checkItemUI = eventData.pointerDrag.GetComponent<ItemUIData>();
+            upgradeCheck = checkItemUI.UpgradeCheck;
+
             inventoryManger.ItemParentB(transform.gameObject);
             inventoryManger.ItemSwapB(slotNumber);
 
             WearItemData wearItemDataSc = eventData.pointerDrag.GetComponent<WearItemData>();
 
-            if (inventoryManger.ItemInCheck(slotNumber) == false && wearItemDataSc == null)
+            if (upgradeCheck == true)
+            {
+                eventData.pointerDrag.transform.SetParent(transform);
+
+                RectTransform eventRect = eventData.pointerDrag.GetComponent<RectTransform>();
+                eventRect.position = rectTrs.position;
+
+                upgradeCheck = false;
+
+                inventoryManger.ItemParentB(null);
+            }
+            else if (inventoryManger.ItemInCheck(slotNumber) == false && wearItemDataSc == null)
             {
                 eventData.pointerDrag.transform.SetParent(transform);
 
@@ -91,6 +109,7 @@ public class ItemInvenDrop : MonoBehaviour, IDropHandler
             if (itemUIData.GetSlotNumber() != slotNumber)
             {
                 itemUIData.SetSlotNumber(slotNumber);
+                itemUIData.UpgradeCheck = false;
             }
         }
         else if (itemUIData != null && transform.Find("itemImage(Clone)") == null)
