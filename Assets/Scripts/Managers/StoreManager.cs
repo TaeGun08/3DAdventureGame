@@ -7,7 +7,7 @@ public class StoreManager : MonoBehaviour
 {
     public static StoreManager Instance;
 
-    private InventoryManger inventoryManger;
+    private InventoryManager inventoryManger;
 
     [Header("상점 설정")]
     [SerializeField, Tooltip("아이템을 사기 위한 버튼")] private List<Button> buyButton;
@@ -26,7 +26,7 @@ public class StoreManager : MonoBehaviour
 
     private void Start()
     {
-        inventoryManger = InventoryManger.Instance;
+        inventoryManger = InventoryManager.Instance;
 
         clickButtons();
     }

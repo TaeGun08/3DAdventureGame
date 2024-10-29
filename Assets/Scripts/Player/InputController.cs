@@ -8,7 +8,7 @@ public class InputController : MonoBehaviour
     private GameManager gameManager;
     private InformationManager informationManager;
     private PlayerStateManager playerStateManager;
-    private InventoryManger inventoryManger;
+    private InventoryManager inventoryManger;
     private WearItemManager wearItemManager;
 
     private CharacterController characterController; //플레이어가 가지고 있는 캐릭터 컨트롤러를 받아올 변수
@@ -102,7 +102,7 @@ public class InputController : MonoBehaviour
 
         playerStateManager = PlayerStateManager.Instance;
 
-        inventoryManger = InventoryManger.Instance;
+        inventoryManger = InventoryManager.Instance;
 
         wearItemManager = WearItemManager.Instance;
 

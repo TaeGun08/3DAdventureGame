@@ -7,7 +7,7 @@ public class UpgradeNpc : MonoBehaviour
 {
     private GameManager gameManager;
     private CanvasManager canvasManager;
-    private InventoryManger inventoryManger;
+    private InventoryManager inventoryManger;
 
     private UpgradeSlot upgradeSlot;
 
@@ -41,7 +41,7 @@ public class UpgradeNpc : MonoBehaviour
 
         canvasManager = CanvasManager.Instance;
 
-        inventoryManger = InventoryManger.Instance;
+        inventoryManger = InventoryManager.Instance;
 
         upgradeUI = canvasManager.GetCanvas().transform.Find("UpgradeWindow").gameObject;
 

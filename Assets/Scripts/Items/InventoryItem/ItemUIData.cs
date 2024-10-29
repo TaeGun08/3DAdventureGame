@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
-    private InventoryManger inventoryManger;
+    private InventoryManager inventoryManger;
     private InformationManager informationManager;
 
     [Header("아이템 설정")]
@@ -101,19 +101,13 @@ public class ItemUIData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     private void Start()
     {
-        inventoryManger = InventoryManger.Instance;
+        inventoryManger = InventoryManager.Instance;
 
         informationManager = InformationManager.Instance;
 
         quantityText.gameObject.SetActive(true);
-    }
 
-    private void Update()
-    {
-        if (upgradeCheck == false && transform.parent.name == "UpgradeSlot")
-        {
-            upgradeCheck = true;
-        }
+        upgradeCheck = false;
     }
 
     /// <summary>

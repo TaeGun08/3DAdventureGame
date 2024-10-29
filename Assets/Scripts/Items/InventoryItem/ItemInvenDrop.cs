@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class ItemInvenDrop : MonoBehaviour, IDropHandler
 {
-    private InventoryManger inventoryManger;
+    private InventoryManager inventoryManger;
     private WearItemManager wearItemManager;
 
     [SerializeField] private ItemUIData itemUIData;
@@ -23,14 +23,17 @@ public class ItemInvenDrop : MonoBehaviour, IDropHandler
             upgradeCheck = false;
 
             ItemUIData checkItemUI = eventData.pointerDrag.GetComponent<ItemUIData>();
-            upgradeCheck = checkItemUI.UpgradeCheck;
+            if (checkItemUI != null)
+            {
+                upgradeCheck = checkItemUI.UpgradeCheck;
+            }
 
             inventoryManger.ItemParentB(transform.gameObject);
             inventoryManger.ItemSwapB(slotNumber);
 
             WearItemData wearItemDataSc = eventData.pointerDrag.GetComponent<WearItemData>();
 
-            if (upgradeCheck == true)
+            if (upgradeCheck == true && itemUIData == null)
             {
                 eventData.pointerDrag.transform.SetParent(transform);
 
@@ -95,7 +98,7 @@ public class ItemInvenDrop : MonoBehaviour, IDropHandler
 
     private void Start()
     {
-        inventoryManger = InventoryManger.Instance;
+        inventoryManger = InventoryManager.Instance;
 
         wearItemManager = WearItemManager.Instance;
     }
@@ -106,10 +109,14 @@ public class ItemInvenDrop : MonoBehaviour, IDropHandler
         {
             itemUIData = transform.Find("itemImage(Clone)").GetComponent<ItemUIData>();
 
+            if (itemUIData.UpgradeCheck == true)
+            {
+                itemUIData.UpgradeCheck = false;
+            }
+
             if (itemUIData.GetSlotNumber() != slotNumber)
             {
-                itemUIData.SetSlotNumber(slotNumber);
-                itemUIData.UpgradeCheck = false;
+                itemUIData.SetSlotNumber(slotNumber);             
             }
         }
         else if (itemUIData != null && transform.Find("itemImage(Clone)") == null)

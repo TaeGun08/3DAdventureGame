@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class WearItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    private InventoryManger inventoryManger;
+    private InventoryManager inventoryManger;
     private WearItemManager wearItemManager;
 
     [Header("아이템 설정")]
@@ -56,7 +56,7 @@ public class WearItemData : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         itemRectTrs = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
 
-        inventoryManger = InventoryManger.Instance;
+        inventoryManger = InventoryManager.Instance;
 
         wearItemManager = WearItemManager.Instance;
     }

@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     private PositionCheck positionCheck = new PositionCheck();
 
-    private InventoryManger inventoryManger;
+    private InventoryManager inventoryManger;
     private InformationManager informationManager;
 
     [Header("게임 정지")]
@@ -120,7 +120,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        inventoryManger = InventoryManger.Instance;
+        inventoryManger = InventoryManager.Instance;
         informationManager = InformationManager.Instance;
 
         StartCoroutine(FunctionFade.Instance.functionFade());

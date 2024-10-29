@@ -5,9 +5,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryManger : MonoBehaviour
+public class InventoryManager : MonoBehaviour
 {
-    public static InventoryManger Instance;
+    public static InventoryManager Instance;
 
     public class InventoryData
     {

@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class WearDropItem : MonoBehaviour, IDropHandler
 {
-    private InventoryManger inventoryManger;
+    private InventoryManager inventoryManger;
     private WearItemManager wearItemManager;
 
     [Header("장착 아이템 설정")]
@@ -63,7 +63,7 @@ public class WearDropItem : MonoBehaviour, IDropHandler
 
     private void Start()
     {
-        inventoryManger = InventoryManger.Instance;
+        inventoryManger = InventoryManager.Instance;
 
         wearItemManager = WearItemManager.Instance;
 

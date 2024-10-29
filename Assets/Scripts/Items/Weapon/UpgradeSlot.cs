@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class UpgradeSlot : MonoBehaviour, IDropHandler
 {
-    private InventoryManger inventoryManger;
+    private InventoryManager inventoryManger;
 
     private RectTransform rectTrs;
 
@@ -34,6 +34,8 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
         if (eventData.pointerDrag.gameObject.tag == "Item" && itemUIData == null)
         {
             itemUIData = eventData.pointerDrag.GetComponent<ItemUIData>();
+
+            itemUIData.UpgradeCheck = true;
 
             if (itemUIData != null && itemUIData.GetItemType() < 20)
             {
@@ -67,7 +69,7 @@ public class UpgradeSlot : MonoBehaviour, IDropHandler
 
     private void Start()
     {
-        inventoryManger = InventoryManger.Instance;
+        inventoryManger = InventoryManager.Instance;
     }
 
     private void Update()
